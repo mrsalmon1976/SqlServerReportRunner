@@ -7,11 +7,14 @@ Windows service that can be used to run reports from SQL Server and persist the 
 ## Installation
 
 1. Copy all binary files into a folder on the server that will be processing the reports (not necessarily the database server)
-2. Open the "SqlServerReportRunner.exe.config file, and set configuration options (See Configuration Options section below).  Save and close the file.
-3. (Optional) Configure NLog.config file to add logging.  By default, the application will log to a text file in the application folder, but the service can be configured to (for example) log errors via email if you have access to a mail server
-4. Open a console in Administrator mode and change the current directory to your installation folder
-5. Run "SqlServerReportRunner.exe install"
-6. To start the service, run "SqlServerReportRunner.exe start", or go to the Services control panel and start the service
+2. Open the "SqlServerReportRunner.exe.config file, and:
+    1. Under the connectionStrings section, add connection strings for each server/database pair that will host a ReportQueue table
+    2. Set application configuration options in the appSettings section (See Configuration Options section below).  Save and close the file.
+3. Run the SQL Script "sql/CreateReportQueueTable.sql" on any database that will host a ReportQueue table
+4. (Optional) Configure NLog.config file to add logging.  By default, the application will log to a text file in the application folder, but the service can be configured to (for example) log errors via email if you have access to a mail server
+5. Open a console in Administrator mode and change the current directory to your installation folder
+6. Run "SqlServerReportRunner.exe install"
+7. To start the service, run "SqlServerReportRunner.exe start", or go to the Services control panel and start the service
 
 ## Configuration Options
 
