@@ -41,8 +41,10 @@ Assuming the application is correctly installed and started as a Windows service
     4. Parameters are loaded (applicable to all report types, even SQL as sp_executesql is used to run the text)
     5. StartTime is updated on ReportQueue to the current UTC date/time, and Status is set to "Processing"
     6. Report is executed
+    7. Once data returns from the database server, the report is saved to disk in the format specified in the "ReportFormat" column
+    8. On report completion:
         1. If report runs successfully, EndTime is updated on ReportQueue to the current UTC date/time, and Status is set to Processed
         2. If report fails, Status is set to Error and ErrorDetails column is updated with error information and the associated stack trace
-    7. Report is removed from ConcurrencyManager as a processing report
+    9. Report is removed from ConcurrencyManager as a processing report
 6. Application sleeps for configured time period before polling again (goto Step 1)
 
