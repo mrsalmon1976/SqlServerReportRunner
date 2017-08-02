@@ -17,6 +17,8 @@ Windows service that can be used to run reports from SQL Server and persist the 
 
 Key | Description | Example
 ------------- | ------------- | -------------
+ServiceUserName | Windows account under which the service should run as when installed.  Should be represented as DOMAIN\UserName.  Leaving this blank will result in the service running as Local System. | MYDOMAIN\Eric
+ServicePassword | Windows password for the configured account.  Leave blank if ServiceUserName is blank. | mypassword
 PollInterval | How often the database table is polled to see if there are any new reports to run (in seconds) | 15
 PollSchedule | When polling should take place, represented as a cron string | *Future functionality*
 MaxConcurrentReports | The maximum number of reports that can be run *per host* concurrently | 3
