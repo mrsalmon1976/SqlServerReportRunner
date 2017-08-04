@@ -24,7 +24,7 @@ ServiceUserName | Windows account under which the service should run as when ins
 ServicePassword | Windows password for the configured account.  Leave blank if ServiceUserName is blank. | mypassword
 PollInterval | How often the database table is polled to see if there are any new reports to run (in seconds) | 15
 PollSchedule | When polling should take place, represented as a cron string | *Future functionality*
-MaxConcurrentReports | The maximum number of reports that can be run *per host* concurrently | 3
+MaxConcurrentReports | The maximum number of reports that can be run *connection* concurrently | 3
 
 ## Program Flow
 
@@ -43,7 +43,7 @@ Assuming the application is correctly installed and started as a Windows service
     6. Report is executed
     7. Once data returns from the database server, the report is saved to disk in the format specified in the "ReportFormat" column
     8. On report completion:
-        1. If report runs successfully, EndTime is updated on ReportQueue to the current UTC date/time, and Status is set to Processed
+        1. If report runs successfully, EndTime is updated on ReportQueue to the current UTC date/time, and Status is set to Complete
         2. If report fails, Status is set to Error and ErrorDetails column is updated with error information and the associated stack trace
     9. Report is removed from ConcurrencyManager as a processing report
 6. Application sleeps for configured time period before polling again (goto Step 1)
