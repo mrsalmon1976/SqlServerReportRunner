@@ -67,7 +67,7 @@
     <Compile Include="Reporting\ReportCoordinator.cs" />
     <Compile Include="Reporting\ReportLocationProvider.cs" />
     <Compile Include="Reporting\ReportEngine.cs" />
-    <Compile Include="DAL\Repositories\ReportJobRepository.cs" />
+    <Compile Include="Repositories\ReportJobRepository.cs" />
     <Compile Include="Reporting\Executors\StoredProcedureReportExecutor.cs" />
     <Compile Include="AppSettings.cs" />
     <Compile Include="Models\ReportJob.cs" />
@@ -85,7 +85,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="DAL\Commands\" />
+    <Folder Include="Commands\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

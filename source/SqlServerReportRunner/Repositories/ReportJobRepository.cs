@@ -8,7 +8,7 @@ using Dapper;
 using System.Data;
 using SqlServerReportRunner.Common;
 
-namespace SqlServerReportRunner.DAL.Repositories
+namespace SqlServerReportRunner.Repositories
 {
     public interface IReportJobRepository
     {
