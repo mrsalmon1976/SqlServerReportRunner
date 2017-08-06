@@ -8,33 +8,40 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SqlServerReportRunner.Commands;
+using SqlServerReportRunner.Common;
+using System.Data;
 
 namespace SqlServerReportRunner.Reporting
 {
     public interface IReportJobAgent
     {
-        void ExecuteJobAsync(string connectionString, ReportJob job);
-        void ExecuteJob(string connectionString, ReportJob job);
+        void ExecuteJobAsync(ConnectionSetting connection, ReportJob job);
+        void ExecuteJob(ConnectionSetting connection, ReportJob job);
     }
 
     public class ReportJobAgent : IReportJobAgent
     {
         private readonly ILogger _logger = LogManager.GetCurrentClassLogger();
         private IReportExecutorFactory _reportExecutorFactory;
-        private IReportJobRepository _reportJobRepository;
+        private IStartJobCommand _startJobCommand;
+        private IFinaliseJobCommand _finaliseJobCommand;
+        private IFailJobCommand _failJobCommand;
 
-        public ReportJobAgent(IReportExecutorFactory reportExecutorFactory, IReportJobRepository reportJobRepository)
+        public ReportJobAgent(IReportExecutorFactory reportExecutorFactory, IStartJobCommand startJobCommand, IFinaliseJobCommand finaliseJobCommand, IFailJobCommand failJobCommand)
         {
             _reportExecutorFactory = reportExecutorFactory;
-            _reportJobRepository = reportJobRepository;
+            _startJobCommand = startJobCommand;
+            _finaliseJobCommand = finaliseJobCommand;
+            _failJobCommand = failJobCommand;
         }
 
-        public void ExecuteJobAsync(string connectionString, ReportJob job)
+        public void ExecuteJobAsync(ConnectionSetting connection, ReportJob job)
         {
             BackgroundWorker worker = new BackgroundWorker();
             worker.WorkerReportsProgress = false;
             worker.DoWork += new DoWorkEventHandler(ExecuteJobAsyncInternal);
-            worker.RunWorkerAsync(new JobArgs(connectionString, job));
+            worker.RunWorkerAsync(new JobArgs(connection, job));
             _logger.Info("Created background thread for execution of report {0} ({1})", job.ReportName, job.Id);
 
         }
@@ -42,10 +49,10 @@ namespace SqlServerReportRunner.Reporting
         private void ExecuteJobAsyncInternal(object sender, DoWorkEventArgs e)
         {
             JobArgs args = (JobArgs)e.Argument;
-            ExecuteJob(args.ConnectionString, args.Job);
+            ExecuteJob(args.Connection, args.Job);
         }
 
-        public void ExecuteJob(string connectionString, ReportJob job)
+        public void ExecuteJob(ConnectionSetting connection, ReportJob job)
         {
             try
             {
@@ -53,35 +60,39 @@ namespace SqlServerReportRunner.Reporting
                 IReportExecutor reportExecutor = _reportExecutorFactory.GetReportExecutor(job.CommandType);
 
                 // mark the job as processing 
-                _reportJobRepository.MarkJobAsProcessing(connectionString, job.Id);
+                _logger.Info("Moving job {0} (Id: {1}) into processing state", job.ReportName, job.Id);
+                _startJobCommand.Execute(connection, job.Id);
 
                 // extract the data into a data table
                 _logger.Info("Processing job for report {0} ({1})", job.ReportName, job.Id);
-                reportExecutor.ExecuteJob(connectionString, job);
+                reportExecutor.ExecuteJob(connection, job);
 
                 // mark the job as processed 
-                _reportJobRepository.MarkJobAsProcessed(connectionString, job.Id);
+                _logger.Info("Marking job {0} (Id: {1}) as complete", job.ReportName, job.Id);
+                _finaliseJobCommand.Execute(connection, job.Id);
 
                 _logger.Info("Completed job for report {0} ({1})", job.ReportName, job.Id);
             }
             catch (Exception ex)
             {
-                // mark the job as errored
-                _reportJobRepository.MarkJobAsError(connectionString, job.Id);
                 _logger.Error(ex, ex.Message);
+
+                // mark the job as errored
+                _logger.Info("Saving error information job for report {0} ({1})", job.ReportName, job.Id);
+                _failJobCommand.Execute(connection, job.Id);
             }
         }
 
         private class JobArgs
         {
 
-            public JobArgs(string connectionString, ReportJob job)
+            public JobArgs(ConnectionSetting connection, ReportJob job)
             {
-                this.ConnectionString = connectionString;
+                this.Connection = connection;
                 this.Job = job;
             }
 
-            public string ConnectionString { get; set; }
+            public ConnectionSetting Connection { get; set; }
 
             public ReportJob Job { get; set; }
         }

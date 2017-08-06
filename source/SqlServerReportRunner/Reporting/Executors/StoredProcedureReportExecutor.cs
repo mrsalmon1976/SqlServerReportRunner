@@ -15,16 +15,17 @@ namespace SqlServerReportRunner.Reporting.Executors
     public class StoredProcedureReportExecutor : IReportExecutor
     {
         private IDbConnectionFactory _dbConnectionFactory;
+        private IReportWriterFactory _reportWriterFactory;
 
-        public StoredProcedureReportExecutor(IDbConnectionFactory dbConnectionFactory)
+        public StoredProcedureReportExecutor(IDbConnectionFactory dbConnectionFactory, IReportWriterFactory reportWriterFactory)
         {
             _dbConnectionFactory = dbConnectionFactory;
+            _reportWriterFactory = reportWriterFactory;
         }
 
-        public ReportJobResult ExecuteJob(string connectionString, ReportJob job)
+        public ReportJobResult ExecuteJob(ConnectionSetting connection, ReportJob job)
         {
-
-            using (SqlConnection conn = (SqlConnection)_dbConnectionFactory.CreateConnection(connectionString))
+            using (SqlConnection conn = (SqlConnection)_dbConnectionFactory.CreateConnection(connection.ConnectionString))
             {
 
                 int rowCount = 0;
@@ -39,24 +40,20 @@ namespace SqlServerReportRunner.Reporting.Executors
                     using (var reader = command.ExecuteReader())
                     {
                         string destinationFile = Path.Combine(job.OutputFilePath, job.OutputFileName);
-                        using (var fileWriter = File.CreateText(destinationFile))
+                        IReportWriter reportWriter = _reportWriterFactory.GetReportWriter(job.Format);
+                        using (reportWriter)
                         {
-                            string[] columnNames = GetColumnNames(reader).ToArray();
-                            int numFields = columnNames.Length;
-                            fileWriter.WriteLine(string.Join(",", columnNames));
+                            reportWriter.CreateFile(destinationFile);
+                            ColumnMetaData[] columnInfo = GetColumnInfo(reader).ToArray();
+                            reportWriter.WriteHeader(columnInfo.Select(x => x.Name), job.Delimiter);
                             if (reader.HasRows)
                             {
                                 while (reader.Read())
                                 {
-                                    string[] columnValues =
-                                        Enumerable.Range(0, numFields)
-                                                  .Select(i => reader.GetValue(i).ToString())
-                                                  .Select(field => string.Concat("\"", field.Replace("\"", "\"\""), "\""))
-                                                  .ToArray();
-                                    fileWriter.WriteLine(string.Join(",", columnValues));
+                                    reportWriter.WriteLine(reader, columnInfo, job.Delimiter);
+                                    rowCount++;
                                 }
                             }
-                            rowCount++;
                         }
                     }
                 }
@@ -65,6 +62,18 @@ namespace SqlServerReportRunner.Reporting.Executors
                 result.RowCount = rowCount;
                 result.ExecutionTime = start.Subtract(DateTime.UtcNow);
                 return result;
+            }
+        }
+
+        private IEnumerable<ColumnMetaData> GetColumnInfo(IDataReader reader)
+        {
+            foreach (DataRow row in reader.GetSchemaTable().Rows)
+            {
+                ColumnMetaData metaData = new ColumnMetaData();
+                metaData.Name = (string)row["ColumnName"];
+                metaData.Size = (int)row["ColumnSize"];
+                metaData.DataType = (string)row["DataTypeName"];
+                yield return metaData;
             }
         }
 

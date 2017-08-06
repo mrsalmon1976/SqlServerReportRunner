@@ -9,9 +9,11 @@ namespace SqlServerReportRunner.Reporting
 {
     public interface IConcurrencyCoordinator
     {
-        int GetRunningReportCount(string connectionName);
+        int[] GetRunningReports(string connectionName);
 
         void LockReportJob(string connectionName, int jobId);
+
+        void UnlockReportJob(string connectionName, int jobId);
     }
 
     public class ConcurrencyCoordinator : IConcurrencyCoordinator
@@ -23,17 +25,40 @@ namespace SqlServerReportRunner.Reporting
             _reportLocationProvider = reportLocationProvider;
         }
 
-        public int GetRunningReportCount(string connectionName)
+        public int[] GetRunningReports(string connectionName)
         {
             string path = _reportLocationProvider.GetProcessingFolder(connectionName);
             Directory.CreateDirectory(path);
             string[] files = Directory.GetFiles(path);
-            return files.Length;
+            List<int> runningReports = new List<int>();
+            foreach (string file in files)
+            {
+                string fileName = Path.GetFileName(file);
+                int jobId;
+                if (Int32.TryParse(fileName, out jobId))
+                {
+                    runningReports.Add(jobId);
+                }
+            }
+            return runningReports.ToArray();
         }
 
         public void LockReportJob(string connectionName, int jobId)
         {
-            throw new NotImplementedException();
+            string path = _reportLocationProvider.GetProcessingFolder(connectionName);
+            string filePath = Path.Combine(path, jobId.ToString());
+            File.WriteAllText(filePath, String.Empty);
         }
+
+        public void UnlockReportJob(string connectionName, int jobId)
+        {
+            string path = _reportLocationProvider.GetProcessingFolder(connectionName);
+            string filePath = Path.Combine(path, jobId.ToString());
+            if (File.Exists(filePath))
+            {
+                File.Delete(filePath);
+            }
+        }
+
     }
 }

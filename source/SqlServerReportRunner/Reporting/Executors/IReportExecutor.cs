@@ -9,6 +9,6 @@ namespace SqlServerReportRunner.Reporting.Executors
 {
     public interface IReportExecutor
     {
-        ReportJobResult ExecuteJob(string connectionString, ReportJob job);
+        ReportJobResult ExecuteJob(ConnectionSetting connection, ReportJob job);
     }
 }

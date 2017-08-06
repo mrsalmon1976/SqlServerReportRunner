@@ -13,12 +13,12 @@ namespace SqlServerReportRunner.Reporting
     {
         private readonly ILogger _logger = LogManager.GetCurrentClassLogger();
         private IAppSettings _appSettings;
-        private IReportCoordinator _reportRunCoordinator;
+        private IReportCoordinator _reportCoordinator;
 
-        public ReportEngine(IAppSettings appSettings, IReportCoordinator reportRunCoordinator)
+        public ReportEngine(IAppSettings appSettings, IReportCoordinator reportCoordinator)
         {
             _appSettings = appSettings;
-            _reportRunCoordinator = reportRunCoordinator;
+            _reportCoordinator = reportCoordinator;
         }
 
         public IEnumerable<ReportJob> ExecuteReports()
@@ -28,7 +28,7 @@ namespace SqlServerReportRunner.Reporting
             IEnumerable<ConnectionSetting> connections = _appSettings.ConnectionSettings;
             foreach (ConnectionSetting conn in connections)
             {
-                IEnumerable<ReportJob> jobs = _reportRunCoordinator.RunReports(conn);
+                IEnumerable<ReportJob> jobs = _reportCoordinator.RunReports(conn);
                 executedJobs.AddRange(jobs);
             }
 

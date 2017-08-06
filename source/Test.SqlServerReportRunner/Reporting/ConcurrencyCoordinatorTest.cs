@@ -28,6 +28,7 @@ namespace Test.SqlServerReportRunner.Reporting
             _concurrencyCoordinator = new ConcurrencyCoordinator(_reportLocationProvider);
         }
 
+        [TearDown]
         public void ConcurrencyCoordinatorTest_TearDown()
         {
             if (Directory.Exists(_testRootFolder))
@@ -38,43 +39,84 @@ namespace Test.SqlServerReportRunner.Reporting
 
 
         [Test]
-        public void GetRunningReportCount_NoFiles_ReturnsZero()
+        public void GetRunningReports_NoFiles_ReturnsZero()
         {
             // setup
             string connectionName = Path.GetRandomFileName();
-            string processingFolder = Path.Combine(Environment.CurrentDirectory, connectionName);
+            string processingFolder = Path.Combine(_testRootFolder, connectionName);
             _reportLocationProvider.GetProcessingFolder(connectionName).Returns(processingFolder);
 
             // execute
-            int result = _concurrencyCoordinator.GetRunningReportCount(connectionName);
+            int[] result = _concurrencyCoordinator.GetRunningReports(connectionName);
 
             // assert
-            Assert.AreEqual(0, result);
+            Assert.AreEqual(0, result.Length);
 
         }
 
         [Test]
-        public void GetRunningReportCount_ContainsFiles_ReturnsCorrectCount()
+        public void GetRunningReports_ContainsFiles_ReturnsCorrectCount()
         {
             // setup
             string connectionName = Path.GetRandomFileName();
-            string processingFolder = Path.Combine(Environment.CurrentDirectory, connectionName);
+            string processingFolder = Path.Combine(_testRootFolder, connectionName);
             _reportLocationProvider.GetProcessingFolder(connectionName).Returns(processingFolder);
 
             Directory.CreateDirectory(processingFolder);
             int fileCount = new Random().Next(1, 7);
-            for (int i=0; i<fileCount; i++)
+            for (int i=1; i<=fileCount; i++)
             {
                 string filePath = Path.Combine(processingFolder, i.ToString());
                 File.WriteAllText(filePath, "test data");
             }
 
             // execute
-            int result = _concurrencyCoordinator.GetRunningReportCount(connectionName);
+            int[] result = _concurrencyCoordinator.GetRunningReports(connectionName);
 
             // assert
-            Assert.AreEqual(fileCount, result);
+            Assert.AreEqual(fileCount, result.Length);
+        }
 
+        [Test]
+        public void LockReportJob_OnCall_CreatesTextFile()
+        {
+            // setup
+            string connectionName = Path.GetRandomFileName();
+            int jobId = new Random().Next(1, 100);
+            string processingFolder = Path.Combine(_testRootFolder, connectionName);
+            _reportLocationProvider.GetProcessingFolder(connectionName).Returns(processingFolder);
+            Directory.CreateDirectory(processingFolder);
+
+            // execute
+            _concurrencyCoordinator.LockReportJob(connectionName, jobId);
+
+            string expectedPath = Path.Combine(processingFolder, jobId.ToString());
+            Assert.IsTrue(File.Exists(expectedPath));
+
+            // clean up
+            Directory.Delete(processingFolder, true);
+        }
+
+        [Test]
+        public void UnlockReportJob_OnCall_CreatesTextFile()
+        {
+            // setup
+            string connectionName = Path.GetRandomFileName();
+            int jobId = new Random().Next(1, 100);
+            string processingFolder = Path.Combine(_testRootFolder, connectionName);
+            _reportLocationProvider.GetProcessingFolder(connectionName).Returns(processingFolder);
+            string lockFilePath = Path.Combine(processingFolder, jobId.ToString());
+            
+            Directory.CreateDirectory(processingFolder);
+            File.WriteAllText(lockFilePath, String.Empty);
+
+            // execute
+            _concurrencyCoordinator.UnlockReportJob(connectionName, jobId);
+
+            Assert.IsFalse(File.Exists(lockFilePath));
+
+            // clean up
+            Directory.Delete(processingFolder, true);
         }
 
     }

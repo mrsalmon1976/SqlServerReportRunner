@@ -5,15 +5,17 @@ CREATE TABLE [dbo].[ReportJobQueue](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[ReportName] [varchar](255) NOT NULL,
 	[CommandType] [varchar](255) NOT NULL,		-- StoredProcedure, SQL, SSRS
-	[Command] [varchar](255) NOT NULL,	-- Stored Proc name, SQL Text, SSRS report name
+	[Command] [varchar](255) NOT NULL,			-- Stored Proc name, SQL Text, SSRS report name
 	[Parameters] [xml] NULL,
-	[UserName] [varchar](100) NULL,
 	[OutputFileName] [varchar](255) NOT NULL,
 	[OutputFilePath] [varchar](255) NOT NULL,
+	[Format] [varchar](50) NOT NULL,
+	[Delimiter] [varchar](20) NOT NULL,
+	[UserName] [varchar](100) NULL,
+	[Status] [varchar](100) NOT NULL,
 	[CreateDate] [datetime] NOT NULL,
 	[ProcessStartDate] [datetime] NULL,
 	[ProcessEndDate] [datetime] NULL,
-	[Status] [varchar](100) NOT NULL,
 	[ErrorMessage] [varchar](1000) NULL,
 	[ErrorStackTrace] [varchar](1000) NULL
  CONSTRAINT [PK_ReportJobQueue] PRIMARY KEY CLUSTERED 

@@ -38,21 +38,20 @@ namespace SqlServerReportRunner.Reporting
             _logger.Debug("Retrieving unprocessed reports for connection {0}", connection.Name);
 
             // get the number of reports that are currently procesing for this connection
-            int executingReports = _concurrencyCoordinator.GetRunningReportCount(connection.Name);
-            if (executingReports >= _appSettings.MaxConcurrentReports)
+            int[] executingReports = _concurrencyCoordinator.GetRunningReports(connection.Name);
+            if (executingReports.Length >= _appSettings.MaxConcurrentReports)
             {
                 _logger.Info("Maximum number of concurrent reports ({0}) are already being run for connection '{1}' exiting", _appSettings.MaxConcurrentReports, connection.Name);
                 return Enumerable.Empty<ReportJob>();
             }
 
-            int reportsToRun = _appSettings.MaxConcurrentReports - executingReports;
+            int reportsToRun = _appSettings.MaxConcurrentReports - executingReports.Length;
 
-            _logger.Info("{0} reports executing for connection '{1}', checking queue for additional reports", executingReports, connection.Name);
+            _logger.Info("{0} reports executing for connection '{1}', checking queue for additional reports", executingReports.Length, connection.Name);
             IEnumerable<ReportJob> jobs = _reportJobRepository.GetPendingReports(connection.ConnectionString, reportsToRun);
             foreach (ReportJob job in jobs)
             {
-                _concurrencyCoordinator.LockReportJob(connection.Name, job.Id);
-                _jobAgent.ExecuteJobAsync(connection.ConnectionString, job);
+                _jobAgent.ExecuteJobAsync(connection, job);
                 executedJobs.Add(job);
             }
 

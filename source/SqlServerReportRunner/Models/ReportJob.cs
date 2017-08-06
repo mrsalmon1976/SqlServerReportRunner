@@ -38,6 +38,16 @@ namespace SqlServerReportRunner.Models
 
         public string OutputFilePath { get; set; }
 
+        /// <summary>
+        /// Format of the report e.g. Delimited, CSV, Excel.
+        /// </summary>
+        public string Format { get; set; }
+
+        /// <summary>
+        /// Gets/sets the delimiter for delimiter file format.  Value is ignored for other formats.
+        /// </summary>
+        public string Delimiter { get; set; }
+
         public string ErrorMessage { get; set; }
 
         public string ErrorStackTrace { get; set; }

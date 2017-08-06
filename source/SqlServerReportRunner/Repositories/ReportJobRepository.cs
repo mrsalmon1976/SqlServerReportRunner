@@ -20,11 +20,6 @@ namespace SqlServerReportRunner.Repositories
         /// <returns></returns>
         IEnumerable<ReportJob> GetPendingReports(string connectionString, int count);
 
-        void MarkJobAsProcessing(string connectionString, int jobId);
-
-        void MarkJobAsProcessed(string connectionString, int jobId);
-
-        void MarkJobAsError(string connectionString, int jobId);
     }
 
     public class ReportJobRepository : IReportJobRepository
@@ -47,33 +42,6 @@ namespace SqlServerReportRunner.Repositories
             using (IDbConnection conn = _dbConnectionFactory.CreateConnection(connectionString))
             {
                 return conn.Query<ReportJob>(query, new { Status = JobStatus.Pending });
-            }
-        }
-
-        public void MarkJobAsProcessing(string connectionString, int jobId)
-        {
-            const string query = "UPDATE ReportJobQueue SET ProcessStartDate = @ProcessStartDate, Status = @Status WHERE Id = @Id";
-            using (IDbConnection conn = _dbConnectionFactory.CreateConnection(connectionString))
-            {
-                conn.Execute(query, new { Id = jobId, ProcessStartDate = DateTime.Now, Status = JobStatus.Processing });
-            }
-        }
-
-        public void MarkJobAsProcessed(string connectionString, int jobId)
-        {
-            const string query = "UPDATE ReportJobQueue SET ProcessEndDate = @ProcessEndDate, Status = @Status WHERE Id = @Id";
-            using (IDbConnection conn = _dbConnectionFactory.CreateConnection(connectionString))
-            {
-                conn.Execute(query, new { Id = jobId, ProcessEndDate = DateTime.Now, Status = JobStatus.Complete });
-            }
-        }
-
-        public void MarkJobAsError(string connectionString, int jobId)
-        {
-            const string query = "UPDATE ReportJobQueue SET Status = @Status WHERE Id = @Id";
-            using (IDbConnection conn = _dbConnectionFactory.CreateConnection(connectionString))
-            {
-                conn.Execute(query, new { Id = jobId, Status = JobStatus.Error });
             }
         }
 

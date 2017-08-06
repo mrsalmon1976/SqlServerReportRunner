@@ -40,7 +40,7 @@ namespace Test.SqlServerReportRunner.Reporting
             string connName = Guid.NewGuid().ToString();
             ConnectionSetting conn = new ConnectionSetting(connName, "connection");
 
-            _concurrencyCoordinator.GetRunningReportCount(connName).Returns(5);
+            _concurrencyCoordinator.GetRunningReports(connName).Returns(new int[] { 1, 2, 3, 4, 5 });
             _appSettings.MaxConcurrentReports.Returns(5);
 
             // execute
@@ -48,7 +48,7 @@ namespace Test.SqlServerReportRunner.Reporting
 
             // assert
             Assert.AreEqual(0, result.Count());
-            _concurrencyCoordinator.Received(1).GetRunningReportCount(connName);
+            _concurrencyCoordinator.Received(1).GetRunningReports(connName);
 
             // no call should have been made for more reports
             _reportJobRepository.DidNotReceive().GetPendingReports(Arg.Any<string>(), Arg.Any<int>());
@@ -63,7 +63,7 @@ namespace Test.SqlServerReportRunner.Reporting
             string connectionString = Guid.NewGuid().ToString();
             ConnectionSetting conn = new ConnectionSetting(connName, connectionString);
 
-            _concurrencyCoordinator.GetRunningReportCount(connName).Returns(2);
+            _concurrencyCoordinator.GetRunningReports(connName).Returns(new int[] { 1, 2 });
             _appSettings.MaxConcurrentReports.Returns(5);
 
             List<ReportJob> returnValue = new List<ReportJob>()
@@ -83,9 +83,8 @@ namespace Test.SqlServerReportRunner.Reporting
             // no call should have been made for more reports
             _reportJobRepository.Received(1).GetPendingReports(connectionString, 3);
 
-            _concurrencyCoordinator.Received(1).GetRunningReportCount(connName);
-            _reportJobAgent.Received(3).ExecuteJobAsync(connectionString, Arg.Any<ReportJob>());
-            _concurrencyCoordinator.Received(3).LockReportJob(connName, Arg.Any<int>());
+            _concurrencyCoordinator.Received(1).GetRunningReports(connName);
+            _reportJobAgent.Received(3).ExecuteJobAsync(conn, Arg.Any<ReportJob>());
         }
 
         [Test]
@@ -97,7 +96,7 @@ namespace Test.SqlServerReportRunner.Reporting
             string connectionString = Guid.NewGuid().ToString();
             ConnectionSetting conn = new ConnectionSetting(connName, connectionString);
 
-            _concurrencyCoordinator.GetRunningReportCount(connName).Returns(0);
+            _concurrencyCoordinator.GetRunningReports(connName).Returns(new int[] { });
             _appSettings.MaxConcurrentReports.Returns(maxConcurrentReports);
 
             List<ReportJob> returnValue = new List<ReportJob>();
@@ -116,9 +115,8 @@ namespace Test.SqlServerReportRunner.Reporting
             // no call should have been made for more reports
             _reportJobRepository.Received(1).GetPendingReports(connectionString, maxConcurrentReports);
 
-            _concurrencyCoordinator.Received(1).GetRunningReportCount(connName);
-            _reportJobAgent.Received(maxConcurrentReports).ExecuteJobAsync(connectionString, Arg.Any<ReportJob>());
-            _concurrencyCoordinator.Received(maxConcurrentReports).LockReportJob(connName, Arg.Any<int>());
+            _concurrencyCoordinator.Received(1).GetRunningReports(connName);
+            _reportJobAgent.Received(maxConcurrentReports).ExecuteJobAsync(conn, Arg.Any<ReportJob>());
         }
 
         [Test]
@@ -130,7 +128,7 @@ namespace Test.SqlServerReportRunner.Reporting
             string connectionString = Guid.NewGuid().ToString();
             ConnectionSetting conn = new ConnectionSetting(connName, connectionString);
 
-            _concurrencyCoordinator.GetRunningReportCount(connName).Returns(0);
+            _concurrencyCoordinator.GetRunningReports(connName).Returns(new int[] { });
             _appSettings.MaxConcurrentReports.Returns(maxConcurrentReports);
 
             List<ReportJob> returnValue = new List<ReportJob>();
@@ -147,9 +145,8 @@ namespace Test.SqlServerReportRunner.Reporting
             // no call should have been made for more reports
             _reportJobRepository.Received(1).GetPendingReports(connectionString, maxConcurrentReports);
 
-            _concurrencyCoordinator.Received(1).GetRunningReportCount(connName);
-            _reportJobAgent.Received(2).ExecuteJobAsync(connectionString, Arg.Any<ReportJob>());
-            _concurrencyCoordinator.Received(2).LockReportJob(connName, Arg.Any<int>());
+            _concurrencyCoordinator.Received(1).GetRunningReports(connName);
+            _reportJobAgent.Received(2).ExecuteJobAsync(conn, Arg.Any<ReportJob>());
         }
 
     }

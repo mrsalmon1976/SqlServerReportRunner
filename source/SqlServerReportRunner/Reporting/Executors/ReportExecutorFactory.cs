@@ -15,10 +15,12 @@ namespace SqlServerReportRunner.Reporting.Executors
     public class ReportExecutorFactory : IReportExecutorFactory
     {
         private IDbConnectionFactory _dbConnectionFactory;
+        private IReportWriterFactory _reportWriterFactory;
 
-        public ReportExecutorFactory(IDbConnectionFactory dbConnectionFactory)
+        public ReportExecutorFactory(IDbConnectionFactory dbConnectionFactory, IReportWriterFactory reportWriterFactory)
         {
             _dbConnectionFactory = dbConnectionFactory;
+            _reportWriterFactory = reportWriterFactory;
         }
 
         public IReportExecutor GetReportExecutor(string commandType)
@@ -26,7 +28,7 @@ namespace SqlServerReportRunner.Reporting.Executors
             switch (commandType)
             {
                 case CommandType.StoredProcedure:
-                    return new StoredProcedureReportExecutor(_dbConnectionFactory);
+                    return new StoredProcedureReportExecutor(_dbConnectionFactory, _reportWriterFactory);
                 default:
                     break;
             }

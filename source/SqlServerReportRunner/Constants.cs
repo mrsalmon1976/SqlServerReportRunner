@@ -19,4 +19,9 @@ namespace SqlServerReportRunner
         public const string Complete = "Complete";
         public const string Error = "Error";
     }
+
+    public class ReportFormat
+    {
+        public const string Delimited = "delimited";
+    }
 }
