@@ -17,8 +17,8 @@ CREATE TABLE [dbo].[ReportJobQueue](
 	[CreateDate] [datetime] NOT NULL,
 	[ProcessStartDate] [datetime] NULL,
 	[ProcessEndDate] [datetime] NULL,
-	[ErrorMessage] [varchar](1000) NULL,
-	[ErrorStackTrace] [varchar](1000) NULL
+	[ErrorMessage] [varchar](MAX) NULL,
+	[ErrorStackTrace] [varchar](MAX) NULL
  CONSTRAINT [PK_ReportJobQueue] PRIMARY KEY CLUSTERED 
 (
 	[Id] ASC

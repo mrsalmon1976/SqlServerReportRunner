@@ -79,7 +79,7 @@ namespace SqlServerReportRunner.Reporting
 
                 // mark the job as errored
                 _logger.Info("Saving error information job for report {0} ({1})", job.ReportName, job.Id);
-                _failJobCommand.Execute(connection, job.Id);
+                _failJobCommand.Execute(connection, job.Id, ex);
             }
         }
 

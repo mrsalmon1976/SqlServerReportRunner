@@ -54,7 +54,7 @@ namespace Test.SqlServerReportRunner.Reporting
             reportExecutor.Received(1).ExecuteJob(connSetting, reportJob);
             _finaliseJobCommand.Received(1).Execute(connSetting, reportJob.Id);
 
-            _failJobCommand.Received(0).Execute(connSetting, reportJob.Id);
+            _failJobCommand.Received(0).Execute(Arg.Any<ConnectionSetting>(), Arg.Any<int>(), Arg.Any<Exception>());
         }
 
         [Test]
@@ -77,7 +77,7 @@ namespace Test.SqlServerReportRunner.Reporting
             // assert
             _reportExecutorFactory.Received(1).GetReportExecutor(reportJob.CommandType);
             _startJobCommand.Received(1).Execute(connSetting, reportJob.Id);
-            _failJobCommand.Received(1).Execute(connSetting, reportJob.Id);
+            _failJobCommand.Received(1).Execute(connSetting, reportJob.Id, Arg.Any<Exception>());
             _finaliseJobCommand.Received(0).Execute(Arg.Any<ConnectionSetting>(), Arg.Any<int>());
 
         }

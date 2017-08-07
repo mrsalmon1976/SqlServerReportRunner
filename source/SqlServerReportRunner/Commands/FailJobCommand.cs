@@ -13,8 +13,8 @@ namespace SqlServerReportRunner.Commands
 {
     public interface IFailJobCommand
     {
-        int Execute(ConnectionSetting connection, int jobId);
-        int Execute(ConnectionSetting connection, int jobId, IDbConnection dbConnection);
+        int Execute(ConnectionSetting connection, int jobId, Exception ex);
+        int Execute(ConnectionSetting connection, int jobId, Exception ex, IDbConnection dbConnection);
     }
     public class FailJobCommand : IFailJobCommand
     {
@@ -27,18 +27,18 @@ namespace SqlServerReportRunner.Commands
             _dbConnectionFactory = dbConnectionFactory;
         }
 
-        public int Execute(ConnectionSetting connection, int jobId, IDbConnection dbConnection)
+        public int Execute(ConnectionSetting connection, int jobId, Exception ex, IDbConnection dbConnection)
         {
-            const string query = "UPDATE ReportJobQueue SET Status = @Status WHERE Id = @Id";
+            const string query = "UPDATE ReportJobQueue SET Status = @Status, ErrorMessage = @ErrorMessage, ErrorStackTrace = @ErrorStackTrace WHERE Id = @Id";
             _concurrencyCoordinator.UnlockReportJob(connection.Name, jobId);
-            return dbConnection.Execute(query, new { Id = jobId, Status = JobStatus.Error });
+            return dbConnection.Execute(query, new { Id = jobId, Status = JobStatus.Error, ErrorMessage = ex.Message, ErrorStackTrace = ex.ToString()});
         }
 
-        public int Execute(ConnectionSetting connection, int jobId)
+        public int Execute(ConnectionSetting connection, int jobId, Exception ex)
         {
             using (IDbConnection dbConnection = _dbConnectionFactory.CreateConnection(connection.ConnectionString))
             {
-                return this.Execute(connection, jobId, dbConnection);
+                return this.Execute(connection, jobId, ex, dbConnection);
             }
         }
     }

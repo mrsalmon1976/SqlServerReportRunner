@@ -41,7 +41,7 @@ namespace Test.SqlServerReportRunner.Commands
             _dbConnectionFactory.CreateConnection(connString, true).Returns(dbConnection);
 
             // execute
-            _failJobCommand.Execute(connSetting, jobId);
+            _failJobCommand.Execute(connSetting, jobId, new Exception("test exception"));
 
             // assert
             _dbConnectionFactory.Received(1).CreateConnection(connString);
