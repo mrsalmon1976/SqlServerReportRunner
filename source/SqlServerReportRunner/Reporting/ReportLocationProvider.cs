@@ -35,7 +35,7 @@ namespace SqlServerReportRunner.Reporting
 
         public string GetProcessingFolder(string connectionName)
         {
-            return Path.Combine(this.AppPath, connectionName);
+            return Path.Combine(this.AppPath, "Processing", connectionName);
         }
     }
 }

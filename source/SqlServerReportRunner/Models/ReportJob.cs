@@ -32,7 +32,7 @@ namespace SqlServerReportRunner.Models
 
         public DateTime? ProcessEndDate { get; set; }
 
-        public int Status { get; set; }
+        public string Status { get; set; }
 
         public string OutputFileName { get; set; }
 
@@ -41,7 +41,7 @@ namespace SqlServerReportRunner.Models
         /// <summary>
         /// Format of the report e.g. Delimited, CSV, Excel.
         /// </summary>
-        public string Format { get; set; }
+        public string OutputFormat { get; set; }
 
         /// <summary>
         /// Gets/sets the delimiter for delimiter file format.  Value is ignored for other formats.

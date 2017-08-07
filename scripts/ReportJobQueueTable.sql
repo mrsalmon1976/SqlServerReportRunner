@@ -1,6 +1,7 @@
 SET QUOTED_IDENTIFIER ON
 GO
 
+-- DROP TABLE [dbo].[ReportJobQueue]
 CREATE TABLE [dbo].[ReportJobQueue](
 	[Id] [int] IDENTITY(1,1) NOT NULL,
 	[ReportName] [varchar](255) NOT NULL,
@@ -9,7 +10,7 @@ CREATE TABLE [dbo].[ReportJobQueue](
 	[Parameters] [xml] NULL,
 	[OutputFileName] [varchar](255) NOT NULL,
 	[OutputFilePath] [varchar](255) NOT NULL,
-	[Format] [varchar](50) NOT NULL,
+	[OutputFormat] [varchar](50) NOT NULL,
 	[Delimiter] [varchar](20) NOT NULL,
 	[UserName] [varchar](100) NULL,
 	[Status] [varchar](100) NOT NULL,

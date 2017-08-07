@@ -40,7 +40,7 @@ namespace Test.SqlServerReportRunner.Reporting
             ReportJob reportJob = new ReportJob();
             reportJob.Id = new Random().Next(1, 100);
             reportJob.CommandType = Guid.NewGuid().ToString();
-            reportJob.Format = Guid.NewGuid().ToString();
+            reportJob.OutputFormat = Guid.NewGuid().ToString();
 
             IReportExecutor reportExecutor = Substitute.For<IReportExecutor>();
             _reportExecutorFactory.GetReportExecutor(reportJob.CommandType).Returns(reportExecutor);
@@ -65,7 +65,7 @@ namespace Test.SqlServerReportRunner.Reporting
             ReportJob reportJob = new ReportJob();
             reportJob.Id = new Random().Next(1, 100);
             reportJob.CommandType = Guid.NewGuid().ToString();
-            reportJob.Format = Guid.NewGuid().ToString();
+            reportJob.OutputFormat = Guid.NewGuid().ToString();
 
             IReportExecutor reportExecutor = Substitute.For<IReportExecutor>();
             _reportExecutorFactory.GetReportExecutor(reportJob.CommandType).Returns(reportExecutor);

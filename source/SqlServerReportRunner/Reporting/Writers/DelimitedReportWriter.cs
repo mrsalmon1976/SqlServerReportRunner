@@ -32,7 +32,7 @@ namespace SqlServerReportRunner.Reporting.Writers
             string[] columnValues =
                 Enumerable.Range(0, columnInfo.Length)
                           .Select(i => FormatData(reader.GetValue(i), columnInfo[i]))
-                          .Select(field => string.Concat("\"", field.Replace("\"", "\"\""), "\""))
+                          //.Select(field => string.Concat("\"", field.Replace("\"", "\"\""), "\""))
                           .ToArray();
             _writer.WriteLine(string.Join(delimiter, columnValues));
         }

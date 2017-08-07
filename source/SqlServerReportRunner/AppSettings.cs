@@ -67,7 +67,7 @@ namespace SqlServerReportRunner
             {
                 try
                 {
-                    return Convert.ToInt32(ConfigurationManager.AppSettings["MaxConcurrentReports"]) * 1000;
+                    return Convert.ToInt32(ConfigurationManager.AppSettings["MaxConcurrentReports"]);
                 }
                 catch (Exception ex)
                 {

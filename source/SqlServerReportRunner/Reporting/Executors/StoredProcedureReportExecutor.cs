@@ -40,7 +40,7 @@ namespace SqlServerReportRunner.Reporting.Executors
                     using (var reader = command.ExecuteReader())
                     {
                         string destinationFile = Path.Combine(job.OutputFilePath, job.OutputFileName);
-                        IReportWriter reportWriter = _reportWriterFactory.GetReportWriter(job.Format);
+                        IReportWriter reportWriter = _reportWriterFactory.GetReportWriter(job.OutputFormat);
                         using (reportWriter)
                         {
                             reportWriter.CreateFile(destinationFile);
