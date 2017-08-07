@@ -60,13 +60,14 @@ Dates in YYYY-MM-DD format:
 ```sql
 SELECT CONVERT(char(10), GETDATE(), 126) AS MyDate
 ```
-Dates in YYYY-MM-DD HH:mm:ss format:
 
-Numbers in 0.00 format:
+Dates in YYYY-MM-DD HH:mm:ss format:
 
 ```sql
 SELECT CONVERT(CHAR(19), CONVERT(DATETIME, GETDATE(), 101), 120) AS MyDate
 ```
+
+Numbers in 0.00 format:
 
 ```sql
 SELECT FORMAT(MyMoneyField, '0.00') AS MyNumber
