@@ -55,7 +55,11 @@ namespace SqlServerReportRunner.Reporting.Writers
 
         private string FormatData(object itemValue, ColumnMetaData columnMetaData)
         {
-            return itemValue.ToString();
+            if (itemValue is DBNull || itemValue == null)
+            {
+                return String.Empty;
+            }
+            return itemValue.ToString().Replace("\n", "").Replace("\r", "");
         }
 
     }

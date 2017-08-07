@@ -25,8 +25,9 @@ namespace SqlServerReportRunner.Reporting.Executors
 
         public IReportExecutor GetReportExecutor(string commandType)
         {
-            switch (commandType)
+            switch (commandType.ToLower())
             {
+                case CommandType.Sql:
                 case CommandType.StoredProcedure:
                     return new StoredProcedureReportExecutor(_dbConnectionFactory, _reportWriterFactory);
                 default:

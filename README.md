@@ -48,3 +48,22 @@ Assuming the application is correctly installed and started as a Windows service
     9. Report is removed from ConcurrencyManager as a processing report
 6. Application sleeps for configured time period before polling again (goto Step 1)
 
+## Output Formatting
+
+The formatting of data in the output files is not the responsibility of the program - all it does is convert data values to strings and write them to the output file.  In the case of a delimited text output file, 
+carriage return and line feed characters are removed before writing the line.  If you are wanting dates or numbers formatted in a particular way, you will need to do that at the source query level.
+
+Some examples:
+
+Dates in yyyy-mm-dd format: 
+
+```sql
+SELECT CONVERT(char(10), GETDATE(), 126) AS MyDate
+```
+
+Numbers in 0.00 format:
+
+```sql
+SELECT FORMAT(MyMoneyField, '0.00') AS MyNumber
+```
+

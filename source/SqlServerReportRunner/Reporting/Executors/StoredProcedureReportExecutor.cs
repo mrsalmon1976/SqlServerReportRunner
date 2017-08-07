@@ -34,7 +34,10 @@ namespace SqlServerReportRunner.Reporting.Executors
                 {
                     command.CommandTimeout = 0;
                     command.CommandText = job.Command;
-                    command.CommandType = System.Data.CommandType.StoredProcedure;
+                    if (job.CommandType.ToLower() == CommandType.StoredProcedure)
+                    {
+                        command.CommandType = System.Data.CommandType.StoredProcedure;
+                    }
                     command.Parameters.AddRange(new DbParameterUtility().ConvertXmlToDbParameters(job.Parameters));
 
                     using (var reader = command.ExecuteReader())

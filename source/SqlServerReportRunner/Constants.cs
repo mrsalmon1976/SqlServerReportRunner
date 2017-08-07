@@ -9,7 +9,8 @@ namespace SqlServerReportRunner
 
     public class CommandType
     {
-        public const string StoredProcedure = "StoredProcedure";
+        public const string StoredProcedure = "storedprocedure";
+        public const string Sql = "sql";
     }
 
     public class JobStatus
