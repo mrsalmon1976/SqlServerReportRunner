@@ -53,7 +53,7 @@ Assuming the application is correctly installed and started as a Windows service
 The formatting of data in the output files is not the responsibility of the program - all it does is convert data values to strings and write them to the output file.  In the case of a delimited text output file, 
 carriage return and line feed characters are removed before writing the line.  If you are wanting dates or numbers formatted in a particular way, you will need to do that at the source query level.
 
-Some examples:
+### Some examples:
 
 Dates in yyyy-mm-dd format: 
 
@@ -67,3 +67,46 @@ Numbers in 0.00 format:
 SELECT FORMAT(MyMoneyField, '0.00') AS MyNumber
 ```
 
+## Running Reports
+
+In order to run a report against a database that has been configured for the SqlServerReportRunner, you need to insert a record into the 
+
+```sql
+DECLARE @xml XML 
+SELECT @xml = (
+	select 1 AS Param1
+	, '29' AS Param2 
+	, '2017-02-01' AS DateParam 
+	for XML PATH, type)
+
+--declare @fileName varchar(255) = 'SalesReport_Client_' + cast(@ClientId as varchar(100)) + '.csv'
+DECLARE @fileName varchar(255) = 'CPS_4.txt'
+INSERT INTO ReportJobQueue
+	(
+	ReportName
+	, CommandType
+	, Command
+	, [Parameters]
+	, OutputFileName
+	, OutputFilePath
+	, OutputFormat
+	, Delimiter
+	, UserName
+	, [Status]
+	, CreateDate
+	)
+VALUES
+	(
+	'Test Report'
+	, 'StoredProcedure'
+	, 'dbo.MyStoredProcedure'
+	, @xml
+	, @fileName
+	, '\\' + @@SERVERNAME + '\Test\Reporting'
+	, 'Delimited'
+	, '|'
+	, 'matt'
+	, 'Pending'
+	, GETUTCDATE()
+	)
+```
