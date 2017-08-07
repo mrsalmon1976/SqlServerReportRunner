@@ -79,7 +79,6 @@ SELECT @xml = (
 	, '2017-02-01' AS DateParam 
 	for XML PATH, type)
 
---declare @fileName varchar(255) = 'SalesReport_Client_' + cast(@ClientId as varchar(100)) + '.csv'
 DECLARE @fileName varchar(255) = 'MyFileName.txt'
 INSERT INTO ReportJobQueue
 	(
