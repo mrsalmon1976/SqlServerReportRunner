@@ -1,6 +1,7 @@
 ﻿using SqlServerReportRunner.Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using System.Text;
@@ -14,6 +15,6 @@ namespace SqlServerReportRunner.Reporting.Executors
 
         void WriteHeader(IEnumerable<string> columnNames, string delimiter);
 
-        void WriteLine(SqlDataReader reader, ColumnMetaData[] columnInfo, string delimiter);
+        void WriteLine(IDataReader reader, ColumnMetaData[] columnInfo, string delimiter);
     }
 }

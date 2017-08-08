@@ -2,6 +2,7 @@
 using SqlServerReportRunner.Reporting.Executors;
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.SqlClient;
 using System.IO;
 using System.Linq;
@@ -26,12 +27,12 @@ namespace SqlServerReportRunner.Reporting.Writers
             _writer.WriteLine(string.Join(delimiter, columnNames));
         }
 
-        public void WriteLine(SqlDataReader reader, ColumnMetaData[] columnInfo, string delimiter)
+        public void WriteLine(IDataReader reader, ColumnMetaData[] columnInfo, string delimiter)
         {
             ValidateWriter();
             string[] columnValues =
                 Enumerable.Range(0, columnInfo.Length)
-                          .Select(i => FormatData(reader.GetValue(i), columnInfo[i]))
+                          .Select(i => FormatData(reader.GetValue(i)))
                           //.Select(field => string.Concat("\"", field.Replace("\"", "\"\""), "\""))
                           .ToArray();
             _writer.WriteLine(string.Join(delimiter, columnValues));
@@ -53,7 +54,7 @@ namespace SqlServerReportRunner.Reporting.Writers
             }
         }
 
-        private string FormatData(object itemValue, ColumnMetaData columnMetaData)
+        private string FormatData(object itemValue)
         {
             if (itemValue is DBNull || itemValue == null)
             {
