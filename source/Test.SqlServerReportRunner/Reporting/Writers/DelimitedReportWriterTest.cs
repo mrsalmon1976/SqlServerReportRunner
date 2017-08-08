@@ -23,13 +23,13 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
         [SetUp]
         public void DelimitedReportWriterTest_SetUp()
         {
-            _reportWriter = new DelimitedReportWriter();
-
             // create the root folder
             _testRootFolder = Path.Combine(Environment.CurrentDirectory, "DelimitedReportWriterTest");
             Directory.CreateDirectory(_testRootFolder);
 
             _filePath = Path.Combine(_testRootFolder, Path.GetRandomFileName());
+            _reportWriter = new DelimitedReportWriter(_filePath);
+
         }
 
         [TearDown]
@@ -64,7 +64,6 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
 
             // execute
 
-            _reportWriter.CreateFile(_filePath);
             _reportWriter.WriteHeader(headers.Select(x => x.Name), delimiter);
             foreach (object[] line in data)
             {
@@ -116,7 +115,6 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
             reader.GetValue(1).Returns(data[0][1], data[1][1], data[2][1]);
 
             // execute
-            _reportWriter.CreateFile(_filePath);
             foreach (object[] line in data)
             {
                 _reportWriter.WriteLine(reader, headers, delimiter);
@@ -155,7 +153,6 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
             reader.GetValue(1).Returns(data[0][1], data[1][1], data[2][1]);
 
             // execute
-            _reportWriter.CreateFile(_filePath);
             foreach (object[] line in data)
             {
                 _reportWriter.WriteLine(reader, headers, delimiter);

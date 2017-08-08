@@ -16,20 +16,18 @@ namespace SqlServerReportRunner.Reporting.Writers
 
         private StreamWriter _writer;
 
-        public void CreateFile(string filePath)
+        public DelimitedReportWriter(string filePath)
         {
             _writer = File.CreateText(filePath);
         }
 
         public void WriteHeader(IEnumerable<string> columnNames, string delimiter)
         {
-            ValidateWriter();
             _writer.WriteLine(string.Join(delimiter, columnNames));
         }
 
         public void WriteLine(IDataReader reader, ColumnMetaData[] columnInfo, string delimiter)
         {
-            ValidateWriter();
             string[] columnValues =
                 Enumerable.Range(0, columnInfo.Length)
                           .Select(i => FormatData(reader.GetValue(i)))
@@ -43,14 +41,6 @@ namespace SqlServerReportRunner.Reporting.Writers
             if (_writer != null)
             {
                 _writer.Dispose();
-            }
-        }
-
-        private void ValidateWriter()
-        {
-            if (_writer == null)
-            {
-                throw new InvalidOperationException("StreamWriter is null - CreateFile must be called before WriteHeader or WriteLine");
             }
         }
 

@@ -11,8 +11,6 @@ namespace SqlServerReportRunner.Reporting.Executors
 {
     public interface IReportWriter : IDisposable
     {
-        void CreateFile(string filePath);
-
         void WriteHeader(IEnumerable<string> columnNames, string delimiter);
 
         void WriteLine(IDataReader reader, ColumnMetaData[] columnInfo, string delimiter);

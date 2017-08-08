@@ -11,7 +11,7 @@ namespace SqlServerReportRunner.Reporting.Executors
 {
     public interface IReportWriterFactory
     {
-        IReportWriter GetReportWriter(string reportFormat);
+        IReportWriter GetReportWriter(string filePath, string reportFormat);
     }
     public class ReportWriterFactory : IReportWriterFactory
     {
@@ -20,12 +20,12 @@ namespace SqlServerReportRunner.Reporting.Executors
         {
         }
 
-        public IReportWriter GetReportWriter(string reportFormat)
+        public IReportWriter GetReportWriter(string filePath, string reportFormat)
         {
             switch (reportFormat.ToLower())
             {
                 case ReportFormat.Delimited:
-                    return new DelimitedReportWriter();
+                    return new DelimitedReportWriter(filePath);
                 default:
                     break;
             }
