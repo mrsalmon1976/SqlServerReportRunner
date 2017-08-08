@@ -24,6 +24,8 @@ namespace SqlServerReportRunner.Reporting.Executors
         {
             switch (reportFormat.ToLower())
             {
+                case ReportFormat.Csv:
+                    return new CsvReportWriter(filePath);
                 case ReportFormat.Delimited:
                     return new DelimitedReportWriter(filePath);
                 default:

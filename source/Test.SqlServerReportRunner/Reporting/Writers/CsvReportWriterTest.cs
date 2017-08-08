@@ -14,35 +14,34 @@ using System.Threading.Tasks;
 namespace Test.SqlServerReportRunner.Reporting.Writers
 {
     [TestFixture]
-    public class DelimitedReportWriterTest
+    public class CsvReportWriterTest
     {
         private IReportWriter _reportWriter;
         private string _testRootFolder = String.Empty;
         private string _filePath = String.Empty;
 
         [SetUp]
-        public void DelimitedReportWriterTest_SetUp()
+        public void CsvReportWriterTest_SetUp()
         {
             // create the root folder
             _testRootFolder = Path.Combine(Environment.CurrentDirectory, "DelimitedReportWriterTest");
             Directory.CreateDirectory(_testRootFolder);
 
             _filePath = Path.Combine(_testRootFolder, Path.GetRandomFileName());
-            _reportWriter = new DelimitedReportWriter(_filePath);
+            _reportWriter = new CsvReportWriter(_filePath);
 
         }
 
         [TearDown]
-        public void DelimitedReportWriterTest_TearDown()
+        public void CsvReportWriterTest_TearDown()
         {
             Directory.Delete(_testRootFolder, true);
         }
 
-        [TestCase(",")]
-        [TestCase("|")]
-        [TestCase("********")]
-        public void DelimitedReportWriterTest_CheckFileContents(string delimiter)
+        [Test]
+        public void CsvReportWriterTest_CheckFileContents()
         {
+            const string delimiter = ",";
             // set up the data reader to return columns
             ColumnMetaData[] headers = {
                 new ColumnMetaData("Name", "varchar", 100),
@@ -57,13 +56,13 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
             };
 
             IDataReader reader = Substitute.For<IDataReader>();
+            reader.FieldCount.Returns(3);
             reader.Read().Returns(true, true, true, false);
             reader.GetValue(0).Returns(data[0][0], data[1][0], data[2][0]);
             reader.GetValue(1).Returns(data[0][1], data[1][1], data[2][1]);
             reader.GetValue(2).Returns(data[0][2], data[1][2], data[2][2]);
 
             // execute
-
             _reportWriter.WriteHeader(headers.Select(x => x.Name), delimiter);
             foreach (object[] line in data)
             {
@@ -73,7 +72,6 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
 
             // assert
             Assert.IsTrue(File.Exists(_filePath));
-
             List<string> lines = File.ReadLines(_filePath).ToList();
 
             // check that the header is correct
@@ -89,13 +87,12 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
                 Assert.AreEqual(expectedLine, actualLine);
 
             }
-
         }
 
         [Test]
-        public void DelimitedReportWriterTest_DataContainsLineBreaks_LineBreaksRemoved()
+        public void CsvReportWriterTest_DataContainsLineBreaks_LineBreaksRemoved()
         {
-            const string delimiter = "|";
+            const string delimiter = ",";
 
             // set up the data reader to return columns
             ColumnMetaData[] headers = {
@@ -110,6 +107,7 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
             };
 
             IDataReader reader = Substitute.For<IDataReader>();
+            reader.FieldCount.Returns(2);
             reader.Read().Returns(true, true, true, false);
             reader.GetValue(0).Returns(data[0][0], data[1][0], data[2][0]);
             reader.GetValue(1).Returns(data[0][1], data[1][1], data[2][1]);
@@ -125,15 +123,15 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
             Assert.IsTrue(File.Exists(_filePath));
 
             List<string> lines = File.ReadLines(_filePath).ToList();
-            Assert.AreEqual("NL|newline", lines[0]);
-            Assert.AreEqual("CR|carriagereturn", lines[1]);
-            Assert.AreEqual("CRNL|carriagereturn_newline", lines[2]);
+            Assert.AreEqual("NL,newline", lines[0]);
+            Assert.AreEqual("CR,carriagereturn", lines[1]);
+            Assert.AreEqual("CRNL,carriagereturn_newline", lines[2]);
         }
 
         [Test]
-        public void DelimitedReportWriterTest_DataContainsNulls_EmptyStringReturned()
+        public void CsvReportWriterTest_DataContainsNulls_EmptyStringReturned()
         {
-            const string delimiter = "|";
+            const string delimiter = ",";
 
             // set up the data reader to return columns
             ColumnMetaData[] headers = {
@@ -148,6 +146,7 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
             };
 
             IDataReader reader = Substitute.For<IDataReader>();
+            reader.FieldCount.Returns(2);
             reader.Read().Returns(true, true, true, false);
             reader.GetValue(0).Returns(data[0][0], data[1][0], data[2][0]);
             reader.GetValue(1).Returns(data[0][1], data[1][1], data[2][1]);
@@ -163,9 +162,46 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
             Assert.IsTrue(File.Exists(_filePath));
 
             List<string> lines = File.ReadLines(_filePath).ToList();
-            Assert.AreEqual("Valid|valid", lines[0]);
-            Assert.AreEqual("DbNull|", lines[1]);
-            Assert.AreEqual("null|", lines[2]);
+            Assert.AreEqual("Valid,valid", lines[0]);
+            Assert.AreEqual("DbNull,", lines[1]);
+            Assert.AreEqual("null,", lines[2]);
+        }
+
+        [Test]
+        public void CsvReportWriterTest_DataContainsQuotes_QuotesAreEscaped()
+        {
+            const string delimiter = ",";
+
+            // set up the data reader to return columns
+            ColumnMetaData[] headers = {
+                new ColumnMetaData("Name", "varchar", 100),
+                new ColumnMetaData("Surname", "varchar", 100)
+            };
+            object[][] data =
+            {
+                new object[] { "Matt", "Salm\"on" },
+                new object[] { "Jo\"hn", "Thomas" },
+            };
+
+            IDataReader reader = Substitute.For<IDataReader>();
+            reader.FieldCount.Returns(2);
+            reader.Read().Returns(true, true, true, false);
+            reader.GetValue(0).Returns(data[0][0], data[1][0]);
+            reader.GetValue(1).Returns(data[0][1], data[1][1]);
+
+            // execute
+            foreach (object[] line in data)
+            {
+                _reportWriter.WriteLine(reader, headers, delimiter);
+            }
+            _reportWriter.Dispose();
+
+            // assert
+            Assert.IsTrue(File.Exists(_filePath));
+
+            List<string> lines = File.ReadLines(_filePath).ToList();
+            Assert.AreEqual("Matt,\"Salm\"\"on\"", lines[0]);
+            Assert.AreEqual("\"Jo\"\"hn\",Thomas", lines[1]);
         }
     }
 }

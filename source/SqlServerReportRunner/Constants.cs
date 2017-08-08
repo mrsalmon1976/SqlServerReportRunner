@@ -23,6 +23,7 @@ namespace SqlServerReportRunner
 
     public class ReportFormat
     {
+        public const string Csv = "csv";
         public const string Delimited = "delimited";
     }
 }

@@ -1,4 +1,5 @@
-﻿using SqlServerReportRunner.Models;
+﻿using CsvHelper;
+using SqlServerReportRunner.Models;
 using SqlServerReportRunner.Reporting.Executors;
 using System;
 using System.Collections.Generic;
@@ -8,32 +9,35 @@ using System.Linq;
 
 namespace SqlServerReportRunner.Reporting.Writers
 {
-    public class DelimitedReportWriter : IReportWriter
+    public class CsvReportWriter : IReportWriter
     {
 
-        private StreamWriter _writer;
+        private CsvWriter _writer;
 
-        public DelimitedReportWriter(string filePath)
+        public CsvReportWriter(string filePath)
         {
             this.FilePath = filePath;
-            _writer = File.CreateText(filePath);
+            _writer = new CsvWriter(File.CreateText(filePath));
         }
 
         public string FilePath { get; set; }
 
         public void WriteHeader(IEnumerable<string> columnNames, string delimiter)
         {
-            _writer.WriteLine(string.Join(delimiter, columnNames));
+            foreach (string col in columnNames)
+            {
+                _writer.WriteField(col);
+            }
+            _writer.NextRecord();
         }
 
         public void WriteLine(IDataReader reader, ColumnMetaData[] columnInfo, string delimiter)
         {
-            string[] columnValues =
-                Enumerable.Range(0, columnInfo.Length)
-                          .Select(i => FormatData(reader.GetValue(i)))
-                          //.Select(field => string.Concat("\"", field.Replace("\"", "\"\""), "\""))
-                          .ToArray();
-            _writer.WriteLine(string.Join(delimiter, columnValues));
+            for (var i = 0; i < reader.FieldCount; i++)
+            {
+                _writer.WriteField(FormatData(reader.GetValue(i)));
+            }
+            _writer.NextRecord();
         }
 
         public void Dispose()
