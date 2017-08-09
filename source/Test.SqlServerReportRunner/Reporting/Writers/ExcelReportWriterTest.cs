@@ -1,4 +1,5 @@
-﻿using DocumentFormat.OpenXml.Packaging;
+﻿using ClosedXML.Excel;
+using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Spreadsheet;
 using NSubstitute;
 using NUnit.Framework;
@@ -133,17 +134,17 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
         private List<string[]> ReadSpreadsheetLines(string filePath)
         {
             List<string[]> lines = new List<string[]>();
-            using (SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Open(filePath, false))
+            using (XLWorkbook workbook = new XLWorkbook(filePath))
             {
-                WorkbookPart workbookPart = spreadsheetDocument.WorkbookPart;
-                WorksheetPart worksheetPart = workbookPart.WorksheetParts.First();
-                SheetData sheetData = worksheetPart.Worksheet.Elements<SheetData>().First();
-                foreach (Row r in sheetData.Elements<Row>())
+                IXLWorksheet sheet = workbook.Worksheets.First();
+                var rows = sheet.RowsUsed().Count();
+                var cols = sheet.ColumnsUsed().Count();
+                for (int r = 0; r < rows; r++)
                 {
                     List<string> values = new List<string>();
-                    foreach (Cell c in r.Elements<Cell>())
+                    for (int c = 0; c < cols; c++)
                     {
-                        values.Add(c.CellValue.Text);
+                        values.Add(sheet.Cell(r + 1, c + 1).Value.ToString());
                     }
                     lines.Add(values.ToArray());
                 }
