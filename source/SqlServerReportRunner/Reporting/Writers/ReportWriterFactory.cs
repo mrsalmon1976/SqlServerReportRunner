@@ -28,6 +28,8 @@ namespace SqlServerReportRunner.Reporting.Executors
                     return new CsvReportWriter(filePath);
                 case ReportFormat.Delimited:
                     return new DelimitedReportWriter(filePath);
+                case ReportFormat.Excel:
+                    return new ExcelReportWriter(filePath);
                 default:
                     break;
             }

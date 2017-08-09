@@ -25,5 +25,6 @@ namespace SqlServerReportRunner
     {
         public const string Csv = "csv";
         public const string Delimited = "delimited";
+        public const string Excel = "excel";
     }
 }
