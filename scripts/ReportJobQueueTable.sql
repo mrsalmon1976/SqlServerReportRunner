@@ -11,7 +11,7 @@ CREATE TABLE [dbo].[ReportJobQueue](
 	[OutputFileName] [varchar](255) NOT NULL,
 	[OutputFilePath] [varchar](255) NOT NULL,
 	[OutputFormat] [varchar](50) NOT NULL,
-	[Delimiter] [varchar](20) NOT NULL,
+	[Delimiter] [varchar](20) NULL,
 	[UserName] [varchar](100) NULL,
 	[Status] [varchar](100) NOT NULL,
 	[CreateDate] [datetime] NOT NULL,
@@ -26,5 +26,4 @@ CREATE TABLE [dbo].[ReportJobQueue](
 ) ON [PRIMARY] TEXTIMAGE_ON [PRIMARY]
 
 GO
-
 

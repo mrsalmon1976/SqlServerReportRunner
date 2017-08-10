@@ -24,7 +24,6 @@ namespace SqlServerReportRunner.Reporting.Writers
 
             _spreadSheet = new XLWorkbook();
             _workSheet = _spreadSheet.Worksheets.Add("Data");
-
         }
 
         public string FilePath { get; set; }
@@ -57,13 +56,13 @@ namespace SqlServerReportRunner.Reporting.Writers
             _spreadSheet.Dispose();
         }
 
-        private string FormatData(object itemValue)
+        private object FormatData(object itemValue)
         {
             if (itemValue is DBNull || itemValue == null)
             {
                 return String.Empty;
             }
-            return itemValue.ToString();
+            return itemValue;
         }
 
     }
