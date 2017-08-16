@@ -62,11 +62,8 @@ namespace SqlServerReportRunner
                     _logger.Error(ex, ex.Message);
                 }
 
-                // if reports were executed, let's check again immediately, otherwise go to sleep
-                if (executedCount == 0)
-                {
-                    Thread.Sleep(pollInterval);
-                }
+                // sleep for poll interval
+                Thread.Sleep(pollInterval);
             }
         }
 

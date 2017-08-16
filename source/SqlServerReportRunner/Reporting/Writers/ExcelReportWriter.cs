@@ -1,59 +1,61 @@
-﻿using ClosedXML.Excel;
-using DocumentFormat.OpenXml;
+﻿using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Spreadsheet;
+using OfficeOpenXml;
 using SqlServerReportRunner.Models;
 using SqlServerReportRunner.Reporting.Executors;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.IO;
-using System.Linq;
 
 namespace SqlServerReportRunner.Reporting.Writers
 {
     public class ExcelReportWriter : IReportWriter
     {
 
-        private XLWorkbook _spreadSheet;
-        private IXLWorksheet _workSheet;
+        private int _rowNum = 1;
+        private ExcelPackage _excelPackage;
+        private ExcelWorksheet _workSheet;
 
         public ExcelReportWriter(string filePath)
         {
             this.FilePath = filePath;
 
-            _spreadSheet = new XLWorkbook();
-            _workSheet = _spreadSheet.Worksheets.Add("Data");
+            _excelPackage = new ExcelPackage();
+            _workSheet = _excelPackage.Workbook.Worksheets.Add("Data");
         }
 
         public string FilePath { get; set; }
 
         public void WriteHeader(IEnumerable<string> columnNames, string delimiter)
         {
-            string[] columns = columnNames.ToArray();
-            for (int i = 0; i < columns.Length; i++)
+            int colIndex = 1;
+            foreach (string col in columnNames)
             {
-                var cell = _workSheet.Cell(1, i + 1);
-                cell.Value = columns[i];
-                cell.Style.Font.Bold = true;
+                ExcelRange range = _workSheet.Cells[_rowNum, colIndex];
+                range.Style.Font.Bold = true;
+                range.Value = col;
+                colIndex++;
             }
+            _rowNum++;
         }
 
         public void WriteLine(IDataReader reader, ColumnMetaData[] columnInfo, string delimiter)
         {
-            var lastRowUsed = _workSheet.LastRowUsed();
-            int row = (lastRowUsed == null ? 1 : lastRowUsed.RowNumber() + 1);
-
-            for (int i = 0; i < columnInfo.Length; i++ )
+            for (int i = 0; i < columnInfo.Length; i++)
             {
-                _workSheet.Cell(row, i + 1).Value = FormatData(reader.GetValue(i));
+                ExcelRange range = _workSheet.Cells[_rowNum, i + 1];
+                range.Value = reader.GetValue(i);
+                //range.Style.Numberformat.Format = 
             }
+            _rowNum++;
+
         }
 
         public void Dispose()
         {
-            _spreadSheet.SaveAs(this.FilePath);
-            _spreadSheet.Dispose();
+            _excelPackage.SaveAs(new FileInfo(this.FilePath));
         }
 
         private object FormatData(object itemValue)

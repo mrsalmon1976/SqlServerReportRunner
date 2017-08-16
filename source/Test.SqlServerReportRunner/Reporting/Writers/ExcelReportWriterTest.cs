@@ -1,8 +1,6 @@
-﻿using ClosedXML.Excel;
-using DocumentFormat.OpenXml.Packaging;
-using DocumentFormat.OpenXml.Spreadsheet;
-using NSubstitute;
+﻿using NSubstitute;
 using NUnit.Framework;
+using OfficeOpenXml;
 using SqlServerReportRunner.Models;
 using SqlServerReportRunner.Reporting.Executors;
 using SqlServerReportRunner.Reporting.Writers;
@@ -11,8 +9,6 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Test.SqlServerReportRunner.Reporting.Writers
 {
@@ -134,17 +130,18 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
         private List<string[]> ReadSpreadsheetLines(string filePath)
         {
             List<string[]> lines = new List<string[]>();
-            using (XLWorkbook workbook = new XLWorkbook(filePath))
+            using (ExcelPackage package = new ExcelPackage(new FileInfo(filePath)))
             {
-                IXLWorksheet sheet = workbook.Worksheets.First();
-                var rows = sheet.RowsUsed().Count();
-                var cols = sheet.ColumnsUsed().Count();
+                ExcelWorksheet sheet = package.Workbook.Worksheets.First();
+                var rows = sheet.Dimension.End.Row;
+                var cols = sheet.Dimension.End.Column;
                 for (int r = 0; r < rows; r++)
                 {
                     List<string> values = new List<string>();
                     for (int c = 0; c < cols; c++)
                     {
-                        values.Add(sheet.Cell(r + 1, c + 1).Value.ToString());
+                        string val = (sheet.Cells[r + 1, c + 1].Value ?? "").ToString();
+                        values.Add(val.ToString());
                     }
                     lines.Add(values.ToArray());
                 }
