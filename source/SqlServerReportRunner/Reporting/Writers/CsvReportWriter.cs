@@ -1,6 +1,7 @@
 ﻿using CsvHelper;
 using SqlServerReportRunner.Models;
 using SqlServerReportRunner.Reporting.Executors;
+using SqlServerReportRunner.Reporting.Formatters;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -12,10 +13,12 @@ namespace SqlServerReportRunner.Reporting.Writers
     public class CsvReportWriter : IReportWriter
     {
 
+        private ITextFormatter _textFormatter;
         private CsvWriter _writer;
 
-        public CsvReportWriter(string filePath)
+        public CsvReportWriter(ITextFormatter textFormatter, string filePath)
         {
+            _textFormatter = textFormatter;
             this.FilePath = filePath;
             _writer = new CsvWriter(File.CreateText(filePath));
         }
@@ -35,7 +38,7 @@ namespace SqlServerReportRunner.Reporting.Writers
         {
             for (var i = 0; i < reader.FieldCount; i++)
             {
-                _writer.WriteField(FormatData(reader.GetValue(i)));
+                _writer.WriteField(_textFormatter.FormatText(reader.GetValue(i), reader.GetFieldType(i)));
             }
             _writer.NextRecord();
         }
@@ -46,15 +49,6 @@ namespace SqlServerReportRunner.Reporting.Writers
             {
                 _writer.Dispose();
             }
-        }
-
-        private string FormatData(object itemValue)
-        {
-            if (itemValue is DBNull || itemValue == null)
-            {
-                return String.Empty;
-            }
-            return itemValue.ToString().Replace("\n", "").Replace("\r", "");
         }
 
     }

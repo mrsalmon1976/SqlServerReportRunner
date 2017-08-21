@@ -4,6 +4,7 @@ using OfficeOpenXml;
 using SqlServerReportRunner.Models;
 using SqlServerReportRunner.Reporting.Executors;
 using SqlServerReportRunner.Reporting.Writers;
+using SqlServerReportRunner.Reporting.Formatters;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -18,6 +19,7 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
         private IReportWriter _reportWriter;
         private string _testRootFolder = String.Empty;
         private string _filePath = String.Empty;
+        private IExcelRangeFormatter _excelRangeFormatter;
 
         [SetUp]
         public void ExcelReportWriterTest_SetUp()
@@ -26,8 +28,14 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
             _testRootFolder = Path.Combine(Environment.CurrentDirectory, "ExcelReportWriterTest");
             Directory.CreateDirectory(_testRootFolder);
 
+            _excelRangeFormatter = Substitute.For<IExcelRangeFormatter>();
+            _excelRangeFormatter.When(x => x.FormatCell(Arg.Any<ExcelRange>(), Arg.Any<object>(), Arg.Any<Type>())).Do((r) => 
+            {
+                ExcelRange range = r.ArgAt<ExcelRange>(0);
+                range.Value = r.ArgAt<object>(1);
+            });
             _filePath = Path.Combine(_testRootFolder, Path.GetFileNameWithoutExtension(Path.GetRandomFileName()) + ".xlsx");
-            _reportWriter = new ExcelReportWriter(_filePath);
+            _reportWriter = new ExcelReportWriter(_excelRangeFormatter, _filePath);
 
         }
 
@@ -86,6 +94,8 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
                 Assert.AreEqual(expectedLine, actualLine);
 
             }
+
+            _excelRangeFormatter.Received(data.Length * data[0].Length).FormatCell(Arg.Any<ExcelRange>(), Arg.Any<object>(), Arg.Any<Type>());
         }
 
         [Test]
@@ -125,6 +135,9 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
             Assert.AreEqual("Valid,valid", String.Join(delimiter, lines[0]));
             Assert.AreEqual("DbNull,", String.Join(delimiter, lines[1]));
             Assert.AreEqual("null,", String.Join(delimiter, lines[2]));
+
+            _excelRangeFormatter.Received(data.Length * data[0].Length).FormatCell(Arg.Any<ExcelRange>(), Arg.Any<object>(), Arg.Any<Type>());
+
         }
 
         private List<string[]> ReadSpreadsheetLines(string filePath)

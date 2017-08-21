@@ -74,8 +74,11 @@
     <Compile Include="Common\DbParameterUtilityTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reporting\ConcurrencyCoordinatorTest.cs" />
+    <Compile Include="Reporting\Formatters\TextFormatterTest.cs" />
+    <Compile Include="Reporting\Formatters\ExcelRangeFormatterTest.cs" />
     <Compile Include="Reporting\ReportCoordinatorTest.cs" />
     <Compile Include="Reporting\ReportJobAgentTest.cs" />
+    <Compile Include="Reporting\Writers\ReportWriterFactoryTest.cs" />
     <Compile Include="Reporting\Writers\ExcelReportWriterTest.cs" />
     <Compile Include="Reporting\Writers\CsvReportWriterTest.cs" />
     <Compile Include="Reporting\Writers\DelimitedReportWriterTest.cs" />

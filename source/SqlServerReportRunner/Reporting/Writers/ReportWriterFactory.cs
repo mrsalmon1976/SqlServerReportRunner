@@ -1,6 +1,7 @@
 ﻿using SqlServerReportRunner.Common;
 using SqlServerReportRunner.Models;
 using SqlServerReportRunner.Reporting.Writers;
+using SqlServerReportRunner.Reporting.Formatters;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -25,11 +26,11 @@ namespace SqlServerReportRunner.Reporting.Executors
             switch (reportFormat.ToLower())
             {
                 case ReportFormat.Csv:
-                    return new CsvReportWriter(filePath);
+                    return new CsvReportWriter(new TextFormatter(new AppSettings()), filePath);
                 case ReportFormat.Delimited:
-                    return new DelimitedReportWriter(filePath);
+                    return new DelimitedReportWriter(new TextFormatter(new AppSettings()), filePath);
                 case ReportFormat.Excel:
-                    return new ExcelReportWriter(filePath);
+                    return new ExcelReportWriter(new ExcelRangeFormatter(new AppSettings()), filePath);
                 default:
                     break;
             }

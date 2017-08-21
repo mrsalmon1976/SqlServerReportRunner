@@ -1,8 +1,7 @@
-﻿using DocumentFormat.OpenXml;
-using DocumentFormat.OpenXml.Packaging;
-using OfficeOpenXml;
+﻿using OfficeOpenXml;
 using SqlServerReportRunner.Models;
 using SqlServerReportRunner.Reporting.Executors;
+using SqlServerReportRunner.Reporting.Formatters;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -17,9 +16,11 @@ namespace SqlServerReportRunner.Reporting.Writers
         private int _rowNum = 1;
         private ExcelPackage _excelPackage;
         private ExcelWorksheet _workSheet;
+        private IExcelRangeFormatter _excelRangeFormatter;
 
-        public ExcelReportWriter(string filePath)
+        public ExcelReportWriter(IExcelRangeFormatter excelRangeFormatter, string filePath)
         {
+            _excelRangeFormatter = excelRangeFormatter;
             this.FilePath = filePath;
 
             _excelPackage = new ExcelPackage();
@@ -46,8 +47,9 @@ namespace SqlServerReportRunner.Reporting.Writers
             for (int i = 0; i < columnInfo.Length; i++)
             {
                 ExcelRange range = _workSheet.Cells[_rowNum, i + 1];
-                range.Value = reader.GetValue(i);
-                //range.Style.Numberformat.Format = 
+                object cellValue = reader.GetValue(i);
+                Type dataType = reader.GetFieldType(i);
+                _excelRangeFormatter.FormatCell(range, cellValue, dataType);
             }
             _rowNum++;
 
@@ -56,15 +58,9 @@ namespace SqlServerReportRunner.Reporting.Writers
         public void Dispose()
         {
             _excelPackage.SaveAs(new FileInfo(this.FilePath));
-        }
-
-        private object FormatData(object itemValue)
-        {
-            if (itemValue is DBNull || itemValue == null)
-            {
-                return String.Empty;
-            }
-            return itemValue;
+            _workSheet.Dispose();
+            _excelPackage.Dispose();
+            _excelPackage = null;
         }
 
     }

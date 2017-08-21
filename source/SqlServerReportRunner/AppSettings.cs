@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,9 +12,26 @@ namespace SqlServerReportRunner
     public interface IAppSettings
     {
         /// <summary>
+        /// Gets the default date/time format to apply to date fields.
+        /// </summary>
+        string DefaultDateTimeFormat { get; }
+
+        /// <summary>
+        /// Gets the default format to apply to decimal fields.
+        /// https://docs.microsoft.com/en-us/dotnet/standard/base-types/standard-numeric-format-strings
+        /// https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-numeric-format-strings
+        /// </summary>
+        string DefaultDecimalFormat { get; }
+
+        /// <summary>
         /// Gets the user-defined connection settings defined in the configuration files.
         /// </summary>
         IEnumerable<ConnectionSetting> ConnectionSettings { get; }
+
+        /// <summary>
+        /// Gets the culture info to use when formatting numbers.  If left empty in the application config, this will default to CultureInfo.InvariantCulture.
+        /// </summary>
+        CultureInfo GlobalizationCulture { get; }
 
         /// <summary>
         /// Gets the maximum number of reports that can run per user-defined connection.
@@ -57,6 +75,47 @@ namespace SqlServerReportRunner
 
             }
         }
+
+        /// <summary>
+        /// Gets the default date/time format to apply to date fields.
+        /// </summary>
+        public string DefaultDateTimeFormat
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["DefaultDateTimeFormat"];
+            }
+        }
+
+        /// <summary>
+        /// Gets the default format to apply to decimal fields.
+        /// https://docs.microsoft.com/en-us/dotnet/standard/base-types/standard-numeric-format-strings
+        /// https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-numeric-format-strings
+        /// </summary>
+        public string DefaultDecimalFormat
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["DefaultDecimalFormat"];
+            }
+        }
+
+        /// <summary>
+        /// Gets the culture info to use when formatting numbers.  If left empty in the application config, this will default to CultureInfo.InvariantCulture.
+        /// </summary>
+        public CultureInfo GlobalizationCulture
+        {
+            get
+            {
+                string cultureInfo = ConfigurationManager.AppSettings["GlobalizationCulture"];
+                if (String.IsNullOrWhiteSpace(cultureInfo))
+                {
+                    return CultureInfo.InvariantCulture;
+                }
+                return CultureInfo.CreateSpecificCulture(cultureInfo);
+            }
+        }
+
 
         /// <summary>
         /// Gets the maximum number of reports that can run per user-defined connection.

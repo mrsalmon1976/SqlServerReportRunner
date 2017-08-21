@@ -87,9 +87,11 @@
     <Compile Include="Reporting\ReportCoordinator.cs" />
     <Compile Include="Reporting\ReportLocationProvider.cs" />
     <Compile Include="Reporting\ReportEngine.cs" />
+    <Compile Include="Reporting\Formatters\ExcelRangeFormatter.cs" />
     <Compile Include="Reporting\Writers\ExcelReportWriter.cs" />
     <Compile Include="Reporting\Writers\CsvReportWriter.cs" />
     <Compile Include="Reporting\Writers\DelimitedReportWriter.cs" />
+    <Compile Include="Reporting\Formatters\TextFormatter.cs" />
     <Compile Include="Reporting\Writers\IReportWriter.cs" />
     <Compile Include="Reporting\Writers\ReportWriterFactory.cs" />
     <Compile Include="Repositories\ReportJobRepository.cs" />

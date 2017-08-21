@@ -1,5 +1,6 @@
 ﻿using SqlServerReportRunner.Models;
 using SqlServerReportRunner.Reporting.Executors;
+using SqlServerReportRunner.Reporting.Formatters;
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -10,11 +11,12 @@ namespace SqlServerReportRunner.Reporting.Writers
 {
     public class DelimitedReportWriter : IReportWriter
     {
-
+        private ITextFormatter _textFormatter;
         private StreamWriter _writer;
 
-        public DelimitedReportWriter(string filePath)
+        public DelimitedReportWriter(ITextFormatter textFormatter, string filePath)
         {
+            _textFormatter = textFormatter;
             this.FilePath = filePath;
             _writer = File.CreateText(filePath);
         }
@@ -30,8 +32,7 @@ namespace SqlServerReportRunner.Reporting.Writers
         {
             string[] columnValues =
                 Enumerable.Range(0, columnInfo.Length)
-                          .Select(i => FormatData(reader.GetValue(i)))
-                          //.Select(field => string.Concat("\"", field.Replace("\"", "\"\""), "\""))
+                          .Select(i => _textFormatter.FormatText(reader.GetValue(i), reader.GetFieldType(i)))
                           .ToArray();
             _writer.WriteLine(string.Join(delimiter, columnValues));
         }
@@ -42,15 +43,6 @@ namespace SqlServerReportRunner.Reporting.Writers
             {
                 _writer.Dispose();
             }
-        }
-
-        private string FormatData(object itemValue)
-        {
-            if (itemValue is DBNull || itemValue == null)
-            {
-                return String.Empty;
-            }
-            return itemValue.ToString().Replace("\n", "").Replace("\r", "");
         }
 
     }

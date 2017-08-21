@@ -2,6 +2,7 @@
 using NUnit.Framework;
 using SqlServerReportRunner.Models;
 using SqlServerReportRunner.Reporting.Executors;
+using SqlServerReportRunner.Reporting.Formatters;
 using SqlServerReportRunner.Reporting.Writers;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,7 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
     public class CsvReportWriterTest
     {
         private IReportWriter _reportWriter;
+        private ITextFormatter _textFormatter;
         private string _testRootFolder = String.Empty;
         private string _filePath = String.Empty;
 
@@ -27,8 +29,10 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
             _testRootFolder = Path.Combine(Environment.CurrentDirectory, "CsvReportWriterTest");
             Directory.CreateDirectory(_testRootFolder);
 
+            _textFormatter = Substitute.For<ITextFormatter>();
+
             _filePath = Path.Combine(_testRootFolder, Path.GetRandomFileName());
-            _reportWriter = new CsvReportWriter(_filePath);
+            _reportWriter = new CsvReportWriter(_textFormatter, _filePath);
 
         }
 
@@ -61,6 +65,10 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
             reader.GetValue(0).Returns(data[0][0], data[1][0], data[2][0]);
             reader.GetValue(1).Returns(data[0][1], data[1][1], data[2][1]);
             reader.GetValue(2).Returns(data[0][2], data[1][2], data[2][2]);
+            reader.GetFieldType(Arg.Any<int>()).Returns(typeof(String));
+
+            // set up the text formatter to return the value supplied
+            _textFormatter.FormatText(Arg.Any<object>(), Arg.Any<Type>()).Returns((c) => { return c.ArgAt<object>(0).ToString(); });
 
             // execute
             _reportWriter.WriteHeader(headers.Select(x => x.Name), delimiter);
@@ -87,84 +95,16 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
                 Assert.AreEqual(expectedLine, actualLine);
 
             }
-        }
 
-        [Test]
-        public void CsvReportWriterTest_DataContainsLineBreaks_LineBreaksRemoved()
-        {
-            const string delimiter = ",";
-
-            // set up the data reader to return columns
-            ColumnMetaData[] headers = {
-                new ColumnMetaData("Name", "varchar", 100),
-                new ColumnMetaData("Surname", "varchar", 100)
-            };
-            object[][] data =
-            {
-                new object[] { "NL", "new\nline" },
-                new object[] { "CR", "carriage\rreturn" },
-                new object[] { "CRNL", "carriage\rreturn_new\nline"  }
-            };
-
-            IDataReader reader = Substitute.For<IDataReader>();
-            reader.FieldCount.Returns(2);
-            reader.Read().Returns(true, true, true, false);
-            reader.GetValue(0).Returns(data[0][0], data[1][0], data[2][0]);
-            reader.GetValue(1).Returns(data[0][1], data[1][1], data[2][1]);
-
-            // execute
+            // make sure all the data items are formatted
             foreach (object[] line in data)
             {
-                _reportWriter.WriteLine(reader, headers, delimiter);
+                foreach (object item in line)
+                {
+                    _textFormatter.Received(1).FormatText(item, typeof(String));
+                }
             }
-            _reportWriter.Dispose();
 
-            // assert
-            Assert.IsTrue(File.Exists(_filePath));
-
-            List<string> lines = File.ReadLines(_filePath).ToList();
-            Assert.AreEqual("NL,newline", lines[0]);
-            Assert.AreEqual("CR,carriagereturn", lines[1]);
-            Assert.AreEqual("CRNL,carriagereturn_newline", lines[2]);
-        }
-
-        [Test]
-        public void CsvReportWriterTest_DataContainsNulls_EmptyStringReturned()
-        {
-            const string delimiter = ",";
-
-            // set up the data reader to return columns
-            ColumnMetaData[] headers = {
-                new ColumnMetaData("Name", "varchar", 100),
-                new ColumnMetaData("Surname", "varchar", 100)
-            };
-            object[][] data =
-            {
-                new object[] { "Valid", "valid" },
-                new object[] { "DbNull", DBNull.Value },
-                new object[] { "null", null  }
-            };
-
-            IDataReader reader = Substitute.For<IDataReader>();
-            reader.FieldCount.Returns(2);
-            reader.Read().Returns(true, true, true, false);
-            reader.GetValue(0).Returns(data[0][0], data[1][0], data[2][0]);
-            reader.GetValue(1).Returns(data[0][1], data[1][1], data[2][1]);
-
-            // execute
-            foreach (object[] line in data)
-            {
-                _reportWriter.WriteLine(reader, headers, delimiter);
-            }
-            _reportWriter.Dispose();
-
-            // assert
-            Assert.IsTrue(File.Exists(_filePath));
-
-            List<string> lines = File.ReadLines(_filePath).ToList();
-            Assert.AreEqual("Valid,valid", lines[0]);
-            Assert.AreEqual("DbNull,", lines[1]);
-            Assert.AreEqual("null,", lines[2]);
         }
 
         [Test]
@@ -188,6 +128,10 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
             reader.Read().Returns(true, true, true, false);
             reader.GetValue(0).Returns(data[0][0], data[1][0]);
             reader.GetValue(1).Returns(data[0][1], data[1][1]);
+            reader.GetFieldType(Arg.Any<int>()).Returns(typeof(String));
+
+            // set up the text formatter to return the value supplied
+            _textFormatter.FormatText(Arg.Any<object>(), Arg.Any<Type>()).Returns((c) => { return c.ArgAt<object>(0).ToString(); });
 
             // execute
             foreach (object[] line in data)
