@@ -47,6 +47,13 @@ namespace SqlServerReportRunner
             var container = TinyIoC.TinyIoCContainer.Current;
             var appSettings = container.Resolve<IAppSettings>();
             int pollInterval = appSettings.PollInterval;
+
+            // on start up, make sure we clear out any old locks if they exist - this is 
+            // just in case there were issues, or the server rebooted.  We may end up with 
+            // Report queue items in an odd state but that will need to be handled manually
+            IConcurrencyCoordinator concurrencyCoordinator = container.Resolve<IConcurrencyCoordinator>();
+            concurrencyCoordinator.ClearAllLocks();
+
             while (!_shutdownEvent.WaitOne(0))
             {
                 int executedCount = 0;

@@ -72,6 +72,7 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
 
             // execute
 
+            _reportWriter.Initialise();
             _reportWriter.WriteHeader(headers.Select(x => x.Name), delimiter);
             foreach (object[] line in data)
             {
@@ -106,6 +107,24 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
                 }
             }
 
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void WriteLine_WithoutInitialise_ThrowsException()
+        {
+            IDataReader reader = Substitute.For<IDataReader>();
+
+            _reportWriter.WriteLine(reader, new ColumnMetaData[] { }, String.Empty);
+
+            reader.Received(0).GetValue(Arg.Any<int>());
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void WriteHeader_WithoutInitialise_ThrowsException()
+        {
+            _reportWriter.WriteHeader(new string[] { }, String.Empty);
         }
 
     }

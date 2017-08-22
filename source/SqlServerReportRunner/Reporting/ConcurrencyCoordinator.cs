@@ -11,6 +11,8 @@ namespace SqlServerReportRunner.Reporting
     {
         int[] GetRunningReports(string connectionName);
 
+        void ClearAllLocks();
+
         void LockReportJob(string connectionName, int jobId);
 
         void UnlockReportJob(string connectionName, int jobId);
@@ -23,6 +25,18 @@ namespace SqlServerReportRunner.Reporting
         public ConcurrencyCoordinator(IReportLocationProvider reportLocationProvider)
         {
             _reportLocationProvider = reportLocationProvider;
+        }
+
+        public void ClearAllLocks()
+        {
+            string path = _reportLocationProvider.GetProcessingRootFolder();
+
+            string[] directories = Directory.GetDirectories(path);
+            foreach (string dir in directories)
+            {
+                Directory.Delete(dir, true);
+            }
+
         }
 
         public int[] GetRunningReports(string connectionName)

@@ -46,6 +46,7 @@ namespace SqlServerReportRunner.Reporting.Executors
                         using (IReportWriter reportWriter = _reportWriterFactory.GetReportWriter(destinationFile, job.OutputFormat))
                         {
                             ColumnMetaData[] columnInfo = GetColumnInfo(reader).ToArray();
+                            reportWriter.Initialise();
                             reportWriter.WriteHeader(columnInfo.Select(x => x.Name), job.Delimiter);
                             if (reader.HasRows)
                             {

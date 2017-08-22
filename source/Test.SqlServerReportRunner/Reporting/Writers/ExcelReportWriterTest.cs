@@ -70,6 +70,7 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
             reader.GetValue(2).Returns(data[0][2], data[1][2], data[2][2]);
 
             // execute
+            _reportWriter.Initialise();
             _reportWriter.WriteHeader(headers.Select(x => x.Name), delimiter);
             foreach (object[] line in data)
             {
@@ -122,6 +123,7 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
             reader.GetValue(1).Returns(data[0][1], data[1][1], data[2][1]);
 
             // execute
+            _reportWriter.Initialise();
             foreach (object[] line in data)
             {
                 _reportWriter.WriteLine(reader, headers, delimiter);
@@ -138,6 +140,24 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
 
             _excelRangeFormatter.Received(data.Length * data[0].Length).FormatCell(Arg.Any<ExcelRange>(), Arg.Any<object>(), Arg.Any<Type>());
 
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void WriteLine_WithoutInitialise_ThrowsException()
+        {
+            IDataReader reader = Substitute.For<IDataReader>();
+
+            _reportWriter.WriteLine(reader, new ColumnMetaData[] { }, String.Empty);
+
+            reader.Received(0).GetValue(Arg.Any<int>());
+        }
+
+        [Test]
+        [ExpectedException(typeof(InvalidOperationException))]
+        public void WriteHeader_WithoutInitialise_ThrowsException()
+        {
+            _reportWriter.WriteHeader(new string[] { }, String.Empty);
         }
 
         private List<string[]> ReadSpreadsheetLines(string filePath)

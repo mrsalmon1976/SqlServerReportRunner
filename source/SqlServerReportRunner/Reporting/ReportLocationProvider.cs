@@ -21,6 +21,12 @@ namespace SqlServerReportRunner.Reporting
         /// <param name="connectionName"></param>
         /// <returns></returns>
         string GetProcessingFolder(string connectionName);
+
+        /// <summary>
+        /// Gets the root processing foler.
+        /// </summary>
+        /// <returns></returns>
+        string GetProcessingRootFolder();
     }
 
     public class ReportLocationProvider : IReportLocationProvider
@@ -35,7 +41,18 @@ namespace SqlServerReportRunner.Reporting
 
         public string GetProcessingFolder(string connectionName)
         {
-            return Path.Combine(this.AppPath, "Processing", connectionName);
+            string rootFolder = this.GetProcessingRootFolder();
+            return Path.Combine(rootFolder, connectionName);
         }
+
+        /// <summary>
+        /// Gets the root processing foler.
+        /// </summary>
+        /// <returns></returns>
+        public string GetProcessingRootFolder()
+        {
+            return Path.Combine(this.AppPath, "Processing");
+        }
+
     }
 }

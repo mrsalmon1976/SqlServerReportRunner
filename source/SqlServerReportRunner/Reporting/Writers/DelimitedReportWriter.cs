@@ -18,18 +18,25 @@ namespace SqlServerReportRunner.Reporting.Writers
         {
             _textFormatter = textFormatter;
             this.FilePath = filePath;
-            _writer = File.CreateText(filePath);
         }
 
         public string FilePath { get; set; }
 
+        public void Initialise()
+        {
+            _writer = File.CreateText(this.FilePath);
+        }
+
         public void WriteHeader(IEnumerable<string> columnNames, string delimiter)
         {
+            if (_writer == null) throw new InvalidOperationException("Initialise must be called to initialise the report writer");
             _writer.WriteLine(string.Join(delimiter, columnNames));
         }
 
         public void WriteLine(IDataReader reader, ColumnMetaData[] columnInfo, string delimiter)
         {
+            if (_writer == null) throw new InvalidOperationException("Initialise must be called to initialise the report writer");
+
             string[] columnValues =
                 Enumerable.Range(0, columnInfo.Length)
                           .Select(i => _textFormatter.FormatText(reader.GetValue(i), reader.GetFieldType(i)))

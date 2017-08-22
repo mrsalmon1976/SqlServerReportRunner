@@ -20,13 +20,17 @@ namespace SqlServerReportRunner.Reporting.Writers
         {
             _textFormatter = textFormatter;
             this.FilePath = filePath;
-            _writer = new CsvWriter(File.CreateText(filePath));
         }
 
         public string FilePath { get; set; }
 
+        public void Initialise()
+        {
+            _writer = new CsvWriter(File.CreateText(this.FilePath));
+        }
         public void WriteHeader(IEnumerable<string> columnNames, string delimiter)
         {
+            if (_writer == null) throw new InvalidOperationException("Initialise must be called to initialise the report writer");
             foreach (string col in columnNames)
             {
                 _writer.WriteField(col);
@@ -36,6 +40,7 @@ namespace SqlServerReportRunner.Reporting.Writers
 
         public void WriteLine(IDataReader reader, ColumnMetaData[] columnInfo, string delimiter)
         {
+            if (_writer == null) throw new InvalidOperationException("Initialise must be called to initialise the report writer");
             for (var i = 0; i < reader.FieldCount; i++)
             {
                 _writer.WriteField(_textFormatter.FormatText(reader.GetValue(i), reader.GetFieldType(i)));

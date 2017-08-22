@@ -37,6 +37,39 @@ namespace Test.SqlServerReportRunner.Reporting
             }
         }
 
+        [Test]
+        public void ClearAllLocks_NoFoldersExist_ExitsCleanly()
+        {
+            // setup
+            _reportLocationProvider.GetProcessingRootFolder().Returns(_testRootFolder);
+
+            // execute
+            _concurrencyCoordinator.ClearAllLocks();
+        }
+
+        [Test]
+        public void ClearAllLocks_FoldersExist_FoldersAreRemoved()
+        {
+            // setup
+            _reportLocationProvider.GetProcessingRootFolder().Returns(_testRootFolder);
+
+            // create some folders and some files
+            string dir1 = Path.Combine(_testRootFolder, Path.GetRandomFileName());
+            string dir2 = Path.Combine(_testRootFolder, Path.GetRandomFileName());
+            Directory.CreateDirectory(dir1);
+            Directory.CreateDirectory(dir2);
+            File.WriteAllText(Path.Combine(dir1, Path.GetRandomFileName()), "this is a test");
+            File.WriteAllText(Path.Combine(dir1, Path.GetRandomFileName()), "this is a test");
+            File.WriteAllText(Path.Combine(dir1, Path.GetRandomFileName()), "this is a test");
+
+            // execute
+            _concurrencyCoordinator.ClearAllLocks();
+
+            // assert
+            Assert.IsFalse(Directory.Exists(dir1));
+            Assert.IsFalse(Directory.Exists(dir2));
+        }
+
 
         [Test]
         public void GetRunningReports_NoFiles_ReturnsZero()

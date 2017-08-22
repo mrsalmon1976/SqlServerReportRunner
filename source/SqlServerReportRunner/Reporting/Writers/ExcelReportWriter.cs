@@ -22,15 +22,20 @@ namespace SqlServerReportRunner.Reporting.Writers
         {
             _excelRangeFormatter = excelRangeFormatter;
             this.FilePath = filePath;
-
-            _excelPackage = new ExcelPackage();
-            _workSheet = _excelPackage.Workbook.Worksheets.Add("Data");
         }
 
         public string FilePath { get; set; }
 
+        public void Initialise()
+        {
+            _excelPackage = new ExcelPackage();
+            _workSheet = _excelPackage.Workbook.Worksheets.Add("Data");
+        }
+
         public void WriteHeader(IEnumerable<string> columnNames, string delimiter)
         {
+            if (_excelPackage == null) throw new InvalidOperationException("Initialise must be called to initialise the report writer");
+
             int colIndex = 1;
             foreach (string col in columnNames)
             {
@@ -44,6 +49,8 @@ namespace SqlServerReportRunner.Reporting.Writers
 
         public void WriteLine(IDataReader reader, ColumnMetaData[] columnInfo, string delimiter)
         {
+            if (_excelPackage == null) throw new InvalidOperationException("Initialise must be called to initialise the report writer");
+
             for (int i = 0; i < columnInfo.Length; i++)
             {
                 ExcelRange range = _workSheet.Cells[_rowNum, i + 1];
