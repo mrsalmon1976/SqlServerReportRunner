@@ -41,7 +41,10 @@ namespace SqlServerReportRunner.Reporting.Formatters
             // for date time, we need to apply a default format
             if (dataType == typeof(DateTime))
             {
-                range.Style.Numberformat.Format = _appSettings.DefaultDateTimeFormat;
+                if (!String.IsNullOrWhiteSpace(_appSettings.DefaultDateTimeFormat))
+                {
+                    range.Style.Numberformat.Format = _appSettings.DefaultDateTimeFormat;
+                }
                 try
                 {
                     range.Value = Convert.ToDateTime(cellValue);
@@ -54,7 +57,10 @@ namespace SqlServerReportRunner.Reporting.Formatters
             }
             else if (dataType == typeof(Decimal) || dataType == typeof(Single) || dataType == typeof(Double))
             {
-                range.Style.Numberformat.Format = _appSettings.DefaultDecimalFormat;
+                if (!String.IsNullOrWhiteSpace(_appSettings.DefaultDecimalFormat))
+                {
+                    range.Style.Numberformat.Format = _appSettings.DefaultDecimalFormat;
+                }
                 range.Value = cellValue;
                 return range;
             }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using NLog;
+using System;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -15,6 +16,7 @@ namespace SqlServerReportRunner.Reporting.Formatters
     public class TextFormatter : ITextFormatter
     {
         private IAppSettings _appSettings;
+        private ILogger _logger = LogManager.GetCurrentClassLogger();
 
         public TextFormatter(IAppSettings appSettings)
         {
@@ -32,25 +34,35 @@ namespace SqlServerReportRunner.Reporting.Formatters
             // date/time needs to be formatted per default values
             if (dataType == typeof(DateTime))
             {
-                try
+                if (!String.IsNullOrWhiteSpace(_appSettings.DefaultDateTimeFormat))
                 {
-                    return Convert.ToDateTime(value).ToString(_appSettings.DefaultDateTimeFormat);
+                    try
+                    {
+                        return Convert.ToDateTime(value).ToString(_appSettings.DefaultDateTimeFormat);
+                    }
+                    catch (Exception ex)
+                    {
+                        // we just swallow this exception
+                        _logger.Error(ex, ex.Message);
+                    }
                 }
-                catch (Exception)
-                {
-                    return value.ToString();
-                }
+                return value.ToString();
             }
             else if (dataType == typeof(Decimal) || dataType == typeof(Single) || dataType == typeof(Double))
             {
-                try
+                if (!String.IsNullOrWhiteSpace(_appSettings.DefaultDecimalFormat))
                 {
-                    return Convert.ToDouble(value).ToString(_appSettings.DefaultDecimalFormat, _appSettings.GlobalizationCulture);
+                    try
+                    {
+                        return Convert.ToDouble(value).ToString(_appSettings.DefaultDecimalFormat, _appSettings.GlobalizationCulture);
+                    }
+                    catch (Exception ex)
+                    {
+                        // we just swallow this exception
+                        _logger.Error(ex, ex.Message);
+                    }
                 }
-                catch (Exception)
-                {
-                    return value.ToString();
-                }
+                return value.ToString();
             }
 
             // for anything else, remove spaces!

@@ -51,7 +51,7 @@ namespace Test.SqlServerReportRunner.Reporting.Formatters
         }
 
         [Test]
-        public void FormatCell_DataTypeIsDateTime_ReturnsFormattedDateTime()
+        public void FormatCell_DataTypeIsDateTimeDefaultConfigured_ReturnsFormattedDateTime()
         {
             // setup 
             DateTime cellValue = DateTime.Now;
@@ -64,6 +64,21 @@ namespace Test.SqlServerReportRunner.Reporting.Formatters
             // assert
             Assert.AreEqual(cellValue.ToString(dateFormat), result);
 
+        }
+
+        [TestCase("")]
+        [TestCase("  ")]
+        public void FormatCell_DataTypeIsDateTimeAndNoDefaultConfigured_StringValueIsReturned(string defaultDateTime)
+        {
+            // setup
+            const string cellValue = "test";
+            _appSettings.DefaultDateTimeFormat.Returns(defaultDateTime);
+            
+            // execute
+            string result = _textFormatter.FormatText(cellValue, typeof(DateTime));
+
+            // assert
+            Assert.AreEqual(cellValue, result);
         }
 
         [Test]
@@ -152,6 +167,25 @@ namespace Test.SqlServerReportRunner.Reporting.Formatters
             // assert
             string expectedResult = itemValue.ToString(numericFormat, culture);
             Assert.AreEqual(expectedResult, result);
+        }
+
+        [TestCase("")]
+        [TestCase("  ")]
+        public void FormatCell_DataTypeIsNumericNoDefaultConfigured_ValueIsReturned(string numericFormat)
+        {
+            // setup
+            const string itemValue = "test";
+            CultureInfo culture = CultureInfo.CurrentCulture;
+
+            _appSettings.DefaultDecimalFormat.Returns(numericFormat);
+            _appSettings.GlobalizationCulture.Returns(culture);
+            
+            // execute
+            string result = _textFormatter.FormatText(itemValue, typeof(Decimal));
+
+            // assert
+
+            Assert.AreEqual(itemValue, result);
         }
 
     }

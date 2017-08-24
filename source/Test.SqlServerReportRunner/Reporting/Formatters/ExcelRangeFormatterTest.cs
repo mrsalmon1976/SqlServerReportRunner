@@ -87,7 +87,7 @@ namespace Test.SqlServerReportRunner.Reporting.Formatters
         }
 
         [Test]
-        public void FormatCell_DataTypeIsDateTime_ValueAndStyleSet()
+        public void FormatCell_DataTypeIsDateTimeAndDefaultConfigured_ValueAndStyleSet()
         {
             // setup
             ExcelRange range = _workSheet.Cells[1, 1];
@@ -101,11 +101,25 @@ namespace Test.SqlServerReportRunner.Reporting.Formatters
             // assert
             Assert.AreEqual(cellValue, result.Value);
             Assert.AreEqual(dateFormat, result.Style.Numberformat.Format);
+        }
 
+        [TestCase("")]
+        [TestCase("  ")]
+        public void FormatCell_DataTypeIsDateTimeAndNoDefaultConfigured_StringValueIsReturned(string defaultDateTime)
+        {
+            // setup
+            ExcelRange range = _workSheet.Cells[1, 1];
+            string cellValue = "test";
+            _appSettings.DefaultDateTimeFormat.Returns(defaultDateTime);
+            // execute
+            ExcelRange result = _excelRangeFormatter.FormatCell(range, cellValue, typeof(DateTime));
+
+            // assert
+            Assert.AreEqual(cellValue, result.Value);
         }
 
         [Test]
-        public void FormatCell_DataTypeIsString_ValueIsSet()
+        public void FormatCell_DataTypeIsStringAndDefaultConfigured_ValueIsSet()
         {
             // setup
             ExcelRange range = _workSheet.Cells[1, 1];
@@ -180,6 +194,25 @@ namespace Test.SqlServerReportRunner.Reporting.Formatters
 
             string expectedResult = cellValue.ToString(numericFormat, culture);
             Assert.AreEqual(expectedResult, result.Text);
+        }
+
+        [TestCase("")]
+        [TestCase("  ")]
+        public void FormatCell_DataTypeIsNumericNoDefaultConfigured_ValueIsReturned(string numericFormat)
+        {
+            // setup
+            ExcelRange range = _workSheet.Cells[1, 1];
+            const string cellValue = "test";
+            CultureInfo culture = CultureInfo.CurrentCulture;
+
+            _appSettings.DefaultDecimalFormat.Returns(numericFormat);
+            _appSettings.GlobalizationCulture.Returns(culture);
+            // execute
+            ExcelRange result = _excelRangeFormatter.FormatCell(range, cellValue, typeof(Decimal));
+
+            // assert
+
+            Assert.AreEqual(cellValue, result.Text);
         }
 
     }
