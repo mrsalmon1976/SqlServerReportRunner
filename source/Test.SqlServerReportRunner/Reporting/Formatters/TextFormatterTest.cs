@@ -50,35 +50,42 @@ namespace Test.SqlServerReportRunner.Reporting.Formatters
             Assert.AreEqual(String.Empty, result);
         }
 
-        [Test]
-        public void FormatCell_DataTypeIsDateTimeDefaultConfigured_ReturnsFormattedDateTime()
+        [TestCase("en-ZA")]
+        [TestCase("en-UK")]
+        [TestCase("en-US")]
+        [TestCase("ta-IN")]
+        [TestCase("ky-KZ")]
+        public void FormatCell_DataTypeIsDateTimeGlobalizationConfigured_ReturnsFormattedDateTime(string cultureName)
         {
             // setup 
             DateTime cellValue = DateTime.Now;
-            const string dateFormat = "yyyy-MM-dd HH:mm:ss";
-            _appSettings.DefaultDateTimeFormat.Returns(dateFormat);
+            CultureInfo cultureInfo = CultureInfo.GetCultureInfo(cultureName);
+            _appSettings.GlobalizationCulture.Returns(cultureInfo);
+
 
             // execute
             string result = _textFormatter.FormatText(cellValue, typeof(DateTime));
 
             // assert
-            Assert.AreEqual(cellValue.ToString(dateFormat), result);
-
+            string expectedResult = cellValue.ToString(cultureInfo);
+            Assert.AreEqual(expectedResult, result);
         }
 
-        [TestCase("")]
-        [TestCase("  ")]
-        public void FormatCell_DataTypeIsDateTimeAndNoDefaultConfigured_StringValueIsReturned(string defaultDateTime)
+        [Test()]
+        public void FormatCell_DataTypeIsDateTimeGlobalizationNotConfigured_ReturnsFormattedDateTime()
         {
-            // setup
-            const string cellValue = "test";
-            _appSettings.DefaultDateTimeFormat.Returns(defaultDateTime);
-            
+            // setup 
+            DateTime cellValue = DateTime.Now;
+            CultureInfo cultureInfo = CultureInfo.InvariantCulture;
+            _appSettings.GlobalizationCulture.Returns(cultureInfo);
+
+
             // execute
             string result = _textFormatter.FormatText(cellValue, typeof(DateTime));
 
             // assert
-            Assert.AreEqual(cellValue, result);
+            string expectedResult = cellValue.ToString(cultureInfo);
+            Assert.AreEqual(expectedResult, result);
         }
 
         [Test]
@@ -110,82 +117,88 @@ namespace Test.SqlServerReportRunner.Reporting.Formatters
             Assert.AreEqual(cellValue.Replace("\r", "").Replace("\n", ""), result);
         }
 
-        [TestCase("0.0000")]
-        [TestCase("0.00")]
-        [TestCase("0")]
-        public void FormatCell_DataTypeIsSingle_ReturnsFormattedNumber(string numericFormat)
-        {
-            // setup
-            const float itemValue = 123.456789F;
-            CultureInfo culture = CultureInfo.CurrentCulture;
-
-            _appSettings.DefaultDecimalFormat.Returns(numericFormat);
-            _appSettings.GlobalizationCulture.Returns(culture);
-            // execute
-            string result = _textFormatter.FormatText(itemValue, typeof(Single));
-
-            // assert
-
-            string expectedResult = itemValue.ToString(numericFormat, culture);
-            Assert.AreEqual(expectedResult, result);
-        }
-
-        [TestCase("0.0000")]
-        [TestCase("0.00")]
-        [TestCase("0")]
-        public void FormatCell_DataTypeIsDouble_ReturnsFormattedNumber(string numericFormat)
+        [TestCase("en-ZA")]
+        [TestCase("en-UK")]
+        [TestCase("en-US")]
+        [TestCase("ta-IN")]
+        [TestCase("ky-KZ")]
+        public void FormatCell_DataTypeIsDoubleAndGlobalizationConfigured_ReturnsFormattedNumber(string cultureName)
         {
             // setup
             const double itemValue = 123.456789D;
-            CultureInfo culture = CultureInfo.CurrentCulture;
+            CultureInfo cultureInfo = CultureInfo.GetCultureInfo(cultureName);
 
-            _appSettings.DefaultDecimalFormat.Returns(numericFormat);
-            _appSettings.GlobalizationCulture.Returns(culture);
+            //_appSettings.DefaultDecimalFormat.Returns(numericFormat);
+            _appSettings.GlobalizationCulture.Returns(cultureInfo);
             // execute
             string result = _textFormatter.FormatText(itemValue, typeof(Double));
 
             // assert
 
-            string expectedResult = itemValue.ToString(numericFormat, culture);
+            string expectedResult = itemValue.ToString(cultureInfo);
             Assert.AreEqual(expectedResult, result);
         }
 
-        [TestCase("0.0000")]
-        [TestCase("0.00")]
-        [TestCase("0")]
-        public void FormatCell_DataTypeIsDecimal_ReturnsFormattedNumber(string numericFormat)
+        [TestCase("en-ZA")]
+        [TestCase("en-UK")]
+        [TestCase("en-US")]
+        [TestCase("ta-IN")]
+        [TestCase("ky-KZ")]
+        public void FormatCell_DataTypeIsSingleAndGlobalizationConfigured_ReturnsFormattedNumber(string cultureName)
+        {
+            // setup
+            const float itemValue = 123.456789F;
+            CultureInfo cultureInfo = CultureInfo.GetCultureInfo(cultureName);
+
+            //_appSettings.DefaultDecimalFormat.Returns(numericFormat);
+            _appSettings.GlobalizationCulture.Returns(cultureInfo);
+            // execute
+            string result = _textFormatter.FormatText(itemValue, typeof(Single));
+
+            // assert
+
+            string expectedResult = itemValue.ToString(cultureInfo);
+            Assert.AreEqual(expectedResult, result);
+        }
+
+        [TestCase("en-ZA")]
+        [TestCase("en-UK")]
+        [TestCase("en-US")]
+        [TestCase("ta-IN")]
+        [TestCase("ky-KZ")]
+        public void FormatCell_DataTypeIsDecimalAndGlobalizationConfigured_ReturnsFormattedNumber(string cultureName)
         {
             // setup
             const decimal itemValue = 123.456789M;
-            CultureInfo culture = CultureInfo.CurrentCulture;
+            CultureInfo cultureInfo = CultureInfo.GetCultureInfo(cultureName);
 
-            _appSettings.DefaultDecimalFormat.Returns(numericFormat);
-            _appSettings.GlobalizationCulture.Returns(culture);
+            //_appSettings.DefaultDecimalFormat.Returns(numericFormat);
+            _appSettings.GlobalizationCulture.Returns(cultureInfo);
             // execute
             string result = _textFormatter.FormatText(itemValue, typeof(Decimal));
 
             // assert
-            string expectedResult = itemValue.ToString(numericFormat, culture);
+
+            string expectedResult = itemValue.ToString(cultureInfo);
             Assert.AreEqual(expectedResult, result);
         }
 
-        [TestCase("")]
-        [TestCase("  ")]
-        public void FormatCell_DataTypeIsNumericNoDefaultConfigured_ValueIsReturned(string numericFormat)
+        [Test]
+        public void FormatCell_DataTypeIsNumericAndGlobalizationNotConfigured_ReturnsFormattedNumber()
         {
             // setup
-            const string itemValue = "test";
-            CultureInfo culture = CultureInfo.CurrentCulture;
+            const decimal itemValue = 123.456789M;
+            CultureInfo cultureInfo = CultureInfo.InvariantCulture;
 
-            _appSettings.DefaultDecimalFormat.Returns(numericFormat);
-            _appSettings.GlobalizationCulture.Returns(culture);
-            
+            //_appSettings.DefaultDecimalFormat.Returns(numericFormat);
+            _appSettings.GlobalizationCulture.Returns(cultureInfo);
             // execute
             string result = _textFormatter.FormatText(itemValue, typeof(Decimal));
 
             // assert
 
-            Assert.AreEqual(itemValue, result);
+            string expectedResult = itemValue.ToString(cultureInfo);
+            Assert.AreEqual(expectedResult, result);
         }
 
     }

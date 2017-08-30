@@ -12,18 +12,6 @@ namespace SqlServerReportRunner
     public interface IAppSettings
     {
         /// <summary>
-        /// Gets the default date/time format to apply to date fields.
-        /// </summary>
-        string DefaultDateTimeFormat { get; }
-
-        /// <summary>
-        /// Gets the default format to apply to decimal fields.
-        /// https://docs.microsoft.com/en-us/dotnet/standard/base-types/standard-numeric-format-strings
-        /// https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-numeric-format-strings
-        /// </summary>
-        string DefaultDecimalFormat { get; }
-
-        /// <summary>
         /// Gets the user-defined connection settings defined in the configuration files.
         /// </summary>
         IEnumerable<ConnectionSetting> ConnectionSettings { get; }
@@ -73,30 +61,6 @@ namespace SqlServerReportRunner
                 }
                 return settings;
 
-            }
-        }
-
-        /// <summary>
-        /// Gets the default date/time format to apply to date fields.
-        /// </summary>
-        public string DefaultDateTimeFormat
-        {
-            get
-            {
-                return ConfigurationManager.AppSettings["DefaultDateTimeFormat"];
-            }
-        }
-
-        /// <summary>
-        /// Gets the default format to apply to decimal fields.
-        /// https://docs.microsoft.com/en-us/dotnet/standard/base-types/standard-numeric-format-strings
-        /// https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-numeric-format-strings
-        /// </summary>
-        public string DefaultDecimalFormat
-        {
-            get
-            {
-                return ConfigurationManager.AppSettings["DefaultDecimalFormat"];
             }
         }
 

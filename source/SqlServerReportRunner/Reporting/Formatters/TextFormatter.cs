@@ -31,38 +31,30 @@ namespace SqlServerReportRunner.Reporting.Formatters
                 return String.Empty;
             }
 
-            // date/time needs to be formatted per default values
-            if (dataType == typeof(DateTime))
+            // date/time and numbers needs to be formatted per globalization values
+            try
             {
-                if (!String.IsNullOrWhiteSpace(_appSettings.DefaultDateTimeFormat))
+                if (dataType == typeof(DateTime))
                 {
-                    try
-                    {
-                        return Convert.ToDateTime(value).ToString(_appSettings.DefaultDateTimeFormat);
-                    }
-                    catch (Exception ex)
-                    {
-                        // we just swallow this exception
-                        _logger.Error(ex, ex.Message);
-                    }
+                    return Convert.ToDateTime(value).ToString(_appSettings.GlobalizationCulture);
                 }
-                return value.ToString();
+                else if (dataType == typeof(Decimal))
+                {
+                    return Convert.ToDecimal(value).ToString(_appSettings.GlobalizationCulture);
+                }
+                else if (dataType == typeof(Single))
+                {
+                    return Convert.ToSingle(value).ToString(_appSettings.GlobalizationCulture);
+                }
+                else if (dataType == typeof(Double))
+                {
+                    return Convert.ToDouble(value).ToString(_appSettings.GlobalizationCulture);
+                }
             }
-            else if (dataType == typeof(Decimal) || dataType == typeof(Single) || dataType == typeof(Double))
+            catch (Exception ex)
             {
-                if (!String.IsNullOrWhiteSpace(_appSettings.DefaultDecimalFormat))
-                {
-                    try
-                    {
-                        return Convert.ToDouble(value).ToString(_appSettings.DefaultDecimalFormat, _appSettings.GlobalizationCulture);
-                    }
-                    catch (Exception ex)
-                    {
-                        // we just swallow this exception
-                        _logger.Error(ex, ex.Message);
-                    }
-                }
-                return value.ToString();
+                // we just swallow this exception
+                _logger.Error(ex, ex.Message);
             }
 
             // for anything else, remove spaces!
