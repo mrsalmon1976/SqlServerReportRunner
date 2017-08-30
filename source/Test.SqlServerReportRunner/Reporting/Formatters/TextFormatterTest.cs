@@ -51,10 +51,9 @@ namespace Test.SqlServerReportRunner.Reporting.Formatters
         }
 
         [TestCase("en-ZA")]
-        [TestCase("en-UK")]
+        [TestCase("en-GB")]
         [TestCase("en-US")]
         [TestCase("ta-IN")]
-        [TestCase("ky-KZ")]
         public void FormatCell_DataTypeIsDateTimeGlobalizationConfigured_ReturnsFormattedDateTime(string cultureName)
         {
             // setup 
@@ -118,10 +117,9 @@ namespace Test.SqlServerReportRunner.Reporting.Formatters
         }
 
         [TestCase("en-ZA")]
-        [TestCase("en-UK")]
+        [TestCase("en-GB")]
         [TestCase("en-US")]
         [TestCase("ta-IN")]
-        [TestCase("ky-KZ")]
         public void FormatCell_DataTypeIsDoubleAndGlobalizationConfigured_ReturnsFormattedNumber(string cultureName)
         {
             // setup
@@ -140,10 +138,9 @@ namespace Test.SqlServerReportRunner.Reporting.Formatters
         }
 
         [TestCase("en-ZA")]
-        [TestCase("en-UK")]
+        [TestCase("en-GB")]
         [TestCase("en-US")]
         [TestCase("ta-IN")]
-        [TestCase("ky-KZ")]
         public void FormatCell_DataTypeIsSingleAndGlobalizationConfigured_ReturnsFormattedNumber(string cultureName)
         {
             // setup
@@ -162,10 +159,9 @@ namespace Test.SqlServerReportRunner.Reporting.Formatters
         }
 
         [TestCase("en-ZA")]
-        [TestCase("en-UK")]
+        [TestCase("en-GB")]
         [TestCase("en-US")]
         [TestCase("ta-IN")]
-        [TestCase("ky-KZ")]
         public void FormatCell_DataTypeIsDecimalAndGlobalizationConfigured_ReturnsFormattedNumber(string cultureName)
         {
             // setup
