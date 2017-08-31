@@ -30,6 +30,7 @@ namespace SqlServerReportRunner.Reporting
         public void ClearAllLocks()
         {
             string path = _reportLocationProvider.GetProcessingRootFolder();
+            Directory.CreateDirectory(path);
 
             string[] directories = Directory.GetDirectories(path);
             foreach (string dir in directories)
@@ -60,6 +61,7 @@ namespace SqlServerReportRunner.Reporting
         public void LockReportJob(string connectionName, int jobId)
         {
             string path = _reportLocationProvider.GetProcessingFolder(connectionName);
+            Directory.CreateDirectory(path);
             string filePath = Path.Combine(path, jobId.ToString());
             File.WriteAllText(filePath, String.Empty);
         }
@@ -67,6 +69,7 @@ namespace SqlServerReportRunner.Reporting
         public void UnlockReportJob(string connectionName, int jobId)
         {
             string path = _reportLocationProvider.GetProcessingFolder(connectionName);
+            Directory.CreateDirectory(path);
             string filePath = Path.Combine(path, jobId.ToString());
             if (File.Exists(filePath))
             {
