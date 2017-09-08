@@ -30,7 +30,7 @@ namespace SqlServerReportRunner.Reporting.Executors
                 case ReportFormat.Delimited:
                     return new DelimitedReportWriter(new TextFormatter(new AppSettings()), filePath);
                 case ReportFormat.Excel:
-                    return new ExcelReportWriter(new ExcelRangeFormatter(), filePath);
+                    return new ExcelReportWriter(new ExcelRangeFormatter(new AppSettings()), filePath);
                 default:
                     break;
             }

@@ -17,6 +17,11 @@ namespace SqlServerReportRunner
         IEnumerable<ConnectionSetting> ConnectionSettings { get; }
 
         /// <summary>
+        /// Gets the default date/time format for Excel extracts.
+        /// </summary>
+        string ExcelDefaultDateTimeFormat { get; }
+
+        /// <summary>
         /// Gets the culture info to use when formatting numbers.  If left empty in the application config, this will default to CultureInfo.InvariantCulture.
         /// </summary>
         CultureInfo GlobalizationCulture { get; }
@@ -61,6 +66,17 @@ namespace SqlServerReportRunner
                 }
                 return settings;
 
+            }
+        }
+
+        /// <summary>
+        /// Gets the default date/time format for Excel extracts.
+        /// </summary>
+        public string ExcelDefaultDateTimeFormat
+        {
+            get
+            {
+                return ConfigurationManager.AppSettings["ExcelDefaultDateTimeFormat"];
             }
         }
 

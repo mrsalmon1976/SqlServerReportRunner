@@ -19,12 +19,15 @@ namespace Test.SqlServerReportRunner.Reporting.Formatters
         private ExcelWorksheet _workSheet;
         private IExcelRangeFormatter _excelRangeFormatter;
 
+        private IAppSettings _appSettings;
 
 
         [SetUp]
         public void ExcelRangeFormatterTest_SetUp()
         {
-            _excelRangeFormatter = new ExcelRangeFormatter();
+            _appSettings = Substitute.For<IAppSettings>();
+
+            _excelRangeFormatter = new ExcelRangeFormatter(_appSettings);
 
             _excelPackage = new ExcelPackage();
             _workSheet = _excelPackage.Workbook.Worksheets.Add("Data");
@@ -96,6 +99,22 @@ namespace Test.SqlServerReportRunner.Reporting.Formatters
             // assert
             Assert.AreEqual(cellValue, result.Text);
             Assert.AreEqual("General", result.Style.Numberformat.Format);
+        }
+
+        [Test()]
+        public void FormatCell_DataTypeIsDateTime_ExcelDefaultFormatIsSetOnRange()
+        {
+            // setup 
+            const string dateFormat = "yyyy-MM-dd HH:mm:ss";
+            _appSettings.ExcelDefaultDateTimeFormat.Returns(dateFormat);
+
+            ExcelRange range = _workSheet.Cells[1, 1];
+
+            // execute
+            ExcelRange result = _excelRangeFormatter.FormatCell(range, DateTime.Now, typeof(DateTime));
+
+            // assert
+            Assert.AreEqual(dateFormat, result.Style.Numberformat.Format);
         }
 
     }
