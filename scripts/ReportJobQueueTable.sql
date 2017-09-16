@@ -13,6 +13,7 @@ CREATE TABLE [dbo].[ReportJobQueue](
 	[OutputFormat] [varchar](50) NOT NULL,
 	[Delimiter] [varchar](20) NULL,
 	[UserName] [varchar](100) NULL,
+	[EmailAddress] [varchar](255) NULL,
 	[Status] [varchar](100) NOT NULL,
 	[CreateDate] [datetime] NOT NULL,
 	[ProcessStartDate] [datetime] NULL,

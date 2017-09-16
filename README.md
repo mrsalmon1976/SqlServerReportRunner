@@ -124,6 +124,7 @@ INSERT INTO ReportJobQueue
 	, OutputFormat
 	, Delimiter
 	, UserName
+	, EmailAddress
 	, [Status]
 	, CreateDate
 	)
@@ -138,6 +139,7 @@ VALUES
 	, 'Delimited'					-- CSV, Delimited or Excel
 	, '|'						-- only used in the case of Delimited files, can be an string value
 	, 'matt'					-- the name of the user (optional)
+	, 'matt@test.com'					-- the email address of the user (optional)
 	, 'Pending'					-- status of the report
 	, GETUTCDATE()					-- date the report is created (must be UTC)
 	)

@@ -52,5 +52,10 @@ namespace SqlServerReportRunner.Models
 
         public string ErrorStackTrace { get; set; }
 
+        /// <summary>
+        /// Gets/sets the email address of the current user.
+        /// </summary>
+        public string EmailAddress { get; set; }
+
     }
 }

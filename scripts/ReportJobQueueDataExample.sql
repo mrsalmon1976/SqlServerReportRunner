@@ -17,6 +17,7 @@ INSERT INTO ReportJobQueue
 	, OutputFormat
 	, Delimiter
 	, UserName
+	, EmailAddress
 	, [Status]
 	, CreateDate
 	)
@@ -31,6 +32,7 @@ VALUES
 	, 'Delimited'
 	, '|'
 	, 'matt'
+	, 'matt@test.com'
 	, 'Pending'
 	, GETUTCDATE()
 	)
