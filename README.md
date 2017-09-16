@@ -25,6 +25,8 @@ ServicePassword | Windows password for the configured account.  Leave blank if S
 PollInterval | How often the database table is polled to see if there are any new reports to run (in seconds) | 15
 PollSchedule | When polling should take place, represented as a cron string | *Future functionality*
 MaxConcurrentReports | The maximum number of reports that can be run *connection* concurrently | 3
+GlobalizationCulture | Culture used for the formatting of data in the output files.  This can be left blank to use the locale on the server on which the application is running | en-ZA
+ExcelDefaultDateTimeFormat | The EPPlus component used for Excel output requires a default date/time format, otherwise dates display as numbers - value can be any [custom .NET format](https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings) | yyyy-MM-dd HH:mm:ss
 
 ## Program Flow
 
@@ -48,20 +50,39 @@ Assuming the application is correctly installed and started as a Windows service
     9. Report is removed from ConcurrencyManager as a processing report
 6. Application sleeps for configured time period before polling again (goto Step 1)
 
+## Command Types
+
+The following source commands can be used:
+
+1. Raw SQL statements (SQL)
+2. Stored procedures (StoredProcedure)
+
 ## Output Formatting
 
-The formatting of data in the output files is not the responsibility of the program - all it does is convert data values to strings and write them to the output file.  In the case of a delimited text output file, 
-carriage return and line feed characters are removed before writing the line.  If you are wanting dates or numbers formatted in a particular way, you will need to do that at the source query level.
+SqlServerReportRunner supports the following file output formats:
+
+1. CSV - Comma Separated Values
+2. Delimited - Text-delimited file, where any delimiter can be specified
+3. Excel - OpenDocument .xlsx format
+
+## Data Formatting
+
+The program will export data into these files using the locale of the machine on which it is running, or the locale specified in the GlobalizationCulture configuration setting.  However, the file format must also be taken into account.
+
+1. CSV/Text-delimited - all values will be output using the current locale (or the GlobalizationCulture configuration setting if this has a value)
+2. Excel - Excel itself will use the current locale to display all values, as data values are passed through to Excel using the same data types returned by from the database.  The only exception to this is dates.  If you are using Excel as an output option, then you must specify your default date/time format in the application configuration setting "ExcelDefaultDateTimeFormat".  This is because the underlying component requires a format to be specified - if this is not done you may end up with numbers displayed in date/time cells.
+
+If you want to completely override the output values you can always format the data in the source query.  Just be careful if you convert values to string data types (e.g. varchar) if you are using Excel, as they will be written to Excel as text (as opposed to a number or a date).
 
 ### Some examples:
 
-Dates in YYYY-MM-DD format: 
+Dates in YYYY-MM-DD format, converted to string: 
 
 ```sql
 SELECT CONVERT(char(10), GETDATE(), 126) AS MyDate
 ```
 
-Dates in YYYY-MM-DD HH:mm:ss format:
+Dates in YYYY-MM-DD HH:mm:ss format, converted to string:
 
 ```sql
 SELECT CONVERT(CHAR(19), CONVERT(DATETIME, GETDATE(), 101), 120) AS MyDate
@@ -71,6 +92,12 @@ Numbers in 0.00 format:
 
 ```sql
 SELECT FORMAT(MyMoneyField, '0.00') AS MyNumber
+```
+
+Round numbers to 2 decimal places:
+
+```sql
+SELECT ROUND(MyMoneyField, 2) AS MyNumber
 ```
 
 ## Running Reports
@@ -102,16 +129,16 @@ INSERT INTO ReportJobQueue
 	)
 VALUES
 	(
-	'Test Report'
-	, 'StoredProcedure'
-	, 'dbo.MyStoredProcedure'
-	, @xml
-	, @fileName
-	, '\\' + @@SERVERNAME + '\Test\Reporting'
-	, 'Delimited'
-	, '|'
-	, 'matt'
-	, 'Pending'
-	, GETUTCDATE()
+	'Test Report'					-- the name of the report - for your usage
+	, 'StoredProcedure'				-- SQL or StoredProcedure
+	, 'dbo.MyStoredProcedure'			-- the actual command (will be a SQL query or the name of a stored procedure)
+	, @xml						-- the actual parameters as an XML data type
+	, @fileName					-- the name of the output file
+	, '\\' + @@SERVERNAME + '\Test\Reporting'	-- the location of the output folder (UNC)
+	, 'Delimited'					-- CSV, Delimited or Excel
+	, '|'						-- only used in the case of Delimited files, can be an string value
+	, 'matt'					-- the name of the user (optional)
+	, 'Pending'					-- status of the report
+	, GETUTCDATE()					-- date the report is created (must be UTC)
 	)
 ```
