@@ -16,11 +16,11 @@ namespace SqlServerReportRunner.Reporting.Formatters
 
     public class ExcelRangeFormatter : IExcelRangeFormatter
     {
-        private IAppSettings _appSettings;
+        private string _defaultDateTimeFormat;
 
-        public ExcelRangeFormatter(IAppSettings appSettings)
+        public ExcelRangeFormatter(string defaultDateTimeFormat)
         {
-            _appSettings = appSettings;
+            _defaultDateTimeFormat = defaultDateTimeFormat;
         }
 
         public ExcelRange FormatCell(ExcelRange range, object cellValue, Type dataType)
@@ -35,7 +35,7 @@ namespace SqlServerReportRunner.Reporting.Formatters
             //string dateFormat = DateTime.Now.ToString(cultureInfo.DateTimeFormat.ShortDatePattern);
             if (dataType == typeof(DateTime))
             {
-                range.Style.Numberformat.Format = _appSettings.ExcelDefaultDateTimeFormat;
+                range.Style.Numberformat.Format = _defaultDateTimeFormat;
             }
             range.Value = cellValue;
             return range;

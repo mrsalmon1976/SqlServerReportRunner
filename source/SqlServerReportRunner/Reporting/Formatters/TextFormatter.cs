@@ -15,12 +15,14 @@ namespace SqlServerReportRunner.Reporting.Formatters
 
     public class TextFormatter : ITextFormatter
     {
-        private IAppSettings _appSettings;
         private ILogger _logger = LogManager.GetCurrentClassLogger();
+        private CultureInfo _dateTimeCultureInfo;
+        private CultureInfo _numericCultureInfo;
 
-        public TextFormatter(IAppSettings appSettings)
+        public TextFormatter(CultureInfo dateTimeCultureInfo, CultureInfo numericCultureInfo)
         {
-            _appSettings = appSettings;
+            this._dateTimeCultureInfo = dateTimeCultureInfo;
+            this._numericCultureInfo = numericCultureInfo;
         }
 
         public string FormatText(object value, Type dataType)
@@ -36,19 +38,19 @@ namespace SqlServerReportRunner.Reporting.Formatters
             {
                 if (dataType == typeof(DateTime))
                 {
-                    return Convert.ToDateTime(value).ToString(_appSettings.GlobalizationCulture);
+                    return Convert.ToDateTime(value).ToString(_dateTimeCultureInfo);
                 }
                 else if (dataType == typeof(Decimal))
                 {
-                    return Convert.ToDecimal(value).ToString(_appSettings.GlobalizationCulture);
+                    return Convert.ToDecimal(value).ToString(_numericCultureInfo);
                 }
                 else if (dataType == typeof(Single))
                 {
-                    return Convert.ToSingle(value).ToString(_appSettings.GlobalizationCulture);
+                    return Convert.ToSingle(value).ToString(_numericCultureInfo);
                 }
                 else if (dataType == typeof(Double))
                 {
-                    return Convert.ToDouble(value).ToString(_appSettings.GlobalizationCulture);
+                    return Convert.ToDouble(value).ToString(_numericCultureInfo);
                 }
             }
             catch (Exception ex)

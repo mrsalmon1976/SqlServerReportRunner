@@ -32,7 +32,7 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
             _textFormatter = Substitute.For<ITextFormatter>();
 
             _filePath = Path.Combine(_testRootFolder, Path.GetRandomFileName());
-            _reportWriter = new DelimitedReportWriter(_textFormatter, _filePath);
+            _reportWriter = new DelimitedReportWriter(_textFormatter);
 
         }
 
@@ -72,7 +72,7 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
 
             // execute
 
-            _reportWriter.Initialise();
+            _reportWriter.Initialise(_filePath);
             _reportWriter.WriteHeader(headers.Select(x => x.Name), delimiter);
             foreach (object[] line in data)
             {

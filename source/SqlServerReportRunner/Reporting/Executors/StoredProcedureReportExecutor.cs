@@ -9,6 +9,7 @@ using Dapper;
 using System.Data.SqlClient;
 using System.IO;
 using SqlServerReportRunner.Common;
+using SqlServerReportRunner.Reporting.Writers;
 
 namespace SqlServerReportRunner.Reporting.Executors
 {
@@ -43,10 +44,10 @@ namespace SqlServerReportRunner.Reporting.Executors
                     using (var reader = command.ExecuteReader())
                     {
                         string destinationFile = Path.Combine(job.OutputFilePath, job.OutputFileName);
-                        using (IReportWriter reportWriter = _reportWriterFactory.GetReportWriter(destinationFile, job.OutputFormat))
+                        using (IReportWriter reportWriter = _reportWriterFactory.GetReportWriter(job.OutputFormat))
                         {
                             ColumnMetaData[] columnInfo = GetColumnInfo(reader).ToArray();
-                            reportWriter.Initialise();
+                            reportWriter.Initialise(destinationFile);
                             reportWriter.WriteHeader(columnInfo.Select(x => x.Name), job.Delimiter);
                             if (reader.HasRows)
                             {

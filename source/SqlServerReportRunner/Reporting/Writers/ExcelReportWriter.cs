@@ -17,17 +17,16 @@ namespace SqlServerReportRunner.Reporting.Writers
         private ExcelPackage _excelPackage;
         private ExcelWorksheet _workSheet;
         private IExcelRangeFormatter _excelRangeFormatter;
+        private string _filePath;
 
-        public ExcelReportWriter(IExcelRangeFormatter excelRangeFormatter, string filePath)
+        public ExcelReportWriter(IExcelRangeFormatter excelRangeFormatter)
         {
             _excelRangeFormatter = excelRangeFormatter;
-            this.FilePath = filePath;
         }
 
-        public string FilePath { get; set; }
-
-        public void Initialise()
+        public void Initialise(string filePath)
         {
+            _filePath = filePath;
             _excelPackage = new ExcelPackage();
             _workSheet = _excelPackage.Workbook.Worksheets.Add("Data");
         }
@@ -64,7 +63,7 @@ namespace SqlServerReportRunner.Reporting.Writers
 
         public void Dispose()
         {
-            _excelPackage.SaveAs(new FileInfo(this.FilePath));
+            _excelPackage.SaveAs(new FileInfo(this._filePath));
             _workSheet.Dispose();
             _excelPackage.Dispose();
             _excelPackage = null;

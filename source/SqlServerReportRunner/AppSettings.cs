@@ -24,7 +24,12 @@ namespace SqlServerReportRunner
         /// <summary>
         /// Gets the culture info to use when formatting numbers.  If left empty in the application config, this will default to CultureInfo.InvariantCulture.
         /// </summary>
-        CultureInfo GlobalizationCulture { get; }
+        CultureInfo GlobalizationCultureNumeric { get; }
+
+        /// <summary>
+        /// Gets the culture info to use when formatting date/time values.  If left empty in the application config, this will default to CultureInfo.InvariantCulture.
+        /// </summary>
+        CultureInfo GlobalizationCultureDateTime { get; }
 
         /// <summary>
         /// Gets the maximum number of reports that can run per user-defined connection.
@@ -83,11 +88,27 @@ namespace SqlServerReportRunner
         /// <summary>
         /// Gets the culture info to use when formatting numbers.  If left empty in the application config, this will default to CultureInfo.InvariantCulture.
         /// </summary>
-        public CultureInfo GlobalizationCulture
+        public CultureInfo GlobalizationCultureNumeric
         {
             get
             {
-                string cultureInfo = ConfigurationManager.AppSettings["GlobalizationCulture"];
+                string cultureInfo = ConfigurationManager.AppSettings["GlobalizationCultureNumeric"];
+                if (String.IsNullOrWhiteSpace(cultureInfo))
+                {
+                    return CultureInfo.InvariantCulture;
+                }
+                return CultureInfo.CreateSpecificCulture(cultureInfo);
+            }
+        }
+
+        /// <summary>
+        /// Gets the culture info to use when formatting date/time values.  If left empty in the application config, this will default to CultureInfo.InvariantCulture.
+        /// </summary>
+        public CultureInfo GlobalizationCultureDateTime
+        {
+            get
+            {
+                string cultureInfo = ConfigurationManager.AppSettings["GlobalizationCultureDateTime"];
                 if (String.IsNullOrWhiteSpace(cultureInfo))
                 {
                     return CultureInfo.InvariantCulture;

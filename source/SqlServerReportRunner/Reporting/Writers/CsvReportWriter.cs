@@ -15,18 +15,17 @@ namespace SqlServerReportRunner.Reporting.Writers
 
         private ITextFormatter _textFormatter;
         private CsvWriter _writer;
+        private string _filePath;
 
-        public CsvReportWriter(ITextFormatter textFormatter, string filePath)
+        public CsvReportWriter(ITextFormatter textFormatter)
         {
             _textFormatter = textFormatter;
-            this.FilePath = filePath;
         }
 
-        public string FilePath { get; set; }
-
-        public void Initialise()
+        public void Initialise(string filePath)
         {
-            _writer = new CsvWriter(File.CreateText(this.FilePath));
+            _filePath = filePath;
+            _writer = new CsvWriter(File.CreateText(this._filePath));
         }
         public void WriteHeader(IEnumerable<string> columnNames, string delimiter)
         {

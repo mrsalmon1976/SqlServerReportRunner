@@ -8,29 +8,27 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SqlServerReportRunner.Reporting.Executors
+namespace SqlServerReportRunner.Reporting.Writers
 {
     public interface IReportWriterFactory
     {
-        IReportWriter GetReportWriter(string filePath, string reportFormat);
+        IReportWriter GetReportWriter(string reportFormat);
     }
     public class ReportWriterFactory : IReportWriterFactory
     {
 
-        public ReportWriterFactory()
+        public IReportWriter GetReportWriter(string reportFormat)
         {
-        }
+            IAppSettings appSettings = new AppSettings();
 
-        public IReportWriter GetReportWriter(string filePath, string reportFormat)
-        {
             switch (reportFormat.ToLower())
             {
                 case ReportFormat.Csv:
-                    return new CsvReportWriter(new TextFormatter(new AppSettings()), filePath);
+                    return new CsvReportWriter(new TextFormatter(appSettings.GlobalizationCultureDateTime, appSettings.GlobalizationCultureNumeric));
                 case ReportFormat.Delimited:
-                    return new DelimitedReportWriter(new TextFormatter(new AppSettings()), filePath);
+                    return new DelimitedReportWriter(new TextFormatter(appSettings.GlobalizationCultureDateTime, appSettings.GlobalizationCultureNumeric));
                 case ReportFormat.Excel:
-                    return new ExcelReportWriter(new ExcelRangeFormatter(new AppSettings()), filePath);
+                    return new ExcelReportWriter(new ExcelRangeFormatter(appSettings.ExcelDefaultDateTimeFormat));
                 default:
                     break;
             }

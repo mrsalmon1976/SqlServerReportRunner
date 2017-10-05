@@ -1,5 +1,5 @@
 ﻿using SqlServerReportRunner.Common;
-using SqlServerReportRunner.Models;
+using SqlServerReportRunner.Reporting.Writers;
 using System;
 using System.Collections.Generic;
 using System.Linq;

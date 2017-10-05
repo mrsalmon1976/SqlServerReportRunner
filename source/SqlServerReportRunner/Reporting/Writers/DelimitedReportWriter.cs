@@ -13,18 +13,17 @@ namespace SqlServerReportRunner.Reporting.Writers
     {
         private ITextFormatter _textFormatter;
         private StreamWriter _writer;
+        private string _filePath;
 
-        public DelimitedReportWriter(ITextFormatter textFormatter, string filePath)
+        public DelimitedReportWriter(ITextFormatter textFormatter)
         {
             _textFormatter = textFormatter;
-            this.FilePath = filePath;
         }
 
-        public string FilePath { get; set; }
-
-        public void Initialise()
+        public void Initialise(string filePath)
         {
-            _writer = File.CreateText(this.FilePath);
+            _filePath = filePath;
+            _writer = File.CreateText(_filePath);
         }
 
         public void WriteHeader(IEnumerable<string> columnNames, string delimiter)

@@ -19,15 +19,10 @@ namespace Test.SqlServerReportRunner.Reporting.Formatters
         private ExcelWorksheet _workSheet;
         private IExcelRangeFormatter _excelRangeFormatter;
 
-        private IAppSettings _appSettings;
-
-
         [SetUp]
         public void ExcelRangeFormatterTest_SetUp()
         {
-            _appSettings = Substitute.For<IAppSettings>();
-
-            _excelRangeFormatter = new ExcelRangeFormatter(_appSettings);
+            _excelRangeFormatter = new ExcelRangeFormatter(null);
 
             _excelPackage = new ExcelPackage();
             _workSheet = _excelPackage.Workbook.Worksheets.Add("Data");
@@ -106,7 +101,7 @@ namespace Test.SqlServerReportRunner.Reporting.Formatters
         {
             // setup 
             const string dateFormat = "yyyy-MM-dd HH:mm:ss";
-            _appSettings.ExcelDefaultDateTimeFormat.Returns(dateFormat);
+            _excelRangeFormatter = new ExcelRangeFormatter(dateFormat);
 
             ExcelRange range = _workSheet.Cells[1, 1];
 

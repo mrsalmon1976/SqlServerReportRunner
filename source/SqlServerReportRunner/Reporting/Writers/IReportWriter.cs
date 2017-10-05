@@ -7,16 +7,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SqlServerReportRunner.Reporting.Executors
+namespace SqlServerReportRunner.Reporting.Writers
 {
     public interface IReportWriter : IDisposable
     {
-        string FilePath { get; set; }
-
         /// <summary>
         /// Initialises the writer.  In some writer instances, the output file is created on initialisation.
         /// </summary>
-        void Initialise();
+        void Initialise(string filePath);
 
         void WriteHeader(IEnumerable<string> columnNames, string delimiter);
 

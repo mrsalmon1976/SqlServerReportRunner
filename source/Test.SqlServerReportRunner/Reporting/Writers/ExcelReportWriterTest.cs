@@ -35,7 +35,7 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
                 range.Value = r.ArgAt<object>(1);
             });
             _filePath = Path.Combine(_testRootFolder, Path.GetFileNameWithoutExtension(Path.GetRandomFileName()) + ".xlsx");
-            _reportWriter = new ExcelReportWriter(_excelRangeFormatter, _filePath);
+            _reportWriter = new ExcelReportWriter(_excelRangeFormatter);
 
         }
 
@@ -70,7 +70,7 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
             reader.GetValue(2).Returns(data[0][2], data[1][2], data[2][2]);
 
             // execute
-            _reportWriter.Initialise();
+            _reportWriter.Initialise(_filePath);
             _reportWriter.WriteHeader(headers.Select(x => x.Name), delimiter);
             foreach (object[] line in data)
             {
@@ -123,7 +123,7 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
             reader.GetValue(1).Returns(data[0][1], data[1][1], data[2][1]);
 
             // execute
-            _reportWriter.Initialise();
+            _reportWriter.Initialise(_filePath);
             foreach (object[] line in data)
             {
                 _reportWriter.WriteLine(reader, headers, delimiter);

@@ -32,7 +32,7 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
             _textFormatter = Substitute.For<ITextFormatter>();
 
             _filePath = Path.Combine(_testRootFolder, Path.GetRandomFileName());
-            _reportWriter = new CsvReportWriter(_textFormatter, _filePath);
+            _reportWriter = new CsvReportWriter(_textFormatter);
 
         }
 
@@ -89,7 +89,7 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
             _textFormatter.FormatText(Arg.Any<object>(), Arg.Any<Type>()).Returns((c) => { return c.ArgAt<object>(0).ToString(); });
 
             // execute
-            _reportWriter.Initialise();
+            _reportWriter.Initialise(_filePath);
             _reportWriter.WriteHeader(headers.Select(x => x.Name), delimiter);
             foreach (object[] line in data)
             {
@@ -153,7 +153,7 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
             _textFormatter.FormatText(Arg.Any<object>(), Arg.Any<Type>()).Returns((c) => { return c.ArgAt<object>(0).ToString(); });
 
             // execute
-            _reportWriter.Initialise();
+            _reportWriter.Initialise(_filePath);
             foreach (object[] line in data)
             {
                 _reportWriter.WriteLine(reader, headers, delimiter);

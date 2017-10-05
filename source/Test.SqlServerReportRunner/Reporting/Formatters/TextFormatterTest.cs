@@ -15,15 +15,12 @@ namespace Test.SqlServerReportRunner.Reporting.Formatters
     public class TextFormatterTest
     {
         private ITextFormatter _textFormatter;
-        private IAppSettings _appSettings;
 
 
         [SetUp]
         public void TextFormatterTest_SetUp()
         {
-            _appSettings = Substitute.For<IAppSettings>();
-
-            _textFormatter = new TextFormatter(_appSettings);
+            _textFormatter = new TextFormatter(null, null);
         }
 
         [Test]
@@ -59,8 +56,7 @@ namespace Test.SqlServerReportRunner.Reporting.Formatters
             // setup 
             DateTime cellValue = DateTime.Now;
             CultureInfo cultureInfo = CultureInfo.GetCultureInfo(cultureName);
-            _appSettings.GlobalizationCulture.Returns(cultureInfo);
-
+            _textFormatter = new TextFormatter(cultureInfo, null);
 
             // execute
             string result = _textFormatter.FormatText(cellValue, typeof(DateTime));
@@ -76,8 +72,7 @@ namespace Test.SqlServerReportRunner.Reporting.Formatters
             // setup 
             DateTime cellValue = DateTime.Now;
             CultureInfo cultureInfo = CultureInfo.InvariantCulture;
-            _appSettings.GlobalizationCulture.Returns(cultureInfo);
-
+            _textFormatter = new TextFormatter(cultureInfo, null);
 
             // execute
             string result = _textFormatter.FormatText(cellValue, typeof(DateTime));
@@ -125,9 +120,8 @@ namespace Test.SqlServerReportRunner.Reporting.Formatters
             // setup
             const double itemValue = 123.456789D;
             CultureInfo cultureInfo = CultureInfo.GetCultureInfo(cultureName);
+            _textFormatter = new TextFormatter(null, cultureInfo);
 
-            //_appSettings.DefaultDecimalFormat.Returns(numericFormat);
-            _appSettings.GlobalizationCulture.Returns(cultureInfo);
             // execute
             string result = _textFormatter.FormatText(itemValue, typeof(Double));
 
@@ -146,9 +140,8 @@ namespace Test.SqlServerReportRunner.Reporting.Formatters
             // setup
             const float itemValue = 123.456789F;
             CultureInfo cultureInfo = CultureInfo.GetCultureInfo(cultureName);
+            _textFormatter = new TextFormatter(null, cultureInfo);
 
-            //_appSettings.DefaultDecimalFormat.Returns(numericFormat);
-            _appSettings.GlobalizationCulture.Returns(cultureInfo);
             // execute
             string result = _textFormatter.FormatText(itemValue, typeof(Single));
 
@@ -167,9 +160,8 @@ namespace Test.SqlServerReportRunner.Reporting.Formatters
             // setup
             const decimal itemValue = 123.456789M;
             CultureInfo cultureInfo = CultureInfo.GetCultureInfo(cultureName);
+            _textFormatter = new TextFormatter(null, cultureInfo);
 
-            //_appSettings.DefaultDecimalFormat.Returns(numericFormat);
-            _appSettings.GlobalizationCulture.Returns(cultureInfo);
             // execute
             string result = _textFormatter.FormatText(itemValue, typeof(Decimal));
 
@@ -185,9 +177,8 @@ namespace Test.SqlServerReportRunner.Reporting.Formatters
             // setup
             const decimal itemValue = 123.456789M;
             CultureInfo cultureInfo = CultureInfo.InvariantCulture;
+            _textFormatter = new TextFormatter(null, cultureInfo);
 
-            //_appSettings.DefaultDecimalFormat.Returns(numericFormat);
-            _appSettings.GlobalizationCulture.Returns(cultureInfo);
             // execute
             string result = _textFormatter.FormatText(itemValue, typeof(Decimal));
 

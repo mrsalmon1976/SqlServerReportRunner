@@ -41,21 +41,15 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
         [TestCase("EXCEL", typeof(ExcelReportWriter))]
         public void GetReportWriter_SupportedReportFormat_ReturnsCorrectType(string reportFormat, Type expectedType)
         {
-            string path = Path.Combine(Environment.CurrentDirectory, Path.GetRandomFileName());
-
-            IReportWriter writer = _reportWriterFactory.GetReportWriter(path, reportFormat);
-
+            IReportWriter writer = _reportWriterFactory.GetReportWriter(reportFormat);
             Assert.IsInstanceOf(expectedType, writer);
-            Assert.AreEqual(path, writer.FilePath);
         }
 
         [Test]
         [ExpectedException(ExpectedException =typeof(NotImplementedException))]
         public void GetReportWriter_UnsupportedReportFormat_ThrowsException()
         {
-            string path = Path.Combine(Environment.CurrentDirectory, Path.GetRandomFileName());
-            _reportWriterFactory.GetReportWriter(path, "nomnomnom");
-
+            _reportWriterFactory.GetReportWriter("nomnomnom");
         }
 
 
