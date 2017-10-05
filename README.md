@@ -25,7 +25,8 @@ ServicePassword | Windows password for the configured account.  Leave blank if S
 PollInterval | How often the database table is polled to see if there are any new reports to run (in seconds) | 15
 PollSchedule | When polling should take place, represented as a cron string | *Future functionality*
 MaxConcurrentReports | The maximum number of reports that can be run *connection* concurrently | 3
-GlobalizationCulture | Culture used for the formatting of data in the output files.  This can be left blank to use the locale on the server on which the application is running | en-ZA
+GlobalizationCultureNumeric | Culture used for the formatting of numeric values in the output files.  If left empty, this defaults to CultureInfo.InvariantCulture | en-ZA
+GlobalizationCultureDateTime | Culture used for the formatting of date/time values in the output files.  If left empty, this defaults to CultureInfo.InvariantCulture | en-ZA
 ExcelDefaultDateTimeFormat | The EPPlus component used for Excel output requires a default date/time format, otherwise dates display as numbers - value can be any [custom .NET format](https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings) | yyyy-MM-dd HH:mm:ss
 
 ## Program Flow
