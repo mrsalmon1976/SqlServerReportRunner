@@ -8,9 +8,9 @@ CREATE TABLE [dbo].[ReportJobQueue](
 	[CommandType] [varchar](255) NOT NULL,		-- StoredProcedure, SQL, SSRS
 	[Command] [varchar](255) NOT NULL,			-- Stored Proc name, SQL Text, SSRS report name
 	[Parameters] [xml] NULL,
-	[OutputFileName] [varchar](255) NOT NULL,
-	[OutputFilePath] [varchar](255) NOT NULL,
-	[OutputFormat] [varchar](50) NOT NULL,
+	[OutputFileName] [varchar](255) NULL,
+	[OutputFilePath] [varchar](255) NULL,
+	[OutputFormat] [varchar](50) NULL,
 	[Delimiter] [varchar](20) NULL,
 	[UserName] [varchar](100) NULL,
 	[EmailAddress] [varchar](255) NULL,

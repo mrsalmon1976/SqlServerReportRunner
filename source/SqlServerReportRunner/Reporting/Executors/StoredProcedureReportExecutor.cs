@@ -17,16 +17,18 @@ namespace SqlServerReportRunner.Reporting.Executors
     {
         private IDbConnectionFactory _dbConnectionFactory;
         private IReportWriterFactory _reportWriterFactory;
+        private IDbParameterUtility _dbParameterUtility;
 
-        public StoredProcedureReportExecutor(IDbConnectionFactory dbConnectionFactory, IReportWriterFactory reportWriterFactory)
+        public StoredProcedureReportExecutor(IDbConnectionFactory dbConnectionFactory, IReportWriterFactory reportWriterFactory, IDbParameterUtility dbParameterUtility)
         {
             _dbConnectionFactory = dbConnectionFactory;
             _reportWriterFactory = reportWriterFactory;
+            _dbParameterUtility = dbParameterUtility;
         }
 
         public ReportJobResult ExecuteJob(ConnectionSetting connection, ReportJob job)
         {
-            using (SqlConnection conn = (SqlConnection)_dbConnectionFactory.CreateConnection(connection.ConnectionString))
+            using (IDbConnection conn = _dbConnectionFactory.CreateConnection(connection.ConnectionString))
             {
 
                 int rowCount = 0;
@@ -35,22 +37,33 @@ namespace SqlServerReportRunner.Reporting.Executors
                 {
                     command.CommandTimeout = 0;
                     command.CommandText = job.Command;
-                    if (job.CommandType.ToLower() == CommandType.StoredProcedure)
+                    if (!String.IsNullOrEmpty(job.CommandType) && job.CommandType.ToLower() == Constants.CommandType.StoredProcedure)
                     {
                         command.CommandType = System.Data.CommandType.StoredProcedure;
                     }
-                    command.Parameters.AddRange(new DbParameterUtility().ConvertXmlToDbParameters(job.Parameters));
 
-                    using (var reader = command.ExecuteReader())
+                    // add the parameters to the command
+                    SqlParameter[] parameters = _dbParameterUtility.ConvertXmlToDbParameters(job.Parameters);
+                    foreach (IDataParameter p in parameters)
                     {
-                        string destinationFile = Path.Combine(job.OutputFilePath, job.OutputFileName);
-                        using (IReportWriter reportWriter = _reportWriterFactory.GetReportWriter(job.OutputFormat))
+                        command.Parameters.Add(p);
+                    }
+
+                    // make sure an output format has been specified - if it hasn't then just execute the command
+                    if (String.IsNullOrEmpty(job.OutputFormat))
+                    {
+                        command.ExecuteNonQuery();
+                    }
+                    else
+                    {
+                        using (var reader = command.ExecuteReader())
                         {
-                            ColumnMetaData[] columnInfo = GetColumnInfo(reader).ToArray();
-                            reportWriter.Initialise(destinationFile);
-                            reportWriter.WriteHeader(columnInfo.Select(x => x.Name), job.Delimiter);
-                            if (reader.HasRows)
+                            string destinationFile = Path.Combine(job.OutputFilePath, job.OutputFileName);
+                            using (IReportWriter reportWriter = _reportWriterFactory.GetReportWriter(job.OutputFormat))
                             {
+                                ColumnMetaData[] columnInfo = GetColumnInfo(reader).ToArray();
+                                reportWriter.Initialise(destinationFile);
+                                reportWriter.WriteHeader(columnInfo.Select(x => x.Name), job.Delimiter);
                                 while (reader.Read())
                                 {
                                     reportWriter.WriteLine(reader, columnInfo, job.Delimiter);

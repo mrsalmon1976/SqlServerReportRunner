@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using Dapper;
 using System.Data;
 using SqlServerReportRunner.Common;
+using SqlServerReportRunner.Constants;
 
 namespace SqlServerReportRunner.Repositories
 {

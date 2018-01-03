@@ -8,6 +8,7 @@ using System.Data;
 using SqlServerReportRunner.Common;
 using SqlServerReportRunner.Reporting;
 using SqlServerReportRunner.Models;
+using SqlServerReportRunner.Constants;
 
 namespace SqlServerReportRunner.Commands
 {

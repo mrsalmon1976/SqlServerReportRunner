@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace SqlServerReportRunner
+namespace SqlServerReportRunner.Constants
 {
 
     public class CommandType

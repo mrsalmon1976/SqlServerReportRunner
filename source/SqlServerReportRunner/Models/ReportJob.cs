@@ -18,7 +18,7 @@ namespace SqlServerReportRunner.Models
         public string CommandType { get; set; }
 
         /// <summary>
-        /// Details of the command to exexcute, e.g. stored procecure name, SQL Text, SSRS report name.
+        /// Details of the command to execute, e.g. stored procecure name, SQL Text, SSRS report name.
         /// </summary>
         public string Command { get; set; }
 
