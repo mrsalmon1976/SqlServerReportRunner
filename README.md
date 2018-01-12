@@ -146,3 +146,18 @@ VALUES
 6. Run "SqlServerReportRunner.exe install"
 7. To start the service, run "SqlServerReportRunner.exe start", or go to the Services control panel and start the service
 
+## Reporting Stats
+
+Below are some queries that are useful for looking at your reporting statistics.
+
+```
+SELECT
+	ReportName
+	, COUNT(*) AS ExecutionCount
+	, ROUND(CAST(AVG(DATEDIFF(ss, ProcessStartDate, ProcessEndDate)) as float) / 60, 2) AS AverageTimeInMinutes 
+FROM ReportJobQueue 
+WHERE Status <> 'Error'
+AND ProcessEndDate IS NOT NULL
+AND ProcessStartDate > '1 January 2018'
+GROUP BY ReportName
+```
