@@ -150,7 +150,8 @@ VALUES
 
 Below are some queries that are useful for looking at your reporting statistics.
 
-```
+```sql
+-- Get average execution time for all reports since a specified date
 SELECT
 	ReportName
 	, COUNT(*) AS ExecutionCount
