@@ -29,7 +29,7 @@ Assuming the application is correctly installed and started as a Windows service
     2. are not currently running per the ConcurrencyManager
     3. have not experienced an error
     4. have a ScheduleDate of NULL or less than or equal to the current UTC date/time
-	where *N* is the maximum number of allowed reports minus the number of reports already running as per the ConcurrencyManager
+    5. **where** *N* is the maximum number of allowed reports minus the number of reports already running as per the ConcurrencyManager
 5. Each unprocessed report from the ReportQueue is run on a background thread as follows:
     1. Report is added to the ConcurrencyManager
     2. ReportType is determined (StoredProcedure, SQL, *Future: SSRS*)
