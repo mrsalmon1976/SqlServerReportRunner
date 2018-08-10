@@ -24,7 +24,12 @@ Assuming the application is correctly installed and started as a Windows service
 1. Application loads up all connection strings, and for each connection string:
 2. ConcurrencyService determines how many reports are running for the current server/host 
 3. If maximum allowed limit reached, sleep and return to step 1
-4. Queries "ReportQueue" table (see config items) and fetches *N* reports that have not been processed, are not currently running per the ConcurrencyManager, and have not experienced an error. *N* is the maximum number of allowed reports minus the number of reports already running as per the ConcurrencyManager
+4. Queries "ReportQueue" table (see config items) and fetches *N* reports that:
+    1. have not been processed
+    2. are not currently running per the ConcurrencyManager
+    3. have not experienced an error
+    4. have a ScheduleDate of NULL or less than or equal to the current UTC date/time
+	where *N* is the maximum number of allowed reports minus the number of reports already running as per the ConcurrencyManager
 5. Each unprocessed report from the ReportQueue is run on a background thread as follows:
     1. Report is added to the ConcurrencyManager
     2. ReportType is determined (StoredProcedure, SQL, *Future: SSRS*)
@@ -116,6 +121,7 @@ INSERT INTO ReportJobQueue
 	, EmailAddress
 	, [Status]
 	, CreateDate
+	, ScheduleDate
 	)
 VALUES
 	(
@@ -131,6 +137,7 @@ VALUES
 	, 'matt@test.com'				-- the email address of the user (optional)
 	, 'Pending'					-- status of the report
 	, GETUTCDATE()					-- date the report is created (must be UTC)
+	, DATEADD(minute, 2, GETUTCDATE())	-- when you want the report to run (leave as NULL for immediate execution) (must be UTC)
 	)
 ```
 ## Installation
@@ -139,7 +146,7 @@ VALUES
 2. Open the "SqlServerReportRunner.exe.config file, and:
     1. Under the connectionStrings section, add connection strings for each server/database pair that will host a ReportQueue table
     2. Set application configuration options in the appSettings section (See Configuration Options section below).  Save and close the file.
-3. Run the SQL Script "sql/CreateReportQueueTable.sql" on any database that will host a ReportQueue table
+3. Run the SQL Script "scripts/ReportJobQueueTable.sql" on any database that will host a ReportQueue table
 4. (Optional) Configure NLog.config file to add logging.  By default, the application will log to a text file in the application folder, but the service can be configured to (for example) log errors via email if you have access to a mail server
 5. Open a console in Administrator mode and change the current directory to your installation folder
 6. Run "SqlServerReportRunner.exe install"

@@ -39,10 +39,10 @@ namespace SqlServerReportRunner.Repositories
         /// <returns></returns>
         public IEnumerable<ReportJob> GetPendingReports(string connectionString, int count)
         {
-            string query = String.Format("select TOP {0} * from ReportJobQueue WHERE [Status] = @Status ORDER BY Id", count);
+            string query = String.Format("select TOP {0} * from ReportJobQueue WHERE [Status] = @Status AND ISNULL(ScheduleDate, '1900-01-01') <= @ScheduleDate ORDER BY Id", count);
             using (IDbConnection conn = _dbConnectionFactory.CreateConnection(connectionString))
             {
-                return conn.Query<ReportJob>(query, new { Status = new DbString() { Value = JobStatus.Pending } });
+                return conn.Query<ReportJob>(query, new { Status = new DbString() { Value = JobStatus.Pending }, ScheduleDate = DateTime.UtcNow });
             }
         }
 

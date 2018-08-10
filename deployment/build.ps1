@@ -14,7 +14,7 @@ $source = $root.Replace("deployment", "") + "\source"
 $version = Read-Host -Prompt "What version are we building?"
 
 # build for mongo db 
-Write-Host "Building Stateless.Workflow.MongoDB version $version"
+Write-Host "Building SqlServerReportRunner version $version"
 $binfolder = "$source\SqlServerReportRunner\bin\Release"
 [system.io.file]::Delete("$binfolder\Connections.config")
 $zip = "$root\Output\SqlServerReportRunner_v$version.zip"
