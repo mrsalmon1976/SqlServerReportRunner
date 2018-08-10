@@ -138,7 +138,7 @@ VALUES
 	, 'matt@test.com'				-- the email address of the user (optional)
 	, 'Pending'					-- status of the report
 	, GETUTCDATE()					-- date the report is created (must be UTC)
-	, DATEADD(minute, 2, GETUTCDATE())	-- when you want the report to run (leave as NULL for immediate execution) (must be UTC)
+	, DATEADD(minute, 2, GETUTCDATE())		-- when you want the report to run (leave as NULL for immediate execution) (must be UTC)
 	)
 ```
 ## Installation
