@@ -14,6 +14,7 @@ using System.Threading.Tasks;
 namespace Test.SqlServerReportRunner.Repositories
 {
     [TestFixture]
+    [Category("RequiresDatabase")]
     public class ReportJobRepositoryTest
     {
         private IReportJobRepository _reportJobRepository;
