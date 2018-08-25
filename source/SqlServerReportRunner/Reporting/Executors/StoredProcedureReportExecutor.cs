@@ -76,7 +76,7 @@ namespace SqlServerReportRunner.Reporting.Executors
 
                 ReportJobResult result = new ReportJobResult();
                 result.RowCount = rowCount;
-                result.ExecutionTime = start.Subtract(DateTime.UtcNow);
+                result.ExecutionTime = DateTime.UtcNow.Subtract(start);
                 return result;
             }
         }

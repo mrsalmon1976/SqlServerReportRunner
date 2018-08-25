@@ -46,10 +46,10 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
         }
 
         [Test]
-        [ExpectedException(ExpectedException =typeof(NotImplementedException))]
         public void GetReportWriter_UnsupportedReportFormat_ThrowsException()
         {
-            _reportWriterFactory.GetReportWriter("nomnomnom");
+            TestDelegate del = () => _reportWriterFactory.GetReportWriter("nomnomnom");
+            Assert.Throws(typeof(NotImplementedException), del);
         }
 
 

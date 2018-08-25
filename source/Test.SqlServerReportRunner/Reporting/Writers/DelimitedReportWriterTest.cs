@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -26,7 +27,7 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
         public void DelimitedReportWriterTest_SetUp()
         {
             // create the root folder
-            _testRootFolder = Path.Combine(Environment.CurrentDirectory, "DelimitedReportWriterTest");
+            _testRootFolder = Path.Combine(TestUtility.TestRootFolder, "DelimitedReportWriterTest");
             Directory.CreateDirectory(_testRootFolder);
 
             _textFormatter = Substitute.For<ITextFormatter>();
@@ -110,21 +111,21 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void WriteLine_WithoutInitialise_ThrowsException()
         {
             IDataReader reader = Substitute.For<IDataReader>();
 
-            _reportWriter.WriteLine(reader, new ColumnMetaData[] { }, String.Empty);
+            TestDelegate del = () => _reportWriter.WriteLine(reader, new ColumnMetaData[] { }, String.Empty);
 
             reader.Received(0).GetValue(Arg.Any<int>());
+            Assert.Throws(typeof(InvalidOperationException), del);
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void WriteHeader_WithoutInitialise_ThrowsException()
         {
-            _reportWriter.WriteHeader(new string[] { }, String.Empty);
+            TestDelegate del = () => _reportWriter.WriteHeader(new string[] { }, String.Empty);
+            Assert.Throws(typeof(InvalidOperationException), del);
         }
 
     }

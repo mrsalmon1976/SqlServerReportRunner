@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Data;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 
 namespace Test.SqlServerReportRunner.Reporting.Writers
 {
@@ -25,7 +26,7 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
         public void ExcelReportWriterTest_SetUp()
         {
             // create the root folder
-            _testRootFolder = Path.Combine(Environment.CurrentDirectory, "ExcelReportWriterTest");
+            _testRootFolder = Path.Combine(TestUtility.TestRootFolder, "ExcelReportWriterTest");
             Directory.CreateDirectory(_testRootFolder);
 
             _excelRangeFormatter = Substitute.For<IExcelRangeFormatter>();
@@ -143,21 +144,21 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void WriteLine_WithoutInitialise_ThrowsException()
         {
             IDataReader reader = Substitute.For<IDataReader>();
 
-            _reportWriter.WriteLine(reader, new ColumnMetaData[] { }, String.Empty);
+            TestDelegate del = () => _reportWriter.WriteLine(reader, new ColumnMetaData[] { }, String.Empty);
 
+            Assert.Throws(typeof(InvalidOperationException), del);
             reader.Received(0).GetValue(Arg.Any<int>());
         }
 
         [Test]
-        [ExpectedException(typeof(InvalidOperationException))]
         public void WriteHeader_WithoutInitialise_ThrowsException()
         {
-            _reportWriter.WriteHeader(new string[] { }, String.Empty);
+            TestDelegate del = () => _reportWriter.WriteHeader(new string[] { }, String.Empty);
+            Assert.Throws(typeof(InvalidOperationException), del);
         }
 
         private List<string[]> ReadSpreadsheetLines(string filePath)

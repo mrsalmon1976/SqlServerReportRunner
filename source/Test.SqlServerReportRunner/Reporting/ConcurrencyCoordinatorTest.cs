@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -20,7 +21,7 @@ namespace Test.SqlServerReportRunner.Reporting
         [SetUp]
         public void ConcurrencyCoordinatorTest_SetUp()
         {
-            _testRootFolder = Path.Combine(Environment.CurrentDirectory, "ConcurrencyCoordinatorTest");
+            _testRootFolder = Path.Combine(TestUtility.TestRootFolder, "ConcurrencyCoordinatorTest");
             Directory.CreateDirectory(_testRootFolder);
 
             _reportLocationProvider = Substitute.For<IReportLocationProvider>();
