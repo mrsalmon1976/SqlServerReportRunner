@@ -16,13 +16,13 @@ namespace SqlServerReportRunner
             HostFactory.Run(
                             configuration =>
                             {
-                                var importFileWatcher = container.Resolve<IReportProcessorService>();
+                                var reportProcessorService = container.Resolve<IReportProcessorService>();
                                 var appSettings = container.Resolve<IAppSettings>();
 
                                 configuration.Service<IReportProcessorService>(
                                     service =>
                                     {
-                                        service.ConstructUsing(x => importFileWatcher);
+                                        service.ConstructUsing(x => reportProcessorService);
                                         service.WhenStarted(x => x.Start());
                                         service.WhenStopped(x => x.Stop());
                                     });

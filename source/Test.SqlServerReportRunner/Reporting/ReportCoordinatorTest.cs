@@ -1,7 +1,7 @@
 ﻿using NSubstitute;
 using NUnit.Framework;
 using SqlServerReportRunner;
-using SqlServerReportRunner.Repositories;
+using SqlServerReportRunner.BLL.Repositories;
 using SqlServerReportRunner.Models;
 using SqlServerReportRunner.Reporting;
 using System;

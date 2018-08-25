@@ -1,6 +1,6 @@
 ﻿using NSubstitute;
 using NUnit.Framework;
-using SqlServerReportRunner.Commands;
+using SqlServerReportRunner.BLL.Commands;
 using SqlServerReportRunner.Common;
 using SqlServerReportRunner.Models;
 using System;
@@ -12,7 +12,7 @@ using System.Threading.Tasks;
 using Dapper;
 using SqlServerReportRunner.Reporting;
 
-namespace Test.SqlServerReportRunner.Commands
+namespace Test.SqlServerReportRunner.BLL.Commands
 {
     [TestFixture]
     public class StartJobCommandTest

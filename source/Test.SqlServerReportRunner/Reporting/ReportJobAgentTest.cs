@@ -1,6 +1,6 @@
 ﻿using NSubstitute;
 using NUnit.Framework;
-using SqlServerReportRunner.Commands;
+using SqlServerReportRunner.BLL.Commands;
 using SqlServerReportRunner.Models;
 using SqlServerReportRunner.Reporting;
 using SqlServerReportRunner.Reporting.Executors;

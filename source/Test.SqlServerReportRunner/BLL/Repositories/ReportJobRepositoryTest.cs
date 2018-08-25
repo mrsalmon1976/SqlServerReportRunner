@@ -2,7 +2,7 @@
 using NUnit.Framework;
 using SqlServerReportRunner.Common;
 using SqlServerReportRunner.Reporting;
-using SqlServerReportRunner.Repositories;
+using SqlServerReportRunner.BLL.Repositories;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -11,7 +11,7 @@ using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Test.SqlServerReportRunner.Repositories
+namespace Test.SqlServerReportRunner.BLL.Repositories
 {
     [TestFixture]
     [Category("RequiresDatabase")]

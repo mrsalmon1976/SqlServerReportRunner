@@ -10,7 +10,7 @@ using SqlServerReportRunner.Reporting;
 using SqlServerReportRunner.Models;
 using SqlServerReportRunner.Constants;
 
-namespace SqlServerReportRunner.Commands
+namespace SqlServerReportRunner.BLL.Commands
 {
     public interface IFinaliseJobCommand
     {

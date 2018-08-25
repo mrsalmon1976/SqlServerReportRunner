@@ -17,6 +17,11 @@ namespace SqlServerReportRunner
         IEnumerable<ConnectionSetting> ConnectionSettings { get; }
 
         /// <summary>
+        /// The port with which to access the console dashboard
+        /// </summary>
+        int ConsolePort { get; }
+
+        /// <summary>
         /// Gets the default date/time format for Excel extracts.
         /// </summary>
         string ExcelDefaultDateTimeFormat { get; }
@@ -71,6 +76,17 @@ namespace SqlServerReportRunner
                 }
                 return settings;
 
+            }
+        }
+
+        /// <summary>
+        /// The port with which to access the console dashboard
+        /// </summary>
+        public int ConsolePort
+        {
+            get
+            {
+                return Convert.ToInt32(ConfigurationManager.AppSettings["ConsolePort"]);
             }
         }
 

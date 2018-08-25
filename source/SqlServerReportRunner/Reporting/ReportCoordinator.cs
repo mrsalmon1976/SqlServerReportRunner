@@ -1,5 +1,5 @@
 ﻿using NLog;
-using SqlServerReportRunner.Repositories;
+using SqlServerReportRunner.BLL.Repositories;
 using SqlServerReportRunner.Models;
 using System;
 using System.Collections.Generic;
