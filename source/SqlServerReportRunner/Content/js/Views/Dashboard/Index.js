@@ -7,17 +7,22 @@
         // define methods under the `methods` object
         methods: {
             initialise: function () {
-                this.reload();
+                this.reloadAll();
             },
-            reload: function () {
+            reloadAll: function () {
                 $(".reload").each(function (index) {
-                    //console.log(index + ": " + $(this).text());
-                    $(this).removeClass('fa-cube');
-                    $(this).addClass('fa-refresh').addClass('fa-spin');
+                    $(this).removeClass('fa-cube').addClass('fa-refresh').addClass('fa-spin');
                 });
+                this.reloadTotalCount();
             },
+            reloadTotalCount: function () {
+                this.resetStatBox('#stat-total-report-count', 'fa-cube')
+            },
+            resetStatBox: function (boxId, iconClass) {
+                //debugger;
+                $(boxId).find('.reload').addClass(iconClass).removeClass('fa-refresh').removeClass('fa-spin')
+            }
         }
     });
     vm.initialise();
-    //$('#txtPresentValue').focus();
 });
