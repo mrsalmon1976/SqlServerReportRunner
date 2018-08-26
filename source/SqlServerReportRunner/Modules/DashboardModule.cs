@@ -9,11 +9,16 @@ namespace SqlServerReportRunner.Modules
 {
     public class DashboardModule : CustomModule
     {
-        public DashboardModule()
+
+        private IAppSettings _appSettings;
+
+        public DashboardModule(IAppSettings appSettings)
         {
+            _appSettings = appSettings;
+
             Get[Actions.Dashboard.Default] = x =>
             {
-                //AddScript(Scripts.LoginView);
+                AddScript(Scripts.Dashboard.Index);
                 return this.DashboardGet();
             };
 
@@ -21,7 +26,8 @@ namespace SqlServerReportRunner.Modules
 
         public dynamic DashboardGet()
         {
-            var model = new Object();// this.Bind<LoginViewModel>();
+            var model = new ViewModels.Dashboard.IndexViewModel();
+            model.ConnectionNames.AddRange(_appSettings.ConnectionSettings.Select(x => x.Name));
             return this.View[Views.Dashboard.Default, model];
         }
 

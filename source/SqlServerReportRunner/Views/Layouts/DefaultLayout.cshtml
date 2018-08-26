@@ -1,19 +1,203 @@
 ﻿@using System.Collections.Generic
 @using System.Linq
+@model SqlServerReportRunner.ViewModels.Dashboard.IndexViewModel
 @functions {
     //public string MenuActiveClass(string title) {
-     //  return (ViewBag.Title.ToString().Contains(title) ? " active" : "");
+    //  return (ViewBag.Title.ToString().Contains(title) ? " active" : "");
     //}
 }
-<html class=" js flexbox canvas canvastext webgl no-touch geolocation postmessage websqldatabase indexeddb hashchange history draganddrop websockets rgba hsla multiplebgs backgroundsize borderimage borderradius boxshadow textshadow opacity cssanimations csscolumns cssgradients cssreflections csstransforms csstransforms3d csstransitions fontface generatedcontent video audio localstorage sessionstorage webworkers applicationcache svg inlinesvg smil svgclippaths" lang="en">
+<!DOCTYPE html>
+<!-- saved from url=(0064)http://demo.thedevelovers.com/dashboard/klorofil-v2.0/index.html -->
+<html lang="en">
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <meta content="IE=edge,chrome=1" http-equiv="X-UA-Compatible">
     <title>@ViewBag.Title</title>
-</head>
-<body class="main page" data-feedly-mini="yes">
-    @RenderBody()
-  
-</body>
 
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <!-- VENDOR CSS -->
+    <link rel="stylesheet" href="/Content/Css/bootstrap.min.css">
+    <link rel="stylesheet" href="/Content/Css/font-awesome.min.css">
+    <link rel="stylesheet" href="/Content/Css/style.css">
+    <link rel="stylesheet" href="/Content/Css/chartist-custom.css">
+
+    <!-- MAIN CSS -->
+    <link rel="stylesheet" href="/Content/Css/main.css">
+    <!-- GOOGLE FONTS -->
+    <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" rel="stylesheet">
+    <!-- ICONS -->
+    <link rel="apple-touch-icon" sizes="76x76" href="http://demo.thedevelovers.com/dashboard/klorofil-v2.0/assets/img/apple-icon.png">
+    <link rel="icon" type="image/png" sizes="96x96" href="http://demo.thedevelovers.com/dashboard/klorofil-v2.0/assets/img/favicon.png">
+</head>
+<body class="">
+    <!-- WRAPPER -->
+    <div id="wrapper">
+        <!-- NAVBAR -->
+        <nav class="navbar navbar-default navbar-fixed-top">
+            <div class="brand">
+                <a href="/">
+                    <i class="fa fa-database fa-2x" aria-hidden="true"></i>
+                    <span class="brand-text">SqlServerReportRunner</span>
+                </a>
+            </div>
+            <div class="container-fluid">
+                <div class="navbar-btn">
+                    <button type="button" class="btn-toggle-fullwidth"><i class="fa fa-bars" aria-hidden="true"></i></button>
+                </div>
+                <div class="navbar-btn navbar-btn-right navbar-version">
+                    Version @Model.AppVersion
+                </div>
+
+            </div>
+        </nav>
+        <!-- END NAVBAR -->
+        @RenderBody()
+        <div class="clearfix"></div>
+        <footer>
+            <div class="container-fluid">
+                <p class="copyright">© 2017 <a href="https://www.themeineed.com/" target="_blank">Theme I Need</a>. All Rights Reserved.</p>
+            </div>
+        </footer>
+    </div>
+    <!-- END WRAPPER -->
+    <!-- Javascript -->
+    @if (System.Diagnostics.Debugger.IsAttached)
+    {
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+    }
+    else
+    {
+        <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+    }
+    <script src="/Content/Js/jquery.min.js"></script>
+    <script src="/Content/Js/bootstrap.min.js"></script>
+    <script src="/Content/Js/jquery.slimscroll.min.js"></script>
+    <script src="/Content/Js/jquery.easypiechart.min.js"></script>
+    <script src="/Content/Js/chartist.min.js"></script>
+    <script src="/Content/Js/klorofil-common.js"></script>
+    @foreach (string script in ViewBag.Scripts)
+    {
+        <script src="@(script + "?v=" + Model.AppVersion)"></script>
+    }
+
+    <script>
+        $(function () {
+            var data, options;
+
+            // headline charts
+            data = {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                series: [
+                    [23, 29, 24, 40, 25, 24, 35],
+                    [14, 25, 18, 34, 29, 38, 44],
+                ]
+            };
+
+            options = {
+                height: 300,
+                showArea: true,
+                showLine: false,
+                showPoint: false,
+                fullWidth: true,
+                axisX: {
+                    showGrid: false
+                },
+                lineSmooth: false,
+            };
+
+            new Chartist.Line('#headline-chart', data, options);
+
+
+            // visits trend charts
+            data = {
+                labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                series: [
+                    {
+                        name: 'series-real',
+                        data: [200, 380, 350, 320, 410, 450, 570, 400, 555, 620, 750, 900],
+                    },
+                    {
+                        name: 'series-projection',
+                        data: [240, 350, 360, 380, 400, 450, 480, 523, 555, 600, 700, 800],
+                    }
+                ]
+            };
+
+            options = {
+                fullWidth: true,
+                lineSmooth: false,
+                height: "270px",
+                low: 0,
+                high: 'auto',
+                series: {
+                    'series-projection': {
+                        showArea: true,
+                        showPoint: false,
+                        showLine: false
+                    },
+                },
+                axisX: {
+                    showGrid: false,
+
+                },
+                axisY: {
+                    showGrid: false,
+                    onlyInteger: true,
+                    offset: 0,
+                },
+                chartPadding: {
+                    left: 20,
+                    right: 20
+                }
+            };
+
+            new Chartist.Line('#visits-trends-chart', data, options);
+
+
+            // visits chart
+            data = {
+                labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                series: [[6384, 6342, 5437, 2764, 3958, 5068, 7654]]
+            };
+
+            options = {
+                height: 300,
+                axisX: {
+                    showGrid: false
+                },
+            };
+
+            new Chartist.Bar('#visits-chart', data, options);
+
+
+            // real-time pie chart
+            var sysLoad = $('#system-load').easyPieChart({
+                size: 130,
+                barColor: function (percent) {
+                    return "rgb(" + Math.round(200 * percent / 100) + ", " + Math.round(200 * (1.1 - percent / 100)) + ", 0)";
+                },
+                trackColor: 'rgba(245, 245, 245, 0.8)',
+                scaleColor: false,
+                lineWidth: 5,
+                lineCap: "square",
+                animate: 800
+            });
+
+            var updateInterval = 3000; // in milliseconds
+
+            setInterval(function () {
+                var randomVal;
+                randomVal = getRandomInt(0, 100);
+
+                sysLoad.data('easyPieChart').update(randomVal);
+                sysLoad.find('.percent').text(randomVal);
+            }, updateInterval);
+
+            function getRandomInt(min, max) {
+                return Math.floor(Math.random() * (max - min + 1)) + min;
+            }
+
+        });</script>
+
+</body>
 </html>
