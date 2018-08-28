@@ -13,7 +13,12 @@ namespace SqlServerReportRunner.ViewModels
         {
             get
             {
-                return Assembly.GetEntryAssembly().GetName().Version.ToString(3);
+                Assembly a = Assembly.GetEntryAssembly();
+                if (a == null)
+                {
+                    a = Assembly.GetExecutingAssembly();
+                }
+                return a.GetName().Version.ToString(3);
             }
         }
 

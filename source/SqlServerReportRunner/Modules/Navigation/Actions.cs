@@ -10,7 +10,10 @@ namespace SqlServerReportRunner.Modules.Navigation
     {
         public class Dashboard
         {
-            public const string Default = "/dashboard";
+            public const string Index = "/dashboard";
+
+            public const string Statistics = "/dashboard/statistics";
+
         }
     }
 }

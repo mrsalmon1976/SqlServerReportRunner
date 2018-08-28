@@ -15,7 +15,7 @@ namespace SqlServerReportRunner.Modules
         {
             Get["/"] = x =>
             {
-                return this.Response.AsRedirect(Actions.Dashboard.Default);
+                return this.Response.AsRedirect(Actions.Dashboard.Index);
             };
         }
     }

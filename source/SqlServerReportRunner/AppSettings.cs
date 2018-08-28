@@ -55,6 +55,13 @@ namespace SqlServerReportRunner
         /// Gets the password for the account under which the current application should run.
         /// </summary>
         string ServicePassword { get; }
+
+        /// <summary>
+        /// Gets a configured connection string given a connection name.
+        /// </summary>
+        /// <param name="connName"></param>
+        /// <returns></returns>
+        string GetConnectionStringByName(string connName);
     }
 
     public class AppSettings : IAppSettings
@@ -204,6 +211,16 @@ namespace SqlServerReportRunner
                     throw new ConfigurationErrorsException("Application setting 'ServicePassword' is missing.", ex);
                 }
             }
+        }
+
+        /// <summary>
+        /// Gets a configured connection string given a connection name.
+        /// </summary>
+        /// <param name="connName"></param>
+        /// <returns></returns>
+        public string GetConnectionStringByName(string connName)
+        {
+            return this.ConnectionSettings.First(x => x.Name == connName).ConnectionString;
         }
 
     }

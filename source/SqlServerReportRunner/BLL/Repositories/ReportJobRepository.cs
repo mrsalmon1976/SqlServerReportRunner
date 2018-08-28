@@ -21,6 +21,12 @@ namespace SqlServerReportRunner.BLL.Repositories
         /// <returns></returns>
         IEnumerable<ReportJob> GetPendingReports(string connectionString, int count);
 
+        /// <summary>
+        /// Gets a count of all reports ever run.
+        /// </summary>
+        /// <returns></returns>
+        int GetTotalReportCount(string connectionString);
+
     }
 
     public class ReportJobRepository : IReportJobRepository
@@ -43,6 +49,19 @@ namespace SqlServerReportRunner.BLL.Repositories
             using (IDbConnection conn = _dbConnectionFactory.CreateConnection(connectionString))
             {
                 return conn.Query<ReportJob>(query, new { Status = new DbString() { Value = JobStatus.Pending }, ScheduleDate = DateTime.UtcNow });
+            }
+        }
+
+        /// <summary>
+        /// Gets a count of all reports ever run.
+        /// </summary>
+        /// <returns></returns>
+        public int GetTotalReportCount(string connectionString)
+        {
+            const string query = "SELECT COUNT(*) FROM ReportJobQueue";
+            using (IDbConnection conn = _dbConnectionFactory.CreateConnection(connectionString))
+            {
+                return conn.QuerySingle<int>(query);
             }
         }
 

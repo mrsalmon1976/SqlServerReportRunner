@@ -200,6 +200,7 @@
     <Compile Include="ReportProcessorService.cs" />
     <Compile Include="ViewModels\BaseViewModel.cs" />
     <Compile Include="ViewModels\Dashboard\IndexViewModel.cs" />
+    <Compile Include="ViewModels\Dashboard\StatisticsViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\js\Views\Dashboard\Index.js">

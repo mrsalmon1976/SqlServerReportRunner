@@ -40,6 +40,13 @@ namespace Test.SqlServerReportRunner.BLL.Repositories
             _reportJobRepository.GetPendingReports(TestUtility.TestDbConnectionString(TestUtility.TestRootFolder), 10);
         }
 
-
+        [Test]
+        public void GetTotalReportCount_Executes_ReturnsValue()
+        {
+            int result = _reportJobRepository.GetTotalReportCount(TestUtility.TestDbConnectionString(TestUtility.TestRootFolder));
+            Assert.GreaterOrEqual(result, 0);
         }
+
+
     }
+}

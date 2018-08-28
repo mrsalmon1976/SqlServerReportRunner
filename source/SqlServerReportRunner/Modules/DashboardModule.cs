@@ -1,4 +1,8 @@
-﻿using SqlServerReportRunner.Modules.Navigation;
+﻿using Nancy;
+using Nancy.ModelBinding;
+using SqlServerReportRunner.BLL.Repositories;
+using SqlServerReportRunner.Modules.Navigation;
+using SqlServerReportRunner.ViewModels.Dashboard;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,24 +15,48 @@ namespace SqlServerReportRunner.Modules
     {
 
         private IAppSettings _appSettings;
+        private IReportJobRepository _reportJobRepository;
 
-        public DashboardModule(IAppSettings appSettings)
+        public DashboardModule(IAppSettings appSettings, IReportJobRepository reportJobRepository)
         {
             _appSettings = appSettings;
+            _reportJobRepository = reportJobRepository;
 
-            Get[Actions.Dashboard.Default] = x =>
+            Get[Actions.Dashboard.Index] = x =>
             {
                 AddScript(Scripts.Dashboard.Index);
-                return this.DashboardGet();
+                return this.DashboardIndex();
             };
+
+            Post[Actions.Dashboard.Statistics] = x =>
+            {
+                return this.DashboardStatistics();
+            };
+
 
         }
 
-        public dynamic DashboardGet()
+        public dynamic DashboardIndex()
         {
             var model = new ViewModels.Dashboard.IndexViewModel();
             model.ConnectionNames.AddRange(_appSettings.ConnectionSettings.Select(x => x.Name));
             return this.View[Views.Dashboard.Default, model];
+        }
+
+        public dynamic DashboardStatistics()
+        {
+            string connName = Request.Form["ConnName"];
+            string connString = _appSettings.GetConnectionStringByName(connName);
+
+            Task<int> totalReportCountTask = Task.Run(() =>_reportJobRepository.GetTotalReportCount(connString));
+            Task.WaitAll(totalReportCountTask);
+
+            StatisticsViewModel viewModel = new StatisticsViewModel();
+            viewModel.TotalReportCount = totalReportCountTask.Result;
+
+            return Response.AsJson(viewModel);
+
+
         }
 
     }
