@@ -9,5 +9,6 @@ namespace SqlServerReportRunner.ViewModels.Dashboard
     public class StatisticsViewModel
     {
         public int TotalReportCount { get; set; }
+
     }
 }
