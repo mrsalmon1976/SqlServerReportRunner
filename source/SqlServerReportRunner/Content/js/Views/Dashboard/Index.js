@@ -3,9 +3,11 @@
         el: '#vue-dashboard-index',
         data: {
             currentConnection: null,
-            totalReportCount: 0,
             startDate: moment().subtract(3, 'months'),
             endDate: moment(),
+            totalReportCount: 0,
+            averageExecutionSeconds: 0,
+            averageGenerationSeconds: 0,
         },
         methods: {
             // initialisation method, called once the page has loaded
@@ -58,6 +60,8 @@
                     url: '/dashboard/statistics',
                     success: function (data) {
                         that.totalReportCount = data.totalReportCount;
+                        that.averageExecutionSeconds = data.averageExecutionSeconds;
+                        that.averageGenerationSeconds = data.averageGenerationSeconds;
                         that.toggleStatistics(true);
                     },
                     dataType: 'json'

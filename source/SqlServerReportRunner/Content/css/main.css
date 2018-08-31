@@ -1768,6 +1768,23 @@ ul.activity-timeline > li {
     font-size: 180%;
     padding-left: 16px;
 }
+/*
+    can be used for multi-select 
+
+#form-filter .multiselect-native-select {
+    margin-top: 2px;
+}
+#form-filter .input-group {
+    margin-left: 20px;
+}
+#form-filter button {
+    border-color: #eaeaea;
+    background-color: #fcfcfc;
+    padding: 6px 12px 6px 12px;
+    border: 1px solid #eaeaea;
+    border-radius: 2px;
+}
+    */
 .navbar-btn {
     padding: 26px 0;
 }

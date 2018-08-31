@@ -71,6 +71,8 @@ namespace Test.SqlServerReportRunner.Modules
             int totalReportCount = r.Next();
             DateTime startDate = DateTime.Now.AddMonths(-3).AddMinutes(r.Next(10, 50));
             DateTime endDate = DateTime.Now;
+            double avgExecutionSeconds = r.Next(1, 10);
+            double avgGenerationSeconds = avgExecutionSeconds + 2;
 
             DateTime startDateReceived = DateTime.MinValue;
             DateTime endDateReceived = DateTime.MinValue;
@@ -81,6 +83,8 @@ namespace Test.SqlServerReportRunner.Modules
                 startDateReceived = ci.ArgAt<DateTime>(1);
                 endDateReceived = ci.ArgAt<DateTime>(2);
             });
+            _reportJobRepository.GetAverageExecutionTime(connString, Arg.Any<DateTime>(), Arg.Any<DateTime>()).Returns(TimeSpan.FromSeconds(avgExecutionSeconds));
+            _reportJobRepository.GetAverageGenerationTime(connString, Arg.Any<DateTime>(), Arg.Any<DateTime>()).Returns(TimeSpan.FromSeconds(avgGenerationSeconds));
 
             var browser = CreateBrowser();
 
@@ -100,9 +104,13 @@ namespace Test.SqlServerReportRunner.Modules
             Assert.AreEqual(totalReportCount, result.TotalReportCount);
             Assert.That(startDate, Is.EqualTo(startDateReceived).Within(TimeSpan.FromSeconds(1.0)));
             Assert.That(endDate, Is.EqualTo(endDateReceived).Within(TimeSpan.FromSeconds(1.0)));
+            Assert.AreEqual(avgExecutionSeconds, result.AverageExecutionSeconds);
+            Assert.AreEqual(avgGenerationSeconds, result.AverageGenerationSeconds);
 
             _appSettings.Received(1).GetConnectionStringByName(connName);
             _reportJobRepository.Received(1).GetTotalReportCount(connString, Arg.Any<DateTime>(), Arg.Any<DateTime>());
+            _reportJobRepository.Received(1).GetAverageExecutionTime(connString, Arg.Any<DateTime>(), Arg.Any<DateTime>());
+            _reportJobRepository.Received(1).GetAverageGenerationTime(connString, Arg.Any<DateTime>(), Arg.Any<DateTime>());
         }
 
         #endregion

@@ -8,6 +8,10 @@ namespace SqlServerReportRunner.ViewModels.Dashboard
 {
     public class StatisticsViewModel
     {
+        public double AverageExecutionSeconds { get; set; }
+
+        public double AverageGenerationSeconds { get; set; }
+
         public int TotalReportCount { get; set; }
 
     }

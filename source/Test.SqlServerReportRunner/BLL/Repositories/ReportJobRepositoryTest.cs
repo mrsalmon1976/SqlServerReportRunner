@@ -35,6 +35,20 @@ namespace Test.SqlServerReportRunner.BLL.Repositories
         }
 
         [Test]
+        public void GetAverageExecutionTime_Executes_ReturnsValue()
+        {
+            TimeSpan result = _reportJobRepository.GetAverageExecutionTime(TestUtility.TestDbConnectionString(TestUtility.TestRootFolder), DateTime.Now.AddMonths(-3), DateTime.Now);
+            Assert.GreaterOrEqual(result.TotalSeconds, 0);
+        }
+
+        [Test]
+        public void GetAverageGenerationTime_Executes_ReturnsValue()
+        {
+            TimeSpan result = _reportJobRepository.GetAverageGenerationTime(TestUtility.TestDbConnectionString(TestUtility.TestRootFolder), DateTime.Now.AddMonths(-3), DateTime.Now);
+            Assert.GreaterOrEqual(result.TotalSeconds, 0);
+        }
+
+        [Test]
         public void GetPendingReports_Executes_WithoutSqlErrors()
         {
             _reportJobRepository.GetPendingReports(TestUtility.TestDbConnectionString(TestUtility.TestRootFolder), 10);

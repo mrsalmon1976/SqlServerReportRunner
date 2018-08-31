@@ -50,10 +50,14 @@ namespace SqlServerReportRunner.Modules
             string connString = _appSettings.GetConnectionStringByName(data.ConnName);
 
             Task<int> totalReportCountTask = Task.Run(() =>_reportJobRepository.GetTotalReportCount(connString, data.StartDate, data.EndDate));
-            Task.WaitAll(totalReportCountTask);
+            Task<TimeSpan> avgExecutionTimeTask = Task.Run(() => _reportJobRepository.GetAverageExecutionTime(connString, data.StartDate, data.EndDate));
+            Task<TimeSpan> avgGenerationTimeTask = Task.Run(() => _reportJobRepository.GetAverageGenerationTime(connString, data.StartDate, data.EndDate));
+            Task.WaitAll(totalReportCountTask, avgExecutionTimeTask, avgGenerationTimeTask);
 
             StatisticsViewModel viewModel = new StatisticsViewModel();
             viewModel.TotalReportCount = totalReportCountTask.Result;
+            viewModel.AverageExecutionSeconds = avgExecutionTimeTask.Result.TotalSeconds;
+            viewModel.AverageGenerationSeconds= avgGenerationTimeTask.Result.TotalSeconds;
 
             return Response.AsJson(viewModel);
 
