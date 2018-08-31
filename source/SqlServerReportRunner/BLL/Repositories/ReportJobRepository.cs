@@ -24,8 +24,11 @@ namespace SqlServerReportRunner.BLL.Repositories
         /// <summary>
         /// Gets a count of all reports ever run.
         /// </summary>
+        /// <param name="connectionString">The connection string to use to fetch the data.</param>
+        /// <param name="startDate">The date from which to include reports (greater than equal to).</param>
+        /// <param name="endDate">The date until which to include reports (less than and NOT equal to).</param>
         /// <returns></returns>
-        int GetTotalReportCount(string connectionString);
+        int GetTotalReportCount(string connectionString, DateTime startDate, DateTime endDate);
 
     }
 
@@ -55,13 +58,16 @@ namespace SqlServerReportRunner.BLL.Repositories
         /// <summary>
         /// Gets a count of all reports ever run.
         /// </summary>
+        /// <param name="connectionString">The connection string to use to fetch the data.</param>
+        /// <param name="startDate">The date from which to include reports (greater than equal to).</param>
+        /// <param name="endDate">The date until which to include reports (less than and NOT equal to).</param>
         /// <returns></returns>
-        public int GetTotalReportCount(string connectionString)
+        public int GetTotalReportCount(string connectionString, DateTime startDate, DateTime endDate)
         {
-            const string query = "SELECT COUNT(*) FROM ReportJobQueue";
+            const string query = "SELECT COUNT(*) FROM ReportJobQueue WHERE CreateDate >= @StartDate AND CreateDate < @EndDate";
             using (IDbConnection conn = _dbConnectionFactory.CreateConnection(connectionString))
             {
-                return conn.QuerySingle<int>(query);
+                return conn.QuerySingle<int>(query, new { StartDate = startDate, EndDate = endDate });
             }
         }
 

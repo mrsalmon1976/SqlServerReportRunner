@@ -1,6 +1,7 @@
 ﻿using Nancy;
 using Nancy.ModelBinding;
 using SqlServerReportRunner.BLL.Repositories;
+using SqlServerReportRunner.Models.Console;
 using SqlServerReportRunner.Modules.Navigation;
 using SqlServerReportRunner.ViewModels.Dashboard;
 using System;
@@ -45,10 +46,10 @@ namespace SqlServerReportRunner.Modules
 
         public dynamic DashboardStatistics()
         {
-            string connName = Request.Form["ConnName"];
-            string connString = _appSettings.GetConnectionStringByName(connName);
+            DashboardModel data = this.Bind<DashboardModel>();
+            string connString = _appSettings.GetConnectionStringByName(data.ConnName);
 
-            Task<int> totalReportCountTask = Task.Run(() =>_reportJobRepository.GetTotalReportCount(connString));
+            Task<int> totalReportCountTask = Task.Run(() =>_reportJobRepository.GetTotalReportCount(connString, data.StartDate, data.EndDate));
             Task.WaitAll(totalReportCountTask);
 
             StatisticsViewModel viewModel = new StatisticsViewModel();

@@ -43,7 +43,7 @@ namespace Test.SqlServerReportRunner.BLL.Repositories
         [Test]
         public void GetTotalReportCount_Executes_ReturnsValue()
         {
-            int result = _reportJobRepository.GetTotalReportCount(TestUtility.TestDbConnectionString(TestUtility.TestRootFolder));
+            int result = _reportJobRepository.GetTotalReportCount(TestUtility.TestDbConnectionString(TestUtility.TestRootFolder), DateTime.Now.AddMonths(-3), DateTime.Now);
             Assert.GreaterOrEqual(result, 0);
         }
 

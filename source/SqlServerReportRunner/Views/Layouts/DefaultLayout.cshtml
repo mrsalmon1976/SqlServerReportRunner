@@ -1,11 +1,6 @@
 ﻿@using System.Collections.Generic
 @using System.Linq
 @model SqlServerReportRunner.ViewModels.Dashboard.IndexViewModel
-@functions {
-    //public string MenuActiveClass(string title) {
-    //  return (ViewBag.Title.ToString().Contains(title) ? " active" : "");
-    //}
-}
 <!DOCTYPE html>
 <!-- saved from url=(0064)http://demo.thedevelovers.com/dashboard/klorofil-v2.0/index.html -->
 <html lang="en">
@@ -16,12 +11,13 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <!-- VENDOR CSS -->
-    <link rel="stylesheet" href="/Content/Css/bootstrap.min.css">
-    <link rel="stylesheet" href="/Content/Css/font-awesome.min.css">
-    <link rel="stylesheet" href="/Content/Css/style.css">
-    <link rel="stylesheet" href="/Content/Css/chartist-custom.css">
-
+    <link rel="stylesheet" href="/Content/Css/bootstrap.min.css" />
+    <link rel="stylesheet" href="/Content/Css/font-awesome.min.css" />
+    <!-- CONTROLS -->
+    <link rel="stylesheet" href="/Content/Css/chartist-custom.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
     <!-- MAIN CSS -->
+    <link rel="stylesheet" href="/Content/Css/style.css" />
     <link rel="stylesheet" href="/Content/Css/main.css">
     <!-- GOOGLE FONTS -->
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,600,700" rel="stylesheet">
@@ -69,12 +65,14 @@
     {
         <script src="https://cdn.jsdelivr.net/npm/vue"></script>
     }
-    <script src="/Content/Js/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
     <script src="/Content/Js/bootstrap.min.js"></script>
     <script src="/Content/Js/jquery.slimscroll.min.js"></script>
     <script src="/Content/Js/jquery.easypiechart.min.js"></script>
     <script src="/Content/Js/chartist.min.js"></script>
     <script src="/Content/Js/klorofil-common.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
     @foreach (string script in ViewBag.Scripts)
     {
         <script src="@(script + "?v=" + Model.AppVersion)"></script>

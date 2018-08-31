@@ -23,6 +23,7 @@ namespace Test.SqlServerReportRunner.Modules
 
         private IAppSettings _appSettings;
         private IReportJobRepository _reportJobRepository;
+        private const string DateFormatForPost = "yyyy-MM-dd HH:mm:ss";
 
         [SetUp]
         public void DashboardModuleTest_SetUp()
@@ -64,12 +65,22 @@ namespace Test.SqlServerReportRunner.Modules
         public void DashboardStatistics_OnExecute_PopulatesModel()
         {
             // setup
+            Random r = new Random();
             string connName = Guid.NewGuid().ToString();
             string connString = Guid.NewGuid().ToString();
-            int totalReportCount = new Random().Next();
+            int totalReportCount = r.Next();
+            DateTime startDate = DateTime.Now.AddMonths(-3).AddMinutes(r.Next(10, 50));
+            DateTime endDate = DateTime.Now;
+
+            DateTime startDateReceived = DateTime.MinValue;
+            DateTime endDateReceived = DateTime.MinValue;
 
             _appSettings.GetConnectionStringByName(connName).Returns(connString);
-            _reportJobRepository.GetTotalReportCount(connString).Returns(totalReportCount);
+            _reportJobRepository.GetTotalReportCount(connString, Arg.Any<DateTime>(), Arg.Any<DateTime>()).Returns(totalReportCount);
+            _reportJobRepository.When(x => x.GetTotalReportCount(connString, Arg.Any<DateTime>(), Arg.Any<DateTime>())).Do((ci) => {
+                startDateReceived = ci.ArgAt<DateTime>(1);
+                endDateReceived = ci.ArgAt<DateTime>(2);
+            });
 
             var browser = CreateBrowser();
 
@@ -78,6 +89,8 @@ namespace Test.SqlServerReportRunner.Modules
             {
                 with.HttpRequest();
                 with.FormValue("ConnName", connName);
+                with.FormValue("StartDate", startDate.ToString(DateFormatForPost));
+                with.FormValue("EndDate", endDate.ToString(DateFormatForPost));
             });
             StatisticsViewModel result = JsonConvert.DeserializeObject<StatisticsViewModel>(response.Body.AsString());
 
@@ -85,8 +98,11 @@ namespace Test.SqlServerReportRunner.Modules
             Assert.AreEqual(HttpStatusCode.OK, response.StatusCode);
 
             Assert.AreEqual(totalReportCount, result.TotalReportCount);
+            Assert.That(startDate, Is.EqualTo(startDateReceived).Within(TimeSpan.FromSeconds(1.0)));
+            Assert.That(endDate, Is.EqualTo(endDateReceived).Within(TimeSpan.FromSeconds(1.0)));
+
             _appSettings.Received(1).GetConnectionStringByName(connName);
-            _reportJobRepository.Received(1).GetTotalReportCount(connString);
+            _reportJobRepository.Received(1).GetTotalReportCount(connString, Arg.Any<DateTime>(), Arg.Any<DateTime>());
         }
 
         #endregion
