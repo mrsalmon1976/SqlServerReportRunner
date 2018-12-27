@@ -18,7 +18,10 @@ namespace SqlServerReportRunner.Common
         public IDbConnection CreateConnection(string connectionString, bool open = true)
         {
             SqlConnection conn = new SqlConnection(connectionString);
-            if (open) conn.Open();
+            if (open)
+            {
+                conn.Open();
+            }
             return conn;
         }
     }

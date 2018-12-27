@@ -10,22 +10,6 @@
             averageGenerationSeconds: 0,
         },
         methods: {
-            // initialisation method, called once the page has loaded
-            initialise: function () {
-                var connections = $('.link-connection');
-                if (connections.length > 0) {
-                    $('.link-connection').click(this.onConnectionClick);
-                    connections.first().click();
-                    $('#txt-date-filter').daterangepicker({
-                        //opens: 'right',
-                        startDate: this.startDate,
-                        endDate: this.endDate,
-                        locale: {
-                            format: 'YYYY/MM/DD'
-                        }
-                    }, this.onDateFilterChange);
-                }
-            },
             onConnectionClick: function (evt) {
                 var connections = $('.link-connection');
                 connections.removeClass('active');
@@ -55,7 +39,7 @@
                     data: {
                         'ConnName': this.currentConnection,
                         'StartDate': this.startDate.format('YYYY-MM-DD'),
-                        'EndDate': this.endDate.add('days', 1).format('YYYY-MM-DD')
+                        'EndDate': moment(this.endDate).add(1, 'days').format('YYYY-MM-DD')
                     },
                     url: '/dashboard/statistics',
                     success: function (data) {
@@ -76,7 +60,24 @@
                         $(this).removeClass(iconClass).addClass('fa-refresh').addClass('fa-spin');
                 });
             }
+        },
+        mounted: function () {
+            var connections = $('.link-connection');
+            if (connections.length > 0) {
+                $('.link-connection').click(this.onConnectionClick);
+                connections.first().click();
+                $('#txt-date-filter').daterangepicker({
+                    //opens: 'right',
+                    startDate: this.startDate,
+                    endDate: this.endDate,
+                    locale: {
+                        format: 'YYYY/MM/DD'
+                    }
+                }, this.onDateFilterChange);
+            }
+            // initialise tool tips
+            $('[data-toggle="tooltip"]').tooltip();
+
         }
     });
-    vm.initialise();
 });

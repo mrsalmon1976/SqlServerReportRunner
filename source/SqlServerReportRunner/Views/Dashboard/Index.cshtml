@@ -58,7 +58,7 @@
                     <div id="panel-statistics" class="panel-body">
                         <div class="row">
                             <div class="col-md-3">
-                                <div class="metric">
+                                <div class="metric" data-toggle="tooltip" data-placement="bottom" title="The total number of reports generated">
                                     <span class="icon"><i data-icon="fa-cube" class="reload fa fa-cube"></i></span>
                                     <p>
                                         <span class="number">{{ totalReportCount }}</span>
@@ -67,7 +67,7 @@
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="metric">
+                                <div class="metric" data-toggle="tooltip" data-placement="bottom" title="Average time it took to execute the report, excluding time spent waiting in the queue">
                                     <span class="icon"><i data-icon="fa-clock-o" class="reload fa fa-clock-o"></i></span>
                                     <p>
                                         <span class="number">{{ averageExecutionSeconds }}</span>
@@ -76,8 +76,8 @@
                                 </div>
                             </div>
                             <div class="col-md-3">
-                                <div class="metric">
-                                    <span class="icon"><i data-icon="fa-clock-o" class="reload fa fa-clock-o"></i></span>
+                                <div class="metric" data-toggle="tooltip" data-placement="bottom" title="Average time it took to complete the report from when it was requested, including time spent waiting in the queue">
+                                    <span class="icon"><i data-icon="fa-hourglass" class="reload fa fa-hourglass"></i></span>
                                     <p>
                                         <span class="number">{{ averageGenerationSeconds }}</span>
                                         <span class="title">Avg Generation</span>
