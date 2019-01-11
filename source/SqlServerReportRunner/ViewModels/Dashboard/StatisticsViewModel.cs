@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SqlServerReportRunner.Models;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,6 +14,8 @@ namespace SqlServerReportRunner.ViewModels.Dashboard
         public double AverageGenerationSeconds { get; set; }
 
         public int TotalReportCount { get; set; }
+
+        public IEnumerable<UserReportCount> MostActiveUsers { get; set; }
 
     }
 }

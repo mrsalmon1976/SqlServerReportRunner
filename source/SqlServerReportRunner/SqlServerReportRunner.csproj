@@ -171,6 +171,7 @@
     <Compile Include="Models\ColumnMetaData.cs" />
     <Compile Include="Models\ConnectionSetting.cs" />
     <Compile Include="Models\Console\DashboardModel.cs" />
+    <Compile Include="Models\UserReportCount.cs" />
     <Compile Include="Modules\CustomModule.cs" />
     <Compile Include="Modules\DashboardModule.cs" />
     <Compile Include="Modules\IndexModule.cs" />

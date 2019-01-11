@@ -1794,3 +1794,20 @@ ul.activity-timeline > li {
 .slimScrollDiv {
     padding-top: 20px;
 }
+.chart-title {
+    font-size: 160%;
+    margin-bottom: 10px;
+}
+
+svg.ct-chart-bar, svg.ct-chart-line {
+    overflow: visible;
+}
+
+.series-label-45deg .ct-label.ct-label.ct-horizontal.ct-end {
+    position: relative;
+    justify-content: flex-end;
+    text-align: right;
+    transform-origin: 100% 0;
+    transform: translate(-100%) rotate(-45deg);
+    white-space: nowrap;
+}

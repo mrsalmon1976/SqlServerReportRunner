@@ -18,7 +18,6 @@ namespace SqlServerReportRunner
                             {
                                 var reportProcessorService = container.Resolve<IReportProcessorService>();
                                 var appSettings = container.Resolve<IAppSettings>();
-
                                 configuration.Service<IReportProcessorService>(
                                     service =>
                                     {

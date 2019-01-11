@@ -86,6 +86,9 @@ namespace Test.SqlServerReportRunner.Modules
             _reportJobRepository.GetAverageExecutionTime(connString, Arg.Any<DateTime>(), Arg.Any<DateTime>()).Returns(TimeSpan.FromSeconds(avgExecutionSeconds));
             _reportJobRepository.GetAverageGenerationTime(connString, Arg.Any<DateTime>(), Arg.Any<DateTime>()).Returns(TimeSpan.FromSeconds(avgGenerationSeconds));
 
+            UserReportCount[] activeUsers = { new UserReportCount("test2", 2), new UserReportCount("test1", 1) };
+            _reportJobRepository.GetMostActiveUsers(connString, 10, Arg.Any<DateTime>(), Arg.Any<DateTime>()).Returns(activeUsers);
+
             var browser = CreateBrowser();
 
             // execute
@@ -106,11 +109,13 @@ namespace Test.SqlServerReportRunner.Modules
             Assert.That(endDate, Is.EqualTo(endDateReceived).Within(TimeSpan.FromSeconds(1.0)));
             Assert.AreEqual(avgExecutionSeconds, result.AverageExecutionSeconds);
             Assert.AreEqual(avgGenerationSeconds, result.AverageGenerationSeconds);
+            Assert.AreEqual(2, result.MostActiveUsers.Count());
 
             _appSettings.Received(1).GetConnectionStringByName(connName);
             _reportJobRepository.Received(1).GetTotalReportCount(connString, Arg.Any<DateTime>(), Arg.Any<DateTime>());
             _reportJobRepository.Received(1).GetAverageExecutionTime(connString, Arg.Any<DateTime>(), Arg.Any<DateTime>());
             _reportJobRepository.Received(1).GetAverageGenerationTime(connString, Arg.Any<DateTime>(), Arg.Any<DateTime>());
+            _reportJobRepository.Received(1).GetMostActiveUsers(connString, 10, Arg.Any<DateTime>(), Arg.Any<DateTime>());
         }
 
         #endregion

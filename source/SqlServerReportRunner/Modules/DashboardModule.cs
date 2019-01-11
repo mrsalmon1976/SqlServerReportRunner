@@ -1,6 +1,7 @@
 ﻿using Nancy;
 using Nancy.ModelBinding;
 using SqlServerReportRunner.BLL.Repositories;
+using SqlServerReportRunner.Models;
 using SqlServerReportRunner.Models.Console;
 using SqlServerReportRunner.Modules.Navigation;
 using SqlServerReportRunner.ViewModels.Dashboard;
@@ -52,12 +53,14 @@ namespace SqlServerReportRunner.Modules
             Task<int> totalReportCountTask = Task.Run(() =>_reportJobRepository.GetTotalReportCount(connString, data.StartDate, data.EndDate));
             Task<TimeSpan> avgExecutionTimeTask = Task.Run(() => _reportJobRepository.GetAverageExecutionTime(connString, data.StartDate, data.EndDate));
             Task<TimeSpan> avgGenerationTimeTask = Task.Run(() => _reportJobRepository.GetAverageGenerationTime(connString, data.StartDate, data.EndDate));
+            Task<IEnumerable<UserReportCount>> activeUsers = Task.Run(() => _reportJobRepository.GetMostActiveUsers(connString, 10, data.StartDate, data.EndDate));
             Task.WaitAll(totalReportCountTask, avgExecutionTimeTask, avgGenerationTimeTask);
 
             StatisticsViewModel viewModel = new StatisticsViewModel();
             viewModel.TotalReportCount = totalReportCountTask.Result;
             viewModel.AverageExecutionSeconds = avgExecutionTimeTask.Result.TotalSeconds;
             viewModel.AverageGenerationSeconds= avgGenerationTimeTask.Result.TotalSeconds;
+            viewModel.MostActiveUsers = activeUsers.Result;
 
             return Response.AsJson(viewModel);
 

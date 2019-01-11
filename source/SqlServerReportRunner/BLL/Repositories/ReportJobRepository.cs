@@ -33,6 +33,16 @@ namespace SqlServerReportRunner.BLL.Repositories
         TimeSpan GetAverageGenerationTime(string connectionString, DateTime startDate, DateTime endDate);
 
         /// <summary>
+        /// Gets a list of the most active users with a specified time frame.
+        /// </summary>
+        /// <param name="connectionString"></param>
+        /// <param name="count">The number of users to return</param>
+        /// <param name="startDate">Start date</param>
+        /// <param name="endDate">End date</param>
+        /// <returns></returns>
+        IEnumerable<UserReportCount> GetMostActiveUsers(string connectionString, int count, DateTime startDate, DateTime endDate);
+
+        /// <summary>
         /// Gets a list of all pending reports.
         /// </summary>
         /// <param name="connectionString"></param>
@@ -101,6 +111,27 @@ namespace SqlServerReportRunner.BLL.Repositories
             }
         }
 
+        /// <summary>
+        /// Gets a list of the most active users with a specified time frame.
+        /// </summary>
+        /// <param name="connectionString"></param>
+        /// <param name="count">The number of users to return</param>
+        /// <param name="startDate">Start date</param>
+        /// <param name="endDate">End date</param>
+        /// <returns></returns>
+        public IEnumerable<UserReportCount> GetMostActiveUsers(string connectionString, int count, DateTime startDate, DateTime endDate)
+        {
+            string query = String.Format(@"SELECT TOP {0} UserName, COUNT(Id) AS ReportCount 
+                FROM ReportJobQueue
+                WHERE CreateDate >= @StartDate 
+                AND CreateDate < @EndDate
+                GROUP BY UserName
+                ORDER BY COUNT(Id) DESC", count);
+            using (IDbConnection conn = _dbConnectionFactory.CreateConnection(connectionString))
+            {
+                return conn.Query<UserReportCount>(query, new { StartDate = startDate, EndDate = endDate });
+            }
+        }
         /// <summary>
         /// Gets a list of all pending reports.
         /// </summary>

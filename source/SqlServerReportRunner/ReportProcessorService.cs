@@ -55,7 +55,7 @@ namespace SqlServerReportRunner
             string url = String.Format("http://localhost:{0}", _appSettings.ConsolePort);
             _host = new NancyHost(hostConfiguration, new Uri(url));
             _host.Start();
-
+            Console.WriteLine("Dashboard available on port {0}", _appSettings.ConsolePort);
             _logger.Info("Service started");
         }
 

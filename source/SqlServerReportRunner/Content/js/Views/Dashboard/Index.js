@@ -2,6 +2,7 @@
     var vm = new Vue({
         el: '#vue-dashboard-index',
         data: {
+            chartMostActiveUsers: null,
             currentConnection: null,
             startDate: moment().subtract(3, 'months'),
             endDate: moment(),
@@ -30,6 +31,32 @@
             reloadAll: function () {
                 this.reloadStatistics();
             },
+            reloadActiveUsers: function (data) {
+                var users = [];
+                var reportCounts = [];
+                for (var property in data) {
+                    if (data.hasOwnProperty(property)) {
+                        users.push(data[property].userName);
+                        reportCounts.push(Number(data[property].reportCount));
+                    }
+                }
+                var chart = this.chartMostActiveUsers;
+                var chartData = {
+                    labels: users,
+                    series: [
+                        reportCounts
+                    ]
+                };
+
+                //data2 = {
+                //    labels: ['Z1', 'Z2', 'Z3', 'Z4'],
+                //    series: [
+                //        [Math.random() * 1000, Math.random() * 1000, Math.random() * 1000, Math.random() * 1000]
+                //    ]
+                //};
+
+                chart.update(chartData);
+            },
             // reloads all statistics on the page
             reloadStatistics: function () {
                 var that = this;
@@ -46,6 +73,7 @@
                         that.totalReportCount = data.totalReportCount;
                         that.averageExecutionSeconds = data.averageExecutionSeconds;
                         that.averageGenerationSeconds = data.averageGenerationSeconds;
+                        that.reloadActiveUsers(data.mostActiveUsers);
                         that.toggleStatistics(true);
                     },
                     dataType: 'json'
@@ -62,6 +90,9 @@
             }
         },
         mounted: function () {
+            // initialise charts
+            this.chartMostActiveUsers = new Chartist.Bar('#active-users-chart');
+            // initialise the connection
             var connections = $('.link-connection');
             if (connections.length > 0) {
                 $('.link-connection').click(this.onConnectionClick);
@@ -77,7 +108,6 @@
             }
             // initialise tool tips
             $('[data-toggle="tooltip"]').tooltip();
-
         }
     });
 });

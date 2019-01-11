@@ -49,6 +49,12 @@ namespace Test.SqlServerReportRunner.BLL.Repositories
         }
 
         [Test]
+        public void GetMostActiveUsers_Executes_WithoutSqlErrors()
+        {
+            _reportJobRepository.GetMostActiveUsers(TestUtility.TestDbConnectionString(TestUtility.TestRootFolder), 10, DateTime.Now.AddMonths(-3), DateTime.Now);
+        }
+
+        [Test]
         public void GetPendingReports_Executes_WithoutSqlErrors()
         {
             _reportJobRepository.GetPendingReports(TestUtility.TestDbConnectionString(TestUtility.TestRootFolder), 10);
