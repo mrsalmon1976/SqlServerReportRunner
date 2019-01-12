@@ -86,8 +86,11 @@ namespace Test.SqlServerReportRunner.Modules
             _reportJobRepository.GetAverageExecutionTime(connString, Arg.Any<DateTime>(), Arg.Any<DateTime>()).Returns(TimeSpan.FromSeconds(avgExecutionSeconds));
             _reportJobRepository.GetAverageGenerationTime(connString, Arg.Any<DateTime>(), Arg.Any<DateTime>()).Returns(TimeSpan.FromSeconds(avgGenerationSeconds));
 
-            UserReportCount[] activeUsers = { new UserReportCount("test2", 2), new UserReportCount("test1", 1) };
+            ReportCount[] activeUsers = { new ReportCount("test2", 2), new ReportCount("test1", 1) };
             _reportJobRepository.GetMostActiveUsers(connString, 10, Arg.Any<DateTime>(), Arg.Any<DateTime>()).Returns(activeUsers);
+
+            ReportCount[] reportCountByDay = { new ReportCount("test3", 3), new ReportCount("test2", 2), new ReportCount("test1", 1) };
+            _reportJobRepository.GetReportCountByDay(connString, Arg.Any<DateTime>(), Arg.Any<DateTime>()).Returns(reportCountByDay);
 
             var browser = CreateBrowser();
 
@@ -110,12 +113,14 @@ namespace Test.SqlServerReportRunner.Modules
             Assert.AreEqual(avgExecutionSeconds, result.AverageExecutionSeconds);
             Assert.AreEqual(avgGenerationSeconds, result.AverageGenerationSeconds);
             Assert.AreEqual(2, result.MostActiveUsers.Count());
+            Assert.AreEqual(3, result.ReportCountByDay.Count());
 
             _appSettings.Received(1).GetConnectionStringByName(connName);
             _reportJobRepository.Received(1).GetTotalReportCount(connString, Arg.Any<DateTime>(), Arg.Any<DateTime>());
             _reportJobRepository.Received(1).GetAverageExecutionTime(connString, Arg.Any<DateTime>(), Arg.Any<DateTime>());
             _reportJobRepository.Received(1).GetAverageGenerationTime(connString, Arg.Any<DateTime>(), Arg.Any<DateTime>());
             _reportJobRepository.Received(1).GetMostActiveUsers(connString, 10, Arg.Any<DateTime>(), Arg.Any<DateTime>());
+            _reportJobRepository.Received(1).GetReportCountByDay(connString, Arg.Any<DateTime>(), Arg.Any<DateTime>());
         }
 
         #endregion

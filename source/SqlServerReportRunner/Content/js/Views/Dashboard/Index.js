@@ -3,6 +3,7 @@
         el: '#vue-dashboard-index',
         data: {
             chartMostActiveUsers: null,
+            chartReportCountByDay: null,
             currentConnection: null,
             startDate: moment().subtract(3, 'months'),
             endDate: moment(),
@@ -31,30 +32,21 @@
             reloadAll: function () {
                 this.reloadStatistics();
             },
-            reloadActiveUsers: function (data) {
-                var users = [];
-                var reportCounts = [];
+            reloadChart: function (chart, data) {
+                var keys = [];
+                var counts = [];
                 for (var property in data) {
                     if (data.hasOwnProperty(property)) {
-                        users.push(data[property].userName);
-                        reportCounts.push(Number(data[property].reportCount));
+                        keys.push(data[property].key);
+                        counts.push(Number(data[property].count));
                     }
                 }
-                var chart = this.chartMostActiveUsers;
                 var chartData = {
-                    labels: users,
+                    labels: keys,
                     series: [
-                        reportCounts
+                        counts
                     ]
                 };
-
-                //data2 = {
-                //    labels: ['Z1', 'Z2', 'Z3', 'Z4'],
-                //    series: [
-                //        [Math.random() * 1000, Math.random() * 1000, Math.random() * 1000, Math.random() * 1000]
-                //    ]
-                //};
-
                 chart.update(chartData);
             },
             // reloads all statistics on the page
@@ -73,7 +65,10 @@
                         that.totalReportCount = data.totalReportCount;
                         that.averageExecutionSeconds = data.averageExecutionSeconds;
                         that.averageGenerationSeconds = data.averageGenerationSeconds;
-                        that.reloadActiveUsers(data.mostActiveUsers);
+
+                        that.reloadChart(that.chartMostActiveUsers, data.mostActiveUsers);
+                        that.reloadChart(that.chartReportCountByDay, data.reportCountByDay);
+
                         that.toggleStatistics(true);
                     },
                     dataType: 'json'
@@ -83,7 +78,7 @@
             toggleStatistics: function (isEnabled) {
                 $('#panel-statistics').find('.reload').each(function (index, element) {
                     var iconClass = $(this).data('icon');
-                    isEnabled ? 
+                    isEnabled ?
                         $(this).removeClass('fa-refresh').removeClass('fa-spin').addClass(iconClass) :
                         $(this).removeClass(iconClass).addClass('fa-refresh').addClass('fa-spin');
                 });
@@ -91,7 +86,25 @@
         },
         mounted: function () {
             // initialise charts
+            var that = this;
             this.chartMostActiveUsers = new Chartist.Bar('#active-users-chart');
+            this.chartReportCountByDay = new Chartist.Line('#report-count-by-day-chart', null, {
+                low: 0,
+                showArea: true,
+                axisX: {
+                    labelInterpolationFnc: function (value, index) {
+                        // make sure we don't show too many labels
+                        var maxLabels = 10;
+                        if (that.chartReportCountByDay.data.labels.length <= maxLabels) {
+                            return value;
+                        }
+                        else {
+                            var mod = parseInt(that.chartReportCountByDay.data.labels.length / maxLabels);
+                            return index % mod === 0 ? value : null;
+                        }
+                    }
+                }
+            });
             // initialise the connection
             var connections = $('.link-connection');
             if (connections.length > 0) {

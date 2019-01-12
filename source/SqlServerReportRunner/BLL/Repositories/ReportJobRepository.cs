@@ -40,7 +40,7 @@ namespace SqlServerReportRunner.BLL.Repositories
         /// <param name="startDate">Start date</param>
         /// <param name="endDate">End date</param>
         /// <returns></returns>
-        IEnumerable<UserReportCount> GetMostActiveUsers(string connectionString, int count, DateTime startDate, DateTime endDate);
+        IEnumerable<ReportCount> GetMostActiveUsers(string connectionString, int count, DateTime startDate, DateTime endDate);
 
         /// <summary>
         /// Gets a list of all pending reports.
@@ -48,6 +48,16 @@ namespace SqlServerReportRunner.BLL.Repositories
         /// <param name="connectionString"></param>
         /// <returns></returns>
         IEnumerable<ReportJob> GetPendingReports(string connectionString, int count);
+
+        /// <summary>
+        /// Gets the number of reports run per day for a specified time frame.
+        /// </summary>
+        /// <param name="connectionString"></param>
+        /// <param name="startDate">Start date</param>
+        /// <param name="endDate">End date</param>
+        /// <returns></returns>
+        IEnumerable<ReportCount> GetReportCountByDay(string connectionString, DateTime startDate, DateTime endDate);
+
 
         /// <summary>
         /// Gets a count of all reports ever run.
@@ -119,9 +129,9 @@ namespace SqlServerReportRunner.BLL.Repositories
         /// <param name="startDate">Start date</param>
         /// <param name="endDate">End date</param>
         /// <returns></returns>
-        public IEnumerable<UserReportCount> GetMostActiveUsers(string connectionString, int count, DateTime startDate, DateTime endDate)
+        public IEnumerable<ReportCount> GetMostActiveUsers(string connectionString, int count, DateTime startDate, DateTime endDate)
         {
-            string query = String.Format(@"SELECT TOP {0} UserName, COUNT(Id) AS ReportCount 
+            string query = String.Format(@"SELECT TOP {0} UserName AS [Key], COUNT(Id) AS [Count] 
                 FROM ReportJobQueue
                 WHERE CreateDate >= @StartDate 
                 AND CreateDate < @EndDate
@@ -129,9 +139,10 @@ namespace SqlServerReportRunner.BLL.Repositories
                 ORDER BY COUNT(Id) DESC", count);
             using (IDbConnection conn = _dbConnectionFactory.CreateConnection(connectionString))
             {
-                return conn.Query<UserReportCount>(query, new { StartDate = startDate, EndDate = endDate });
+                return conn.Query<ReportCount>(query, new { StartDate = startDate, EndDate = endDate });
             }
         }
+
         /// <summary>
         /// Gets a list of all pending reports.
         /// </summary>
@@ -143,6 +154,27 @@ namespace SqlServerReportRunner.BLL.Repositories
             using (IDbConnection conn = _dbConnectionFactory.CreateConnection(connectionString))
             {
                 return conn.Query<ReportJob>(query, new { Status = new DbString() { Value = JobStatus.Pending }, ScheduleDate = DateTime.UtcNow });
+            }
+        }
+
+        /// <summary>
+        /// Gets the number of reports run per day for a specified time frame.
+        /// </summary>
+        /// <param name="connectionString"></param>
+        /// <param name="startDate">Start date</param>
+        /// <param name="endDate">End date</param>
+        /// <returns></returns>
+        public IEnumerable<ReportCount> GetReportCountByDay(string connectionString, DateTime startDate, DateTime endDate)
+        {
+            const string query = @"SELECT CAST(CAST(CreateDate AS date) AS varchar(10)) AS [Key], COUNT(Id) AS [Count] 
+                FROM ReportJobQueue
+                WHERE CreateDate >= @StartDate 
+                AND CreateDate < @EndDate
+                GROUP BY CAST(CreateDate AS date)
+                ORDER BY 1";
+            using (IDbConnection conn = _dbConnectionFactory.CreateConnection(connectionString))
+            {
+                return conn.Query<ReportCount>(query, new { StartDate = startDate, EndDate = endDate });
             }
         }
 

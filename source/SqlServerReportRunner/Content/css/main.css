@@ -1811,3 +1811,9 @@ svg.ct-chart-bar, svg.ct-chart-line {
     transform: translate(-100%) rotate(-45deg);
     white-space: nowrap;
 }
+.ct-series-a .ct-line {
+    stroke-width: 1px;
+}
+.ct-series-a .ct-point {
+    stroke-width: 6px;
+}

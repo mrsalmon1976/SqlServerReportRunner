@@ -61,6 +61,12 @@ namespace Test.SqlServerReportRunner.BLL.Repositories
         }
 
         [Test]
+        public void GetReportCountByDay_Executes_WithoutSqlErrors()
+        {
+            _reportJobRepository.GetReportCountByDay(TestUtility.TestDbConnectionString(TestUtility.TestRootFolder), DateTime.Now.AddMonths(-3), DateTime.Now);
+        }
+
+        [Test]
         public void GetTotalReportCount_Executes_ReturnsValue()
         {
             int result = _reportJobRepository.GetTotalReportCount(TestUtility.TestDbConnectionString(TestUtility.TestRootFolder), DateTime.Now.AddMonths(-3), DateTime.Now);
