@@ -86,10 +86,13 @@ namespace Test.SqlServerReportRunner.Modules
             _reportJobRepository.GetAverageExecutionTime(connString, Arg.Any<DateTime>(), Arg.Any<DateTime>()).Returns(TimeSpan.FromSeconds(avgExecutionSeconds));
             _reportJobRepository.GetAverageGenerationTime(connString, Arg.Any<DateTime>(), Arg.Any<DateTime>()).Returns(TimeSpan.FromSeconds(avgGenerationSeconds));
 
-            ReportCount[] activeUsers = { new ReportCount("test2", 2), new ReportCount("test1", 1) };
+            ReportCount[] activeUsers = CreateDummyReportResult();
             _reportJobRepository.GetMostActiveUsers(connString, 10, Arg.Any<DateTime>(), Arg.Any<DateTime>()).Returns(activeUsers);
 
-            ReportCount[] reportCountByDay = { new ReportCount("test3", 3), new ReportCount("test2", 2), new ReportCount("test1", 1) };
+            ReportCount[] mostRunReports = CreateDummyReportResult();
+            _reportJobRepository.GetMostRunReports(connString, 10, Arg.Any<DateTime>(), Arg.Any<DateTime>()).Returns(mostRunReports);
+
+            ReportCount[] reportCountByDay = CreateDummyReportResult();
             _reportJobRepository.GetReportCountByDay(connString, Arg.Any<DateTime>(), Arg.Any<DateTime>()).Returns(reportCountByDay);
 
             var browser = CreateBrowser();
@@ -112,14 +115,16 @@ namespace Test.SqlServerReportRunner.Modules
             Assert.That(endDate, Is.EqualTo(endDateReceived).Within(TimeSpan.FromSeconds(1.0)));
             Assert.AreEqual(avgExecutionSeconds, result.AverageExecutionSeconds);
             Assert.AreEqual(avgGenerationSeconds, result.AverageGenerationSeconds);
-            Assert.AreEqual(2, result.MostActiveUsers.Count());
-            Assert.AreEqual(3, result.ReportCountByDay.Count());
+            Assert.AreEqual(activeUsers.Length, result.MostActiveUsers.Count());
+            Assert.AreEqual(mostRunReports.Length, result.MostRunReports.Count());
+            Assert.AreEqual(reportCountByDay.Length, result.ReportCountByDay.Count());
 
             _appSettings.Received(1).GetConnectionStringByName(connName);
             _reportJobRepository.Received(1).GetTotalReportCount(connString, Arg.Any<DateTime>(), Arg.Any<DateTime>());
             _reportJobRepository.Received(1).GetAverageExecutionTime(connString, Arg.Any<DateTime>(), Arg.Any<DateTime>());
             _reportJobRepository.Received(1).GetAverageGenerationTime(connString, Arg.Any<DateTime>(), Arg.Any<DateTime>());
             _reportJobRepository.Received(1).GetMostActiveUsers(connString, 10, Arg.Any<DateTime>(), Arg.Any<DateTime>());
+            _reportJobRepository.Received(1).GetMostRunReports(connString, 10, Arg.Any<DateTime>(), Arg.Any<DateTime>());
             _reportJobRepository.Received(1).GetReportCountByDay(connString, Arg.Any<DateTime>(), Arg.Any<DateTime>());
         }
 
@@ -156,6 +161,17 @@ namespace Test.SqlServerReportRunner.Modules
             {
                 return TestContext.CurrentContext.TestDirectory;
             }
+        }
+
+        private ReportCount[] CreateDummyReportResult()
+        {
+            var count = new Random().Next(2, 8);
+            List<ReportCount> result = new List<ReportCount>();
+            for (var i = 0; i < count; i++)
+            {
+                result.Add(new ReportCount(Guid.NewGuid().ToString(), i));
+            }
+            return result.ToArray();
         }
 
         #endregion

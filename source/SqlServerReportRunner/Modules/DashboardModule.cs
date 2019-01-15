@@ -54,6 +54,7 @@ namespace SqlServerReportRunner.Modules
             Task<TimeSpan> avgExecutionTimeTask = Task.Run(() => _reportJobRepository.GetAverageExecutionTime(connString, data.StartDate, data.EndDate));
             Task<TimeSpan> avgGenerationTimeTask = Task.Run(() => _reportJobRepository.GetAverageGenerationTime(connString, data.StartDate, data.EndDate));
             Task<IEnumerable<ReportCount>> activeUsers = Task.Run(() => _reportJobRepository.GetMostActiveUsers(connString, 10, data.StartDate, data.EndDate));
+            Task<IEnumerable<ReportCount>> mostRunReports = Task.Run(() => _reportJobRepository.GetMostRunReports(connString, 10, data.StartDate, data.EndDate));
             Task<IEnumerable<ReportCount>> reportCountByDay = Task.Run(() => _reportJobRepository.GetReportCountByDay(connString, data.StartDate, data.EndDate));
             Task.WaitAll(totalReportCountTask, avgExecutionTimeTask, avgGenerationTimeTask);
 
@@ -62,6 +63,7 @@ namespace SqlServerReportRunner.Modules
             viewModel.AverageExecutionSeconds = avgExecutionTimeTask.Result.TotalSeconds;
             viewModel.AverageGenerationSeconds= avgGenerationTimeTask.Result.TotalSeconds;
             viewModel.MostActiveUsers = activeUsers.Result;
+            viewModel.MostRunReports = mostRunReports.Result;
             viewModel.ReportCountByDay = reportCountByDay.Result;
 
             return Response.AsJson(viewModel);

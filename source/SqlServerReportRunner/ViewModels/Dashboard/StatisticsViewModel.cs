@@ -17,6 +17,8 @@ namespace SqlServerReportRunner.ViewModels.Dashboard
 
         public IEnumerable<ReportCount> MostActiveUsers { get; set; }
 
+        public IEnumerable<ReportCount> MostRunReports { get; set; }
+
         public IEnumerable<ReportCount> ReportCountByDay { get; set; }
 
     }

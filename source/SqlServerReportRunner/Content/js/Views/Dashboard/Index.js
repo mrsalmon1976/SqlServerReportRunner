@@ -3,6 +3,7 @@
         el: '#vue-dashboard-index',
         data: {
             chartMostActiveUsers: null,
+            chartMostRunReports: null,
             chartReportCountByDay: null,
             currentConnection: null,
             startDate: moment().subtract(3, 'months'),
@@ -37,7 +38,7 @@
                 var counts = [];
                 for (var property in data) {
                     if (data.hasOwnProperty(property)) {
-                        keys.push(data[property].key);
+                        keys.push(data[property].key.replace(/\\/g, '\\&#8203;').replace(/\./g, '.&#8203;'));   // replace gets around domain user names that contain \ and . display issues
                         counts.push(Number(data[property].count));
                     }
                 }
@@ -67,6 +68,7 @@
                         that.averageGenerationSeconds = data.averageGenerationSeconds;
 
                         that.reloadChart(that.chartMostActiveUsers, data.mostActiveUsers);
+                        that.reloadChart(that.chartMostRunReports, data.mostRunReports);
                         that.reloadChart(that.chartReportCountByDay, data.reportCountByDay);
 
                         that.toggleStatistics(true);
@@ -88,7 +90,8 @@
             // initialise charts
             var that = this;
             this.chartMostActiveUsers = new Chartist.Bar('#active-users-chart');
-            this.chartReportCountByDay = new Chartist.Line('#report-count-by-day-chart', null, {
+            this.chartMostRunReports = new Chartist.Bar('#active-reports-chart');
+            this.chartReportCountByDay = new Chartist.Line('#report-count-by-day-chart', {}, {
                 low: 0,
                 showArea: true,
                 axisX: {
@@ -105,11 +108,11 @@
                     }
                 }
             });
+
             // initialise the connection
             var connections = $('.link-connection');
             if (connections.length > 0) {
                 $('.link-connection').click(this.onConnectionClick);
-                connections.first().click();
                 $('#txt-date-filter').daterangepicker({
                     //opens: 'right',
                     startDate: this.startDate,
@@ -118,6 +121,7 @@
                         format: 'YYYY/MM/DD'
                     }
                 }, this.onDateFilterChange);
+                connections.first().click();
             }
             // initialise tool tips
             $('[data-toggle="tooltip"]').tooltip();

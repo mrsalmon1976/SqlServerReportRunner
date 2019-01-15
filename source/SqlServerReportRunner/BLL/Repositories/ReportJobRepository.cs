@@ -43,6 +43,17 @@ namespace SqlServerReportRunner.BLL.Repositories
         IEnumerable<ReportCount> GetMostActiveUsers(string connectionString, int count, DateTime startDate, DateTime endDate);
 
         /// <summary>
+        /// Gets a list of the most active reports for a specified time frame.
+        /// </summary>
+        /// <param name="connectionString"></param>
+        /// <param name="count">The number of users to return</param>
+        /// <param name="startDate">Start date</param>
+        /// <param name="endDate">End date</param>
+        /// <returns></returns>
+        IEnumerable<ReportCount> GetMostRunReports(string connectionString, int count, DateTime startDate, DateTime endDate);
+
+
+        /// <summary>
         /// Gets a list of all pending reports.
         /// </summary>
         /// <param name="connectionString"></param>
@@ -136,6 +147,28 @@ namespace SqlServerReportRunner.BLL.Repositories
                 WHERE CreateDate >= @StartDate 
                 AND CreateDate < @EndDate
                 GROUP BY UserName
+                ORDER BY COUNT(Id) DESC", count);
+            using (IDbConnection conn = _dbConnectionFactory.CreateConnection(connectionString))
+            {
+                return conn.Query<ReportCount>(query, new { StartDate = startDate, EndDate = endDate });
+            }
+        }
+
+        /// <summary>
+        /// Gets a list of the most active reports for a specified time frame.
+        /// </summary>
+        /// <param name="connectionString"></param>
+        /// <param name="count">The number of users to return</param>
+        /// <param name="startDate">Start date</param>
+        /// <param name="endDate">End date</param>
+        /// <returns></returns>
+        public IEnumerable<ReportCount> GetMostRunReports(string connectionString, int count, DateTime startDate, DateTime endDate)
+        {
+            string query = String.Format(@"SELECT TOP {0} ReportName AS [Key], COUNT(Id) AS [Count] 
+                FROM ReportJobQueue
+                WHERE CreateDate >= @StartDate 
+                AND CreateDate < @EndDate
+                GROUP BY ReportName
                 ORDER BY COUNT(Id) DESC", count);
             using (IDbConnection conn = _dbConnectionFactory.CreateConnection(connectionString))
             {

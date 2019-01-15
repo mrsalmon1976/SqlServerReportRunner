@@ -1803,6 +1803,8 @@ svg.ct-chart-bar, svg.ct-chart-line {
     overflow: visible;
 }
 
+/*
+    used to rotate the labels, but it does cause issues with layout
 .series-label-45deg .ct-label.ct-label.ct-horizontal.ct-end {
     position: relative;
     justify-content: flex-end;
@@ -1811,9 +1813,13 @@ svg.ct-chart-bar, svg.ct-chart-line {
     transform: translate(-100%) rotate(-45deg);
     white-space: nowrap;
 }
+    */
 .ct-series-a .ct-line {
     stroke-width: 1px;
 }
 .ct-series-a .ct-point {
     stroke-width: 6px;
+}
+#report-count-by-day-chart .ct-label {
+    white-space: nowrap;
 }
