@@ -41,3 +41,11 @@ BEGIN
 	ALTER TABLE [dbo].[ReportJobQueue] ADD ScheduleDate [datetime] NULL
 END
 
+-- add default constraint on CreateDate
+IF OBJECT_ID('dbo.DF_ReportJobQueue_CreateDate', 'D') IS NULL
+BEGIN
+	ALTER TABLE [dbo].[ReportJobQueue] ADD CONSTRAINT [DF_ReportJobQueue_CreateDate] DEFAULT (GETUTCDATE()) FOR [CreateDate]
+END
+
+
+
