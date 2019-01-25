@@ -1823,3 +1823,15 @@ svg.ct-chart-bar, svg.ct-chart-line {
 #report-count-by-day-chart .ct-label {
     white-space: nowrap;
 }
+.metric .icon-danger {
+    -webkit-border-radius: 50%;
+    -moz-border-radius: 50%;
+    border-radius: 50%;
+    float: left;
+    width: 50px;
+    height: 50px;
+    line-height: 50px;
+    background-color: #d9534f;
+    text-align: center;
+    color: white;
+}

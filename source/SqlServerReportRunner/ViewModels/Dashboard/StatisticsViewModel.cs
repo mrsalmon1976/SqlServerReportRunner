@@ -21,5 +21,7 @@ namespace SqlServerReportRunner.ViewModels.Dashboard
 
         public IEnumerable<ReportCount> ReportCountByDay { get; set; }
 
+        public int ErrorCount { get; set; }
+
     }
 }

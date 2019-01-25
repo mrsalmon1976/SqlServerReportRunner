@@ -53,18 +53,21 @@ namespace SqlServerReportRunner.Modules
             Task<int> totalReportCountTask = Task.Run(() =>_reportJobRepository.GetTotalReportCount(connString, data.StartDate, data.EndDate));
             Task<TimeSpan> avgExecutionTimeTask = Task.Run(() => _reportJobRepository.GetAverageExecutionTime(connString, data.StartDate, data.EndDate));
             Task<TimeSpan> avgGenerationTimeTask = Task.Run(() => _reportJobRepository.GetAverageGenerationTime(connString, data.StartDate, data.EndDate));
-            Task<IEnumerable<ReportCount>> activeUsers = Task.Run(() => _reportJobRepository.GetMostActiveUsers(connString, 10, data.StartDate, data.EndDate));
-            Task<IEnumerable<ReportCount>> mostRunReports = Task.Run(() => _reportJobRepository.GetMostRunReports(connString, 10, data.StartDate, data.EndDate));
-            Task<IEnumerable<ReportCount>> reportCountByDay = Task.Run(() => _reportJobRepository.GetReportCountByDay(connString, data.StartDate, data.EndDate));
-            Task.WaitAll(totalReportCountTask, avgExecutionTimeTask, avgGenerationTimeTask);
+            Task<IEnumerable<ReportCount>> activeUsersTask = Task.Run(() => _reportJobRepository.GetMostActiveUsers(connString, 10, data.StartDate, data.EndDate));
+            Task<IEnumerable<ReportCount>> mostRunReportsTask = Task.Run(() => _reportJobRepository.GetMostRunReports(connString, 10, data.StartDate, data.EndDate));
+            Task<IEnumerable<ReportCount>> reportCountByDayTask = Task.Run(() => _reportJobRepository.GetReportCountByDay(connString, data.StartDate, data.EndDate));
+            Task<int> errorCountTask = Task.Run(() => _reportJobRepository.GetErrorCount(connString, data.StartDate, data.EndDate));
+
+            Task.WaitAll(totalReportCountTask, avgExecutionTimeTask, avgGenerationTimeTask, activeUsersTask, mostRunReportsTask, reportCountByDayTask, errorCountTask);
 
             StatisticsViewModel viewModel = new StatisticsViewModel();
             viewModel.TotalReportCount = totalReportCountTask.Result;
             viewModel.AverageExecutionSeconds = avgExecutionTimeTask.Result.TotalSeconds;
             viewModel.AverageGenerationSeconds= avgGenerationTimeTask.Result.TotalSeconds;
-            viewModel.MostActiveUsers = activeUsers.Result;
-            viewModel.MostRunReports = mostRunReports.Result;
-            viewModel.ReportCountByDay = reportCountByDay.Result;
+            viewModel.MostActiveUsers = activeUsersTask.Result;
+            viewModel.MostRunReports = mostRunReportsTask.Result;
+            viewModel.ReportCountByDay = reportCountByDayTask.Result;
+            viewModel.ErrorCount = errorCountTask.Result;
 
             return Response.AsJson(viewModel);
 

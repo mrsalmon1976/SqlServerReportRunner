@@ -33,6 +33,15 @@ namespace SqlServerReportRunner.BLL.Repositories
         TimeSpan GetAverageGenerationTime(string connectionString, DateTime startDate, DateTime endDate);
 
         /// <summary>
+        /// Gets the number of errors a specified time frame.
+        /// </summary>
+        /// <param name="connectionString"></param>
+        /// <param name="startDate">Start date</param>
+        /// <param name="endDate">End date</param>
+        /// <returns></returns>
+        int GetErrorCount(string connectionString, DateTime startDate, DateTime endDate);
+
+        /// <summary>
         /// Gets a list of the most active users with a specified time frame.
         /// </summary>
         /// <param name="connectionString"></param>
@@ -130,6 +139,23 @@ namespace SqlServerReportRunner.BLL.Repositories
                 int seconds = conn.QuerySingle<int>(query, new { StartDate = startDate, EndDate = endDate });
                 return TimeSpan.FromSeconds(seconds);
             }
+        }
+
+        /// <summary>
+        /// Gets the number of errors a specified time frame.
+        /// </summary>
+        /// <param name="connectionString"></param>
+        /// <param name="startDate">Start date</param>
+        /// <param name="endDate">End date</param>
+        /// <returns></returns>
+        public int GetErrorCount(string connectionString, DateTime startDate, DateTime endDate)
+        {
+            const string query = "SELECT COUNT(*) FROM ReportJobQueue WHERE CreateDate >= @StartDate AND CreateDate < @EndDate AND Status = 'Error'";
+            using (IDbConnection conn = _dbConnectionFactory.CreateConnection(connectionString))
+            {
+                return conn.QuerySingle<int>(query, new { StartDate = startDate, EndDate = endDate });
+            }
+
         }
 
         /// <summary>

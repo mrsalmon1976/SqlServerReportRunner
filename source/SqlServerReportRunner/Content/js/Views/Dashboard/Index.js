@@ -11,6 +11,7 @@
             totalReportCount: 0,
             averageExecutionSeconds: 0,
             averageGenerationSeconds: 0,
+            errorCount: 0,
         },
         methods: {
             onConnectionClick: function (evt) {
@@ -66,6 +67,7 @@
                         that.totalReportCount = data.totalReportCount;
                         that.averageExecutionSeconds = data.averageExecutionSeconds;
                         that.averageGenerationSeconds = data.averageGenerationSeconds;
+                        that.errorCount = data.errorCount;
 
                         that.reloadChart(that.chartMostActiveUsers, data.mostActiveUsers);
                         that.reloadChart(that.chartMostRunReports, data.mostRunReports);
@@ -125,6 +127,11 @@
             }
             // initialise tool tips
             $('[data-toggle="tooltip"]').tooltip();
+        },
+        computed: {
+            computeErrorClass: function () {
+                return (this.errorCount > 0) ? 'icon-danger' : 'icon';
+            }
         }
     });
 });

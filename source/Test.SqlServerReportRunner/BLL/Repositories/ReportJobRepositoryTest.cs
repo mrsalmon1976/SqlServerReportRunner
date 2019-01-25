@@ -49,6 +49,13 @@ namespace Test.SqlServerReportRunner.BLL.Repositories
         }
 
         [Test]
+        public void GetErrorCount_Executes_ReturnsValue()
+        {
+            int result = _reportJobRepository.GetErrorCount(TestUtility.TestDbConnectionString(TestUtility.TestRootFolder), DateTime.Now.AddMonths(-3), DateTime.Now);
+            Assert.GreaterOrEqual(result, 0);
+        }
+
+        [Test]
         public void GetMostActiveUsers_Executes_WithoutSqlErrors()
         {
             _reportJobRepository.GetMostActiveUsers(TestUtility.TestDbConnectionString(TestUtility.TestRootFolder), 10, DateTime.Now.AddMonths(-3), DateTime.Now);

@@ -86,10 +86,10 @@
                             </div>
                             <div class="col-md-3">
                                 <div class="metric">
-                                    <span class="icon"><i class="fa fa-bar-chart"></i></span>
+                                    <span v-bind:class="computeErrorClass"><i class="fa fa-exclamation"></i></span>
                                     <p>
-                                        <span class="number">35%</span>
-                                        <span class="title">Conversions</span>
+                                        <span class="number">{{ errorCount }}</span>
+                                        <span class="title">Errors</span>
                                     </p>
                                 </div>
                             </div>
