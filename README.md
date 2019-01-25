@@ -16,6 +16,7 @@ MaxConcurrentReports | The maximum number of reports that can be run *connection
 GlobalizationCultureNumeric | Culture used for the formatting of numeric values in the output files.  If left empty, this defaults to CultureInfo.InvariantCulture | en-ZA
 GlobalizationCultureDateTime | Culture used for the formatting of date/time values in the output files.  If left empty, this defaults to CultureInfo.InvariantCulture | en-ZA
 ExcelDefaultDateTimeFormat | The EPPlus component used for Excel output requires a default date/time format, otherwise dates display as numbers - value can be any [custom .NET format](https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings) | yyyy-MM-dd HH:mm:ss
+ConsolePort | The port on which the dashboard will be available. Defaults to 8832 | 8832
 
 ## Program Flow
 
@@ -146,7 +147,7 @@ VALUES
 1. Copy all binary files into a folder on the server that will be processing the reports (not necessarily the database server)
 2. Open the "SqlServerReportRunner.exe.config file, and:
     1. Under the connectionStrings section, add connection strings for each server/database pair that will host a ReportQueue table
-    2. Set application configuration options in the appSettings section (See Configuration Options section below).  Save and close the file.
+    2. Set application configuration options in the appSettings section (See Configuration Options section).  Save and close the file.
 3. Run the SQL Script "scripts/ReportJobQueueTable.sql" on any database that will host a ReportQueue table
 4. (Optional) Configure NLog.config file to add logging.  By default, the application will log to a text file in the application folder, but the service can be configured to (for example) log errors via email if you have access to a mail server
 5. Open a console in Administrator mode and change the current directory to your installation folder
@@ -169,3 +170,11 @@ AND ProcessEndDate IS NOT NULL
 AND ProcessStartDate > '1 January 2018'
 GROUP BY ReportName
 ```
+
+## Dashboard
+
+SqlServerReportRunner comes by default with a basic dashboard that can be used to view stats for the connections configured for the application.
+
+![Dashboard Example](img/Dashboard_example.png)
+
+Access to the dashboard is by default on port 8832 on the machine where the service is installed, although this can be configured by adjusting the ConsolePort value in the application configuration file.
