@@ -1,4 +1,5 @@
-﻿using SqlServerReportRunner.Common;
+﻿using SqlServerReportRunner.BLL.Net;
+using SqlServerReportRunner.Common;
 using SqlServerReportRunner.Constants;
 using SqlServerReportRunner.Reporting.Writers;
 using System;
@@ -15,15 +16,8 @@ namespace SqlServerReportRunner.Reporting.Executors
     }
     public class ReportExecutorFactory : IReportExecutorFactory
     {
-        private IDbConnectionFactory _dbConnectionFactory;
-        private IReportWriterFactory _reportWriterFactory;
-        private IDbParameterUtility _dbParameterUtility;
-
-        public ReportExecutorFactory(IDbConnectionFactory dbConnectionFactory, IReportWriterFactory reportWriterFactory, IDbParameterUtility dbParameterUtility)
+        public ReportExecutorFactory()
         {
-            _dbConnectionFactory = dbConnectionFactory;
-            _reportWriterFactory = reportWriterFactory;
-            _dbParameterUtility = dbParameterUtility;
         }
 
         public IReportExecutor GetReportExecutor(string commandType)
@@ -32,7 +26,9 @@ namespace SqlServerReportRunner.Reporting.Executors
             {
                 case CommandType.Sql:
                 case CommandType.StoredProcedure:
-                    return new StoredProcedureReportExecutor(_dbConnectionFactory, _reportWriterFactory, _dbParameterUtility);
+                    return new StoredProcedureReportExecutor(new DbConnectionFactory(), new ReportWriterFactory(), new DbParameterUtility());
+                case CommandType.Ssrs:
+                    return new ReportingServicesReportExecutor(new WebClientWrapper());
                 default:
                     break;
             }

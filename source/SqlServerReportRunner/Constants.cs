@@ -11,6 +11,7 @@ namespace SqlServerReportRunner.Constants
     {
         public const string StoredProcedure = "storedprocedure";
         public const string Sql = "sql";
+        public const string Ssrs = "ssrs";
     }
 
     public class JobStatus

@@ -47,5 +47,9 @@ BEGIN
 	ALTER TABLE [dbo].[ReportJobQueue] ADD CONSTRAINT [DF_ReportJobQueue_CreateDate] DEFAULT (GETUTCDATE()) FOR [CreateDate]
 END
 
+-- bump up the size of the Command column, allowing for URLs for SSRS support
+ALTER TABLE dbo.ReportJobQueue ALTER COLUMN Command varchar(4096) NOT NULL
+
+
 
 

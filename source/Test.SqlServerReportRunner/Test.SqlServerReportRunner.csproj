@@ -214,6 +214,7 @@
     <Compile Include="Modules\DashboardModuleTest.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Reporting\ConcurrencyCoordinatorTest.cs" />
+    <Compile Include="Reporting\Executors\ReportingServicesReportExecutorTest.cs" />
     <Compile Include="Reporting\Executors\StoredProcedureReportExecutorTest.cs" />
     <Compile Include="Reporting\Formatters\TextFormatterTest.cs" />
     <Compile Include="Reporting\Formatters\ExcelRangeFormatterTest.cs" />

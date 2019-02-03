@@ -166,6 +166,9 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BLL\Net\WebClientWrapper.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="BootStrapper.cs" />
     <Compile Include="BLL\Commands\FailJobCommand.cs" />
     <Compile Include="BLL\Commands\FinaliseJobCommand.cs" />
@@ -186,6 +189,7 @@
     <Compile Include="Reporting\ConcurrencyCoordinator.cs" />
     <Compile Include="Reporting\Executors\IReportExecutor.cs" />
     <Compile Include="Reporting\Executors\ReportExecutorFactory.cs" />
+    <Compile Include="Reporting\Executors\ReportingServicesReportExecutor.cs" />
     <Compile Include="Reporting\ReportJobAgent.cs" />
     <Compile Include="Reporting\ReportCoordinator.cs" />
     <Compile Include="Reporting\ReportLocationProvider.cs" />
