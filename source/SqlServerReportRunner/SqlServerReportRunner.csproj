@@ -195,6 +195,7 @@
     <Compile Include="Reporting\ReportLocationProvider.cs" />
     <Compile Include="Reporting\ReportEngine.cs" />
     <Compile Include="Reporting\Formatters\ExcelRangeFormatter.cs" />
+    <Compile Include="Reporting\Writers\AbstractReportWriter.cs" />
     <Compile Include="Reporting\Writers\ExcelReportWriter.cs" />
     <Compile Include="Reporting\Writers\CsvReportWriter.cs" />
     <Compile Include="Reporting\Writers\DelimitedReportWriter.cs" />

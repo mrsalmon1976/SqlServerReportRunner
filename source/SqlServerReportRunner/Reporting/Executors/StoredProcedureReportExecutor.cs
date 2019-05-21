@@ -62,11 +62,11 @@ namespace SqlServerReportRunner.Reporting.Executors
                             using (IReportWriter reportWriter = _reportWriterFactory.GetReportWriter(job.OutputFormat))
                             {
                                 ColumnMetaData[] columnInfo = GetColumnInfo(reader).ToArray();
-                                reportWriter.Initialise(destinationFile);
-                                reportWriter.WriteHeader(columnInfo.Select(x => x.Name), job.Delimiter);
+                                reportWriter.Initialise(destinationFile, job.Delimiter);
+                                reportWriter.WriteHeader(columnInfo.Select(x => x.Name));
                                 while (reader.Read())
                                 {
-                                    reportWriter.WriteLine(reader, columnInfo, job.Delimiter);
+                                    reportWriter.WriteLine(reader, columnInfo);
                                     rowCount++;
                                 }
                             }

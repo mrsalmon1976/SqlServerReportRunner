@@ -43,7 +43,20 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
         [TearDown]
         public void ExcelReportWriterTest_TearDown()
         {
+            _reportWriter.Dispose();
             Directory.Delete(_testRootFolder, true);
+        }
+
+        [TestCase(null)]
+        [TestCase("")]
+        [TestCase("|")]
+        public void Initialise_Delimiter_IsIgnored(string delimiter)
+        {
+            IDataReader reader = Substitute.For<IDataReader>();
+
+            _reportWriter.Initialise(_filePath, delimiter);
+
+            Assert.IsNull(_reportWriter.Delimiter);
         }
 
         [Test]
@@ -71,11 +84,11 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
             reader.GetValue(2).Returns(data[0][2], data[1][2], data[2][2]);
 
             // execute
-            _reportWriter.Initialise(_filePath);
-            _reportWriter.WriteHeader(headers.Select(x => x.Name), delimiter);
+            _reportWriter.Initialise(_filePath, delimiter);
+            _reportWriter.WriteHeader(headers.Select(x => x.Name));
             foreach (object[] line in data)
             {
-                _reportWriter.WriteLine(reader, headers, delimiter);
+                _reportWriter.WriteLine(reader, headers);
             }
             _reportWriter.Dispose();
 
@@ -124,10 +137,10 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
             reader.GetValue(1).Returns(data[0][1], data[1][1], data[2][1]);
 
             // execute
-            _reportWriter.Initialise(_filePath);
+            _reportWriter.Initialise(_filePath, delimiter);
             foreach (object[] line in data)
             {
-                _reportWriter.WriteLine(reader, headers, delimiter);
+                _reportWriter.WriteLine(reader, headers);
             }
             _reportWriter.Dispose();
 
@@ -148,7 +161,7 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
         {
             IDataReader reader = Substitute.For<IDataReader>();
 
-            TestDelegate del = () => _reportWriter.WriteLine(reader, new ColumnMetaData[] { }, String.Empty);
+            TestDelegate del = () => _reportWriter.WriteLine(reader, new ColumnMetaData[] { });
 
             Assert.Throws(typeof(InvalidOperationException), del);
             reader.Received(0).GetValue(Arg.Any<int>());
@@ -157,7 +170,7 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
         [Test]
         public void WriteHeader_WithoutInitialise_ThrowsException()
         {
-            TestDelegate del = () => _reportWriter.WriteHeader(new string[] { }, String.Empty);
+            TestDelegate del = () => _reportWriter.WriteHeader(new string[] { });
             Assert.Throws(typeof(InvalidOperationException), del);
         }
 

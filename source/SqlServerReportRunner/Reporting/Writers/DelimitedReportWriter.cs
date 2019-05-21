@@ -9,30 +9,30 @@ using System.Linq;
 
 namespace SqlServerReportRunner.Reporting.Writers
 {
-    public class DelimitedReportWriter : IReportWriter
+    public class DelimitedReportWriter : AbstractReportWriter
     {
         private ITextFormatter _textFormatter;
         private StreamWriter _writer;
-        private string _filePath;
 
         public DelimitedReportWriter(ITextFormatter textFormatter)
         {
             _textFormatter = textFormatter;
         }
 
-        public void Initialise(string filePath)
+        public override void Initialise(string filePath, string delimiter)
         {
-            _filePath = filePath;
-            _writer = File.CreateText(_filePath);
+            this.FilePath = filePath;
+            this.Delimiter = delimiter;
+            _writer = File.CreateText(this.FilePath);
         }
 
-        public void WriteHeader(IEnumerable<string> columnNames, string delimiter)
+        public override void WriteHeader(IEnumerable<string> columnNames)
         {
             if (_writer == null) throw new InvalidOperationException("Initialise must be called to initialise the report writer");
-            _writer.WriteLine(string.Join(delimiter, columnNames));
+            _writer.WriteLine(string.Join(this.Delimiter, columnNames));
         }
 
-        public void WriteLine(IDataReader reader, ColumnMetaData[] columnInfo, string delimiter)
+        public override void WriteLine(IDataReader reader, ColumnMetaData[] columnInfo)
         {
             if (_writer == null) throw new InvalidOperationException("Initialise must be called to initialise the report writer");
 
@@ -40,13 +40,14 @@ namespace SqlServerReportRunner.Reporting.Writers
                 Enumerable.Range(0, columnInfo.Length)
                           .Select(i => _textFormatter.FormatText(reader.GetValue(i), reader.GetFieldType(i)))
                           .ToArray();
-            _writer.WriteLine(string.Join(delimiter, columnValues));
+            _writer.WriteLine(string.Join(this.Delimiter, columnValues));
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             if (_writer != null)
             {
+                _writer.Close();
                 _writer.Dispose();
             }
         }

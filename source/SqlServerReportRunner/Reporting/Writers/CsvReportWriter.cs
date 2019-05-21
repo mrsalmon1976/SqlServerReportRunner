@@ -10,24 +10,27 @@ using System.Linq;
 
 namespace SqlServerReportRunner.Reporting.Writers
 {
-    public class CsvReportWriter : IReportWriter
+    public class CsvReportWriter : AbstractReportWriter
     {
 
         private ITextFormatter _textFormatter;
         private CsvWriter _writer;
-        private string _filePath;
 
         public CsvReportWriter(ITextFormatter textFormatter)
         {
             _textFormatter = textFormatter;
         }
 
-        public void Initialise(string filePath)
+        public override void Initialise(string filePath, string delimiter)
         {
-            _filePath = filePath;
-            _writer = new CsvWriter(File.CreateText(this._filePath));
+            this.FilePath = filePath;
+            this.Delimiter = String.IsNullOrEmpty(delimiter) ? "," : delimiter;
+
+            _writer = new CsvWriter(File.CreateText(this.FilePath));
+            _writer.Configuration.Delimiter = this.Delimiter;
         }
-        public void WriteHeader(IEnumerable<string> columnNames, string delimiter)
+
+        public override void WriteHeader(IEnumerable<string> columnNames)
         {
             if (_writer == null) throw new InvalidOperationException("Initialise must be called to initialise the report writer");
             foreach (string col in columnNames)
@@ -37,7 +40,7 @@ namespace SqlServerReportRunner.Reporting.Writers
             _writer.NextRecord();
         }
 
-        public void WriteLine(IDataReader reader, ColumnMetaData[] columnInfo, string delimiter)
+        public override void WriteLine(IDataReader reader, ColumnMetaData[] columnInfo)
         {
             if (_writer == null) throw new InvalidOperationException("Initialise must be called to initialise the report writer");
             for (var i = 0; i < reader.FieldCount; i++)
@@ -47,7 +50,7 @@ namespace SqlServerReportRunner.Reporting.Writers
             _writer.NextRecord();
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
             if (_writer != null)
             {

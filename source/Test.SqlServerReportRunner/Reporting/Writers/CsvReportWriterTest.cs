@@ -40,7 +40,19 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
         [TearDown]
         public void CsvReportWriterTest_TearDown()
         {
+            _reportWriter.Dispose();
             Directory.Delete(_testRootFolder, true);
+        }
+
+        [TestCase(null)]
+        [TestCase("")]
+        public void Initialise_NullOrEmptyDelimiter_DefaultsToComma(string delimiter)
+        {
+            IDataReader reader = Substitute.For<IDataReader>();
+
+            _reportWriter.Initialise(_filePath, delimiter);
+
+            Assert.AreEqual(",", _reportWriter.Delimiter);
         }
 
         [Test]
@@ -48,7 +60,7 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
         {
             IDataReader reader = Substitute.For<IDataReader>();
 
-            TestDelegate del = () => _reportWriter.WriteLine(reader, new ColumnMetaData[] { }, String.Empty);
+            TestDelegate del = () => _reportWriter.WriteLine(reader, new ColumnMetaData[] { });
 
             Assert.Throws(typeof(InvalidOperationException), del);
             reader.Received(0).GetValue(Arg.Any<int>());
@@ -57,7 +69,7 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
         [Test]
         public void WriteHeader_WithoutInitialise_ThrowsException()
         {
-            TestDelegate del = () => _reportWriter.WriteHeader(new string[] { }, String.Empty);
+            TestDelegate del = () => _reportWriter.WriteHeader(new string[] { });
             Assert.Throws(typeof(InvalidOperationException), del);
         }
 
@@ -90,11 +102,11 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
             _textFormatter.FormatText(Arg.Any<object>(), Arg.Any<Type>()).Returns((c) => { return c.ArgAt<object>(0).ToString(); });
 
             // execute
-            _reportWriter.Initialise(_filePath);
-            _reportWriter.WriteHeader(headers.Select(x => x.Name), delimiter);
+            _reportWriter.Initialise(_filePath, delimiter);
+            _reportWriter.WriteHeader(headers.Select(x => x.Name));
             foreach (object[] line in data)
             {
-                _reportWriter.WriteLine(reader, headers, delimiter);
+                _reportWriter.WriteLine(reader, headers);
             }
             _reportWriter.Dispose();
 
@@ -154,10 +166,10 @@ namespace Test.SqlServerReportRunner.Reporting.Writers
             _textFormatter.FormatText(Arg.Any<object>(), Arg.Any<Type>()).Returns((c) => { return c.ArgAt<object>(0).ToString(); });
 
             // execute
-            _reportWriter.Initialise(_filePath);
+            _reportWriter.Initialise(_filePath, delimiter);
             foreach (object[] line in data)
             {
-                _reportWriter.WriteLine(reader, headers, delimiter);
+                _reportWriter.WriteLine(reader, headers);
             }
             _reportWriter.Dispose();
 

@@ -10,28 +10,27 @@ using System.IO;
 
 namespace SqlServerReportRunner.Reporting.Writers
 {
-    public class ExcelReportWriter : IReportWriter
+    public class ExcelReportWriter : AbstractReportWriter
     {
 
         private int _rowNum = 1;
         private ExcelPackage _excelPackage;
         private ExcelWorksheet _workSheet;
         private IExcelRangeFormatter _excelRangeFormatter;
-        private string _filePath;
 
         public ExcelReportWriter(IExcelRangeFormatter excelRangeFormatter)
         {
             _excelRangeFormatter = excelRangeFormatter;
         }
 
-        public void Initialise(string filePath)
+        public override void Initialise(string filePath, string delimiter)
         {
-            _filePath = filePath;
+            this.FilePath = filePath;
             _excelPackage = new ExcelPackage();
             _workSheet = _excelPackage.Workbook.Worksheets.Add("Data");
         }
 
-        public void WriteHeader(IEnumerable<string> columnNames, string delimiter)
+        public override void WriteHeader(IEnumerable<string> columnNames)
         {
             if (_excelPackage == null) throw new InvalidOperationException("Initialise must be called to initialise the report writer");
 
@@ -46,7 +45,7 @@ namespace SqlServerReportRunner.Reporting.Writers
             _rowNum++;
         }
 
-        public void WriteLine(IDataReader reader, ColumnMetaData[] columnInfo, string delimiter)
+        public override void WriteLine(IDataReader reader, ColumnMetaData[] columnInfo)
         {
             if (_excelPackage == null) throw new InvalidOperationException("Initialise must be called to initialise the report writer");
 
@@ -61,12 +60,15 @@ namespace SqlServerReportRunner.Reporting.Writers
 
         }
 
-        public void Dispose()
+        public override void Dispose()
         {
-            _excelPackage.SaveAs(new FileInfo(this._filePath));
-            _workSheet.Dispose();
-            _excelPackage.Dispose();
-            _excelPackage = null;
+            if (_excelPackage != null)
+            {
+                _excelPackage.SaveAs(new FileInfo(this.FilePath));
+                _workSheet.Dispose();
+                _excelPackage.Dispose();
+                _excelPackage = null;
+            }
         }
 
     }

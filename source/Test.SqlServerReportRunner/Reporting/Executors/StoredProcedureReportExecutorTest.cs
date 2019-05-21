@@ -279,8 +279,8 @@ namespace Test.SqlServerReportRunner.Reporting.Executors
             cmd.DidNotReceive().ExecuteNonQuery();
             cmd.Received(1).ExecuteReader();
 
-            reportWriter.Received(1).Initialise(Arg.Any<String>());
-            reportWriter.Received(1).WriteHeader(Arg.Any<IEnumerable<String>>(), job.Delimiter);
+            reportWriter.Received(1).Initialise(Arg.Any<String>(), job.Delimiter);
+            reportWriter.Received(1).WriteHeader(Arg.Any<IEnumerable<String>>());
 
         }
     }
