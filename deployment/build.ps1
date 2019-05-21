@@ -6,12 +6,12 @@ function ZipFile
 	)
 
 	set-alias sz "C:\Program Files (x86)\7-Zip\7z.exe"  
-	sz a -tzip -r $zipFile $sourceFile | Out-Null
+	sz a -xr!'logs\*' -tzip -r $zipFile $sourceFile | Out-Null
 }
 
 $root = $PSScriptRoot
 $source = $root.Replace("deployment", "") + "\source"
-$version = Read-Host -Prompt "What version are we building?"
+$version = Read-Host -Prompt "What version are we building? (e.g. 1.2.1)"
 
 # build for mongo db 
 Write-Host "Building SqlServerReportRunner version $version"
