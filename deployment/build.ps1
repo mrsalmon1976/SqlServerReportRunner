@@ -13,7 +13,7 @@ $root = $PSScriptRoot
 $source = $root.Replace("deployment", "") + "\source"
 $version = Read-Host -Prompt "What version are we building? (e.g. 1.2.1)"
 
-# build for mongo db 
+# build 
 Write-Host "Building SqlServerReportRunner version $version"
 $binfolder = "$source\SqlServerReportRunner\bin\Release"
 [system.io.file]::Delete("$binfolder\Connections.config")
