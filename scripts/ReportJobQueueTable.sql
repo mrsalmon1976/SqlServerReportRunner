@@ -61,7 +61,7 @@ IF NOT EXISTS(SELECT 1 FROM sys.columns
           WHERE Name = N'SingleExecutionGroup'
           AND Object_ID = Object_ID(N'dbo.ReportJobQueue'))
 BEGIN
-	ALTER TABLE [dbo].[ReportJobQueue] ADD SingleExecutionGroup [varchar(100)] NULL
+	ALTER TABLE [dbo].[ReportJobQueue] ADD SingleExecutionGroup varchar(100) NULL
 END
 
 
