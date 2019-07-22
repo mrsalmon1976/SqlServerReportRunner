@@ -49,6 +49,20 @@ END
 
 -- bump up the size of the Command column, allowing for URLs for SSRS support
 ALTER TABLE dbo.ReportJobQueue ALTER COLUMN Command varchar(4096) NOT NULL
+-- Priority column
+IF NOT EXISTS(SELECT 1 FROM sys.columns 
+          WHERE Name = N'Priority'
+          AND Object_ID = Object_ID(N'dbo.ReportJobQueue'))
+BEGIN
+	ALTER TABLE [dbo].[ReportJobQueue] ADD Priority [int] NULL
+END
+-- SingleExecutionGroup column
+IF NOT EXISTS(SELECT 1 FROM sys.columns 
+          WHERE Name = N'SingleExecutionGroup'
+          AND Object_ID = Object_ID(N'dbo.ReportJobQueue'))
+BEGIN
+	ALTER TABLE [dbo].[ReportJobQueue] ADD SingleExecutionGroup [varchar(100)] NULL
+END
 
 
 

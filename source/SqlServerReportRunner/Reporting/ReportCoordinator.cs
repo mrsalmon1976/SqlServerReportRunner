@@ -38,19 +38,41 @@ namespace SqlServerReportRunner.Reporting
             _logger.Debug("Retrieving unprocessed reports for connection {0}", connection.Name);
 
             // get the number of reports that are currently procesing for this connection
-            int[] executingReports = _concurrencyCoordinator.GetRunningReports(connection.Name);
-            if (executingReports.Length >= _appSettings.MaxConcurrentReports)
+            List<ReportJob> executingReports = _reportJobRepository.GetProcessingReports(connection.ConnectionString).ToList();
+            if (executingReports.Count >= _appSettings.MaxConcurrentReports)
             {
                 _logger.Info("Maximum number of concurrent reports ({0}) are already being run for connection '{1}' exiting", _appSettings.MaxConcurrentReports, connection.Name);
                 return Enumerable.Empty<ReportJob>();
             }
 
-            int reportsToRun = _appSettings.MaxConcurrentReports - executingReports.Length;
+            // extract the list of SingleExecutionGroups that are running
+            List<string> singleExecutionGroups = executedJobs.Where(x => !String.IsNullOrWhiteSpace(x.SingleExecutionGroup)).Select(x => x.SingleExecutionGroup).Distinct().ToList();
+            _logger.Info("SingleExecutionGroup list to avoid", String.Join(",", singleExecutionGroups));
 
-            _logger.Info("{0} reports executing for connection '{1}', checking queue for additional reports", executingReports.Length, connection.Name);
-            IEnumerable<ReportJob> jobs = _reportJobRepository.GetPendingReports(connection.ConnectionString, reportsToRun);
+            int reportsToRun = _appSettings.MaxConcurrentReports - executingReports.Count;
+
+            _logger.Info("{0} reports executing for connection '{1}', checking queue for additional reports", executingReports.Count, connection.Name);
+            IEnumerable<ReportJob> jobs = _reportJobRepository.GetPendingReports(connection.ConnectionString, reportsToRun, singleExecutionGroups);
             foreach (ReportJob job in jobs)
             {
+
+                // if the job has a SingleExecutionGroup, we need to add it to the list so we are certain we don't run more 
+                // than one of these - we also need to check it hasn't already been added by a previous job retrieved in 
+                // the same call
+                if (!String.IsNullOrWhiteSpace(job.SingleExecutionGroup))
+                {
+                    if (singleExecutionGroups.Contains(job.SingleExecutionGroup))
+                    {
+                        _logger.Info("Not running job {0} as a job with the same SingleExecutionGroup ({1}) is already running", job.Id, job.SingleExecutionGroup);
+                        continue;
+                    }
+                    else
+                    {
+                        singleExecutionGroups.Add(job.SingleExecutionGroup);
+                        _logger.Info("Added SingleExecutionGroup {0} to list of groups to skip", job.SingleExecutionGroup);
+                    }
+                }
+
                 _jobAgent.ExecuteJobAsync(connection, job);
                 executedJobs.Add(job);
             }

@@ -57,5 +57,8 @@ namespace SqlServerReportRunner.Models
         /// </summary>
         public string EmailAddress { get; set; }
 
+        public int Priority { get; set; }
+
+        public string SingleExecutionGroup { get; set; }
     }
 }

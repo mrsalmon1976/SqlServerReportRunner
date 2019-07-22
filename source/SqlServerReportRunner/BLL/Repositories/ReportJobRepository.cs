@@ -66,8 +66,17 @@ namespace SqlServerReportRunner.BLL.Repositories
         /// Gets a list of all pending reports.
         /// </summary>
         /// <param name="connectionString"></param>
+        /// <param name="count">The number of reports to return</param>
+        /// <param name="singleExecutionGroupsToIgnore">The single execution groups to ignore as they are already running</param>
         /// <returns></returns>
-        IEnumerable<ReportJob> GetPendingReports(string connectionString, int count);
+        IEnumerable<ReportJob> GetPendingReports(string connectionString, int count, IEnumerable<string> singleExecutionGroupsToIgnore);
+
+        /// <summary>
+        /// Gets a list of all processing reports.
+        /// </summary>
+        /// <param name="connectionString"></param>
+        /// <returns></returns>
+        IEnumerable<ReportJob> GetProcessingReports(string connectionString);
 
         /// <summary>
         /// Gets the number of reports run per day for a specified time frame.
@@ -206,15 +215,44 @@ namespace SqlServerReportRunner.BLL.Repositories
         /// Gets a list of all pending reports.
         /// </summary>
         /// <param name="connectionString"></param>
+        /// <param name="count">The number of reports to return</param>
+        /// <param name="singleExecutionGroupsToIgnore">The single execution groups to ignore as they are already running</param>
         /// <returns></returns>
-        public IEnumerable<ReportJob> GetPendingReports(string connectionString, int count)
+        public IEnumerable<ReportJob> GetPendingReports(string connectionString, int count, IEnumerable<string> singleExecutionGroupsToIgnore)
         {
-            string query = String.Format("select TOP {0} * from ReportJobQueue WHERE [Status] = @Status AND ISNULL(ScheduleDate, '1900-01-01') <= @ScheduleDate ORDER BY Id", count);
+            List<string> segs = new List<string>(singleExecutionGroupsToIgnore);
+            segs.Add(Guid.NewGuid().ToString());
+            string query = String.Format(@"SELECT TOP {0} * 
+                FROM ReportJobQueue 
+                WHERE [Status] = @Status 
+                AND ISNULL(ScheduleDate, '1900-01-01') <= @ScheduleDate 
+                AND SingleExecutionGroup NOT IN @SingleExecutionGroups
+                ORDER BY ISNULL(Priority, 100000), Id", count);
             using (IDbConnection conn = _dbConnectionFactory.CreateConnection(connectionString))
             {
-                return conn.Query<ReportJob>(query, new { Status = new DbString() { Value = JobStatus.Pending }, ScheduleDate = DateTime.UtcNow });
+                return conn.Query<ReportJob>(query
+                    , new {
+                        Status = new DbString() { Value = JobStatus.Pending }
+                        , ScheduleDate = DateTime.UtcNow 
+                        , SingleExecutionGroups = segs
+                    });
             }
         }
+
+        /// <summary>
+        /// Gets a list of all executing reports.
+        /// </summary>
+        /// <param name="connectionString"></param>
+        /// <returns></returns>
+        public IEnumerable<ReportJob> GetProcessingReports(string connectionString)
+        {
+            const string query = "select * from ReportJobQueue WHERE [Status] = @Status ORDER BY ProcessStartDate";
+            using (IDbConnection conn = _dbConnectionFactory.CreateConnection(connectionString))
+            {
+                return conn.Query<ReportJob>(query, new { Status = new DbString() { Value = JobStatus.Processing } });
+            }
+        }
+
 
         /// <summary>
         /// Gets the number of reports run per day for a specified time frame.

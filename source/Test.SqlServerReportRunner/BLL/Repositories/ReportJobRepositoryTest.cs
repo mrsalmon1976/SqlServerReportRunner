@@ -70,7 +70,7 @@ namespace Test.SqlServerReportRunner.BLL.Repositories
         [Test]
         public void GetPendingReports_Executes_WithoutSqlErrors()
         {
-            _reportJobRepository.GetPendingReports(TestUtility.TestDbConnectionString(TestUtility.TestRootFolder), 10);
+            _reportJobRepository.GetPendingReports(TestUtility.TestDbConnectionString(TestUtility.TestRootFolder), 10, new List<string>());
         }
 
         [Test]
