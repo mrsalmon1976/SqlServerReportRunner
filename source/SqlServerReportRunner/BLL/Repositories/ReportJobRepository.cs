@@ -226,7 +226,7 @@ namespace SqlServerReportRunner.BLL.Repositories
                 FROM ReportJobQueue 
                 WHERE [Status] = @Status 
                 AND ISNULL(ScheduleDate, '1900-01-01') <= @ScheduleDate 
-                AND SingleExecutionGroup NOT IN @SingleExecutionGroups
+                AND ISNULL(SingleExecutionGroup, '') NOT IN @SingleExecutionGroups
                 ORDER BY ISNULL(Priority, 100000), Id", count);
             using (IDbConnection conn = _dbConnectionFactory.CreateConnection(connectionString))
             {
