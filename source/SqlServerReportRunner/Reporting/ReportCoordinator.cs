@@ -46,8 +46,8 @@ namespace SqlServerReportRunner.Reporting
             }
 
             // extract the list of SingleExecutionGroups that are running
-            List<string> singleExecutionGroups = executedJobs.Where(x => !String.IsNullOrWhiteSpace(x.SingleExecutionGroup)).Select(x => x.SingleExecutionGroup).Distinct().ToList();
-            _logger.Info("SingleExecutionGroup list to avoid", String.Join(",", singleExecutionGroups));
+            List<string> singleExecutionGroups = executingReports.Where(x => !String.IsNullOrWhiteSpace(x.SingleExecutionGroup)).Select(x => x.SingleExecutionGroup).Distinct().ToList();
+            _logger.Info("SingleExecutionGroup list to avoid [{0}]", String.Join(",", singleExecutionGroups));
 
             int reportsToRun = _appSettings.MaxConcurrentReports - executingReports.Count;
 
@@ -63,13 +63,13 @@ namespace SqlServerReportRunner.Reporting
                 {
                     if (singleExecutionGroups.Contains(job.SingleExecutionGroup))
                     {
-                        _logger.Info("Not running job {0} as a job with the same SingleExecutionGroup ({1}) is already running", job.Id, job.SingleExecutionGroup);
+                        _logger.Info("Not running job '{0}' as a job with the same SingleExecutionGroup ('{1}') is already running", job.Id, job.SingleExecutionGroup);
                         continue;
                     }
                     else
                     {
                         singleExecutionGroups.Add(job.SingleExecutionGroup);
-                        _logger.Info("Added SingleExecutionGroup {0} to list of groups to skip", job.SingleExecutionGroup);
+                        _logger.Info("Added SingleExecutionGroup '{0}' to list of groups to skip", job.SingleExecutionGroup);
                     }
                 }
 
