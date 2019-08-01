@@ -187,8 +187,8 @@ VALUES
 
 The report runner provides two options for helping you set the importance and concurrency of reports:
 
-Priority: If set, the engine will run reports in ASCending order using this value, where a NULL value is always seen as low priority.  A priority 1 record will always run BEFORE a priority 2 record, even if it was inserted after the latter.
-SingleExecutionGroup: If set, the engine will ensure that any reports with the SAME value in this field do not run at the same time.  NULL values are ignored.
+**Priority:** If set, the engine will run reports in ASCending order using this value, where a NULL value is always seen as low priority.  A priority 1 record will always run BEFORE a priority 2 record, even if it was inserted after the latter.
+**SingleExecutionGroup:** If set, the engine will ensure that any reports with the SAME value in this field do not run at the same time.  NULL values are ignored.
 
 ## Installation
 
