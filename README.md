@@ -17,6 +17,7 @@ GlobalizationCultureNumeric | Culture used for the formatting of numeric values 
 GlobalizationCultureDateTime | Culture used for the formatting of date/time values in the output files.  If left empty, this defaults to CultureInfo.InvariantCulture | en-ZA
 ExcelDefaultDateTimeFormat | The EPPlus component used for Excel output requires a default date/time format, otherwise dates display as numbers - value can be any [custom .NET format](https://docs.microsoft.com/en-us/dotnet/standard/base-types/custom-date-and-time-format-strings) | yyyy-MM-dd HH:mm:ss
 ConsolePort | The port on which the dashboard will be available. Defaults to 8832 | 8832
+ReportingServicesRequestTimeout | The length of time, in seconds, that the reporting services request times out. Defaults to 1800 seconds (30 minutes) | 1800 
 
 ## Program Flow
 
