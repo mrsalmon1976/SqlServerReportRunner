@@ -5,7 +5,7 @@ function ZipFile
 		[String]$zipFile
 	)
 
-	set-alias sz "C:\Program Files (x86)\7-Zip\7z.exe"  
+	set-alias sz "C:\Program Files\7-Zip\7z.exe"  
 	sz a -xr!'logs\*' -tzip -r $zipFile $sourceFile | Out-Null
 }
 

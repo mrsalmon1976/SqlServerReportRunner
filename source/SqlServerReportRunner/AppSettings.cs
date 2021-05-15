@@ -47,6 +47,11 @@ namespace SqlServerReportRunner
         int PollInterval { get; }
 
         /// <summary>
+        /// Gets the length of time, in milliseconds, that the reporting services request times out.
+        /// </summary>
+        int ReportingServicesRequestTimeout { get; }
+
+        /// <summary>
         /// Gets the account under which the current application should run.  Local System will be used if this is empty.
         /// </summary>
         string ServiceUserName { get; }
@@ -178,9 +183,27 @@ namespace SqlServerReportRunner
         }
 
         /// <summary>
-        /// Gets the account under which the current application should run.  Local System will be used if this is empty.
+        /// Gets the length of time, in milliseconds, that the reporting services request times out.
         /// </summary>
-        public string ServiceUserName
+        public int ReportingServicesRequestTimeout
+        {
+            get
+            {
+                try
+                {
+                    return Int32.Parse(ConfigurationManager.AppSettings["ReportingServicesRequestTimeout"]) * 1000;
+                }
+                catch (Exception ex)
+                {
+                    throw new ConfigurationErrorsException("Application setting 'ReportingServicesRequestTimeout' is missing or not a valid integer.", ex);
+                }
+            }
+        }
+
+/// <summary>
+/// Gets the account under which the current application should run.  Local System will be used if this is empty.
+/// </summary>
+public string ServiceUserName
         {
             get
             {

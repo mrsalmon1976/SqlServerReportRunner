@@ -16,8 +16,11 @@ namespace SqlServerReportRunner.Reporting.Executors
     }
     public class ReportExecutorFactory : IReportExecutorFactory
     {
-        public ReportExecutorFactory()
+        private IAppSettings _appSettings;
+
+        public ReportExecutorFactory(IAppSettings appSettings)
         {
+            _appSettings = appSettings;
         }
 
         public IReportExecutor GetReportExecutor(string commandType)
@@ -28,7 +31,7 @@ namespace SqlServerReportRunner.Reporting.Executors
                 case CommandType.StoredProcedure:
                     return new StoredProcedureReportExecutor(new DbConnectionFactory(), new ReportWriterFactory(), new DbParameterUtility());
                 case CommandType.Ssrs:
-                    return new ReportingServicesReportExecutor(new WebClientWrapper());
+                    return new ReportingServicesReportExecutor(new WebClientWrapper(_appSettings.ReportingServicesRequestTimeout));
                 default:
                     break;
             }
