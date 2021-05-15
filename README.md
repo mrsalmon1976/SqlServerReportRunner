@@ -127,6 +127,8 @@ INSERT INTO ReportJobQueue
 	, [Status]
 	, CreateDate
 	, ScheduleDate
+	, Priority
+	, SingleExecutionGroup
 	)
 VALUES
 	(
@@ -143,6 +145,8 @@ VALUES
 	, 'Pending'					-- status of the report
 	, GETUTCDATE()					-- date the report is created (must be UTC)
 	, DATEADD(minute, 2, GETUTCDATE())		-- when you want the report to run (leave as NULL for immediate execution) (must be UTC)
+	, 1						-- set the priority for the report, where 1 is higher priority than 2 (optional)
+	, NULL						-- if set, the SingleExecutionGroup value will prevent the report from running concurrently with other reports with the same value in this field (optional)
 	)
 ```
 
@@ -178,6 +182,13 @@ VALUES
        , GETUTCDATE()
 )
 ```
+
+## Processing Options
+
+The report runner provides two options for helping you set the importance and concurrency of reports:
+
+**Priority:** If set, the engine will run reports in ASCending order using this value, where a NULL value is always seen as low priority.  A priority 1 record will always run BEFORE a priority 2 record, even if it was inserted after the latter.
+**SingleExecutionGroup:** If set, the engine will ensure that any reports with the SAME value in this field do not run at the same time.  NULL values are ignored.
 
 ## Installation
 
