@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="/Content/Css/font-awesome.min.css" />
     <!-- CONTROLS -->
     <link rel="stylesheet" href="/Content/Css/chartist-custom.css" />
-    <link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+    <link rel="stylesheet" type="text/css" href="/Content/css/daterangepicker.css" />
     <!-- MAIN CSS -->
     <link rel="stylesheet" href="/Content/Css/style.css?v=@(Model.AppVersion)" />
     <link rel="stylesheet" href="/Content/Css/main.css?v=@(Model.AppVersion)">
@@ -59,20 +59,20 @@
     <!-- Javascript -->
     @if (System.Diagnostics.Debugger.IsAttached)
     {
-        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <script src="/Content/js/vue.js"></script>
     }
     else
     {
-        <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+        <script src="/Content/js/vue.min.js"></script>
     }
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+    <script type="text/javascript" src="/Content/js/jquery.min.js"></script>
     <script src="/Content/Js/bootstrap.min.js"></script>
     <script src="/Content/Js/jquery.slimscroll.min.js"></script>
     <script src="/Content/Js/jquery.easypiechart.min.js"></script>
     <script src="/Content/Js/chartist.min.js"></script>
     <script src="/Content/Js/klorofil-common.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+    <script type="text/javascript" src="~/Content/js/moment.min.js"></script>
+    <script type="text/javascript" src="~/Content/js/daterangepicker.min.js"></script>
     @foreach (string script in ViewBag.Scripts)
     {
         <script src="@(script + "?v=" + Model.AppVersion)"></script>
