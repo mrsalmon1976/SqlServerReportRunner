@@ -5,6 +5,7 @@ using SqlServerReportRunner.Reporting.Formatters;
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 
@@ -26,8 +27,11 @@ namespace SqlServerReportRunner.Reporting.Writers
             this.FilePath = filePath;
             this.Delimiter = String.IsNullOrEmpty(delimiter) ? "," : delimiter;
 
-            _writer = new CsvWriter(File.CreateText(this.FilePath));
-            _writer.Configuration.Delimiter = this.Delimiter;
+            var writerConfig = new CsvHelper.Configuration.CsvConfiguration(CultureInfo.InvariantCulture)
+            {
+                Delimiter = this.Delimiter
+            };
+            _writer = new CsvWriter(File.CreateText(this.FilePath), writerConfig, false);
         }
 
         public override void WriteHeader(IEnumerable<string> columnNames)
