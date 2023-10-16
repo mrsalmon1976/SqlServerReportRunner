@@ -32,6 +32,7 @@ Assuming the application is correctly installed and started as a Windows service
     3. have not experienced an error
     4. have a ScheduleDate of NULL or less than or equal to the current UTC date/time
     5. where *N* is the maximum number of allowed reports minus the number of reports already running as per the ConcurrencyManager
+    6. Note that reports for processing can also be added with a _SingleExecutionGroup_ value.  If this is provided, only a single report within the group will be executed at one time - for large reports that require a data from key tables, this is useful to prevent multiple execution requests block each other.
 5. Each unprocessed report from the ReportQueue is run on a background thread as follows:
     1. Report is added to the ConcurrencyManager
     2. ReportType is determined (StoredProcedure, SQL, SSRS)
