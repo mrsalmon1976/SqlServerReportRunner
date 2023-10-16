@@ -1,11 +1,9 @@
 ﻿using OfficeOpenXml;
 using SqlServerReportRunner.Models;
-using SqlServerReportRunner.Reporting.Executors;
 using SqlServerReportRunner.Reporting.Formatters;
 using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Globalization;
 using System.IO;
 
 namespace SqlServerReportRunner.Reporting.Writers
