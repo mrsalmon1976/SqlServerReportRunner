@@ -10,6 +10,7 @@ using System.Data.SqlClient;
 using System.IO;
 using SqlServerReportRunner.Common;
 using SqlServerReportRunner.Reporting.Writers;
+using NLog;
 
 namespace SqlServerReportRunner.Reporting.Executors
 {
@@ -18,6 +19,8 @@ namespace SqlServerReportRunner.Reporting.Executors
         private IDbConnectionFactory _dbConnectionFactory;
         private IReportWriterFactory _reportWriterFactory;
         private IDbParameterUtility _dbParameterUtility;
+
+        private readonly ILogger _logger = LogManager.GetCurrentClassLogger();
 
         public StoredProcedureReportExecutor(IDbConnectionFactory dbConnectionFactory, IReportWriterFactory reportWriterFactory, IDbParameterUtility dbParameterUtility)
         {
@@ -52,18 +55,25 @@ namespace SqlServerReportRunner.Reporting.Executors
                     // make sure an output format has been specified - if it hasn't then just execute the command
                     if (String.IsNullOrEmpty(job.OutputFormat))
                     {
+                        _logger.Info($"No output format specified - executing command text {job.Command} (Job {job.Id})");
                         command.ExecuteNonQuery();
+                        _logger.Info($"Completed execution of command text {job.Command} (Job {job.Id})");
                     }
                     else
                     {
+                        _logger.Info($"Executing command text {job.Command} (Job {job.Id})");
                         using (var reader = command.ExecuteReader())
                         {
                             string destinationFile = Path.Combine(job.OutputFilePath, job.OutputFileName);
+                            _logger.Debug($"Initialising report writer for (Job {job.Id})");
                             using (IReportWriter reportWriter = _reportWriterFactory.GetReportWriter(job.OutputFormat))
                             {
+                                _logger.Debug($"Report writer created (Job {job.Id})");
                                 ColumnMetaData[] columnInfo = GetColumnInfo(reader).ToArray();
                                 reportWriter.Initialise(destinationFile, job.Delimiter);
+                                _logger.Debug($"Report writer initialised (Job {job.Id})");
                                 reportWriter.WriteHeader(columnInfo.Select(x => x.Name));
+                                _logger.Debug($"Report header written (Job {job.Id})");
                                 while (reader.Read())
                                 {
                                     reportWriter.WriteLine(reader, columnInfo);
@@ -71,6 +81,7 @@ namespace SqlServerReportRunner.Reporting.Executors
                                 }
                             }
                         }
+                        _logger.Info($"Completed execution of command text {job.Command} (Job {job.Id})");
                     }
                 }
 
